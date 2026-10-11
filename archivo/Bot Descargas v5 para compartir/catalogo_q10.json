@@ -1,0 +1,168 @@
+{
+  "informes": [
+    {
+      "nombre": "Inasistencias por curso",
+      "categoria": "Gestión Académica",
+      "direccion": "InasistenciasJustificacion",
+      "filtros": [
+        {
+          "nombre": "Sede - jornada",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "Tal como sale en el filtro de la pantalla. Ejemplo: B2G - Única.",
+          "opciones": [
+            "B2G - Única",
+            "B2B - Única"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Programa",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "El programa activo para esa sede - jornada.",
+          "opciones": [
+            "YES BOGOTA 2026-2"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Período",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "El período académico del programa.",
+          "opciones": [
+            "B2G_YES BOGOTA-2 C1_SEP_2026"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Curso",
+          "tipo": "varios",
+          "obligatorio": true,
+          "ayuda": "Marque \"Todos\" para un solo reporte con todos los cursos, o escoja cursos específicos para bajar uno por cada uno.",
+          "opciones": [],
+          "depende_de": null,
+          "opciones_por": {}
+        }
+      ],
+      "formatos": [
+        "XLSX"
+      ],
+      "activo": true
+    },
+    {
+      "nombre": "Detalle actualizado matriculas",
+      "categoria": "Informes Personalizados",
+      "direccion": "Detalle actualizado matrículass",
+      "filtros": [
+        {
+          "nombre": "Período",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "Todos"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Sede - jornada",
+          "tipo": "lista",
+          "obligatorio": false,
+          "ayuda": "",
+          "opciones": [
+            "Todos"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Curso",
+          "tipo": "lista",
+          "obligatorio": false,
+          "ayuda": "",
+          "opciones": [
+            "Todos"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        }
+      ],
+      "formatos": [
+        "XLSX"
+      ],
+      "activo": true
+    },
+    {
+      "nombre": "Estudiantes notas y observaciones",
+      "categoria": "Gestion Academica",
+      "direccion": "Estudiantes notas y observaciones",
+      "filtros": [
+        {
+          "nombre": "Sede-jornada",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "B2G - Única"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Programa",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "YES BOGOTA 2026-2"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Asignatura",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "Todos"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Periodo",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "B2G_YES BOGOTA-2 C1_SEP_2026"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Curso",
+          "tipo": "varios",
+          "obligatorio": false,
+          "ayuda": "",
+          "opciones": [
+            "Todos"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        }
+      ],
+      "formatos": [
+        "XLSX"
+      ],
+      "activo": true
+    }
+  ]
+}

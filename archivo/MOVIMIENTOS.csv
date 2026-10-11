@@ -1,0 +1,81 @@
+﻿origen,destino
+botv5,bots/q10
+bots/q10/formulario/configurar_q10.py,herramientas/q10/configurar_q10.py
+bots/q10/formulario/plantilla_cursos.py,herramientas/q10/plantilla_cursos.py
+bots/q10/Plantilla cursos.xlsx,archivo/botv5_Plantilla cursos (copia).xlsx
+bots/q10/pasar_txt_a_excel.py,archivo/botv5_pasar_txt_a_excel.py
+bots/q10/Ejecutar botv5.bat,bots/q10/Ejecutar bot Q10.bat
+botv3,bots/macmillan/motor_botv3
+bots/macmillan/motor_botv3/Trasformaciones.ipynb,analisis/Trasformaciones (botv3).ipynb
+practica/automatizar_macmillan.py,bots/macmillan/automatizar_macmillan.py
+automatizar_oxford.py,bots/oxford/automatizar_oxford.py
+practica/app_macmillan.py,herramientas/macmillan/app_macmillan.py
+practica/perfiles_macmillan.json,herramientas/macmillan/perfiles_macmillan.json
+practica/config_macmillan_activo.json,herramientas/macmillan/config_macmillan_activo.json
+practica/catalogo_clases_macmillan.json,herramientas/macmillan/catalogo_clases_macmillan.json
+practica/app_oxford.py,herramientas/oxford/app_oxford.py
+practica/perfiles_oxford.json,herramientas/oxford/perfiles_oxford.json
+app_colombo/respaldo_originales,archivo/respaldo_antes_de_unificar
+app_colombo,aplicacion
+Bot Descargas.xlsx,datos/Bot Descargas.xlsx
+catalogo_q10.json,datos/catalogo_q10.json
+catalogo_q10.json.respaldo,archivo/catalogo_q10.json.respaldo
+Plantilla cursos.xlsx,datos/Plantilla cursos.xlsx
+Plantilla_Clases_Oxford.xlsx,datos/Plantilla_Clases_Oxford.xlsx
+practica/codigos_activacion.py,otras_herramientas/activacion_codigos_oxford/codigos_activacion.py
+codigos_oxford.xlsx,otras_herramientas/activacion_codigos_oxford/codigos_oxford.xlsx
+codigos_oxford_resultados.xlsx,otras_herramientas/activacion_codigos_oxford/codigos_oxford_resultados.xlsx
+Usuarios para compartir,otras_herramientas/activacion_codigos_oxford/para_compartir
+Transformacion python.ipynb,analisis/Transformacion python.ipynb
+Transformacion Oxford.ipynb,analisis/Transformacion Oxford.ipynb
+Validacion Oxford_Nuevo.ipynb,analisis/Validacion Oxford_Nuevo.ipynb
+Validacion Macmillan (anterior).ipynb,analisis/Validacion Macmillan (anterior).ipynb
+Seguimiento avance Oxford.xlsx,analisis/Seguimiento avance Oxford.xlsx
+avance.html,analisis/avance.html
+avance_oxford.xlsx,analisis/avance_oxford.xlsx
+df_notas_ancho.xlsx,analisis/df_notas_ancho.xlsx
+Consolidado_Inasistencias.xlsx,analisis/Consolidado_Inasistencias.xlsx
+cruzar_estudiantes.py,analisis/cruzar_estudiantes.py
+transformacionMacmillan.py,analisis/transformacionMacmillan.py
+insumos,analisis/insumos
+botv2,archivo/botv2
+botv2-practica,archivo/botv2-practica
+Bot Descargas para compartir,archivo/Bot Descargas para compartir
+Bot Descargas v2 para compartir,archivo/Bot Descargas v2 para compartir
+Bot Descargas v3 para compartir,archivo/Bot Descargas v3 para compartir
+Bot Descargas v5 para compartir,archivo/Bot Descargas v5 para compartir
+Bot Oxford para compartir,archivo/Bot Oxford para compartir
+sistemas,archivo/sistemas
+perfil_navegador,archivo/perfil_navegador
+__pycache__,archivo/__pycache__
+practica,archivo/practica_experimentos
+bot.py,archivo/suelto/bot.py
+nucleo.py,archivo/suelto/nucleo.py
+patch_app.py,archivo/suelto/patch_app.py
+patch_app2.py,archivo/suelto/patch_app2.py
+patch_auto.py,archivo/suelto/patch_auto.py
+patch_performance.py,archivo/suelto/patch_performance.py
+patch_plantilla.py,archivo/suelto/patch_plantilla.py
+patch_rename.py,archivo/suelto/patch_rename.py
+patch_ruta.py,archivo/suelto/patch_ruta.py
+patch_settings.py,archivo/suelto/patch_settings.py
+extract_pp.py,archivo/suelto/extract_pp.py
+extract_pp2.py,archivo/suelto/extract_pp2.py
+get_panel.py,archivo/suelto/get_panel.py
+get_panel2.py,archivo/suelto/get_panel2.py
+get_tabla.py,archivo/suelto/get_tabla.py
+inspect2.py,archivo/suelto/inspect2.py
+inspect3.py,archivo/suelto/inspect3.py
+inspect_app.py,archivo/suelto/inspect_app.py
+recover.py,archivo/suelto/recover.py
+panel_perfiles.py,archivo/suelto/panel_perfiles.py
+panel_settings.txt,archivo/suelto/panel_settings.txt
+transcript_PanelPerfiles.txt,archivo/suelto/transcript_PanelPerfiles.txt
+practica.py,archivo/suelto/practica.py
+1  Ingresar  al sistema.txt,archivo/suelto/1  Ingresar  al sistema.txt
+Ejecutar bot.bat,archivo/suelto/Ejecutar bot.bat
+Ejecutar descarga.bat,archivo/suelto/Ejecutar descarga.bat
+clase_B1-2-5PM24_GT.png,archivo/suelto/clase_B1-2-5PM24_GT.png
+paso4_busqueda.png,archivo/suelto/paso4_busqueda.png
+resultado_1.png,archivo/suelto/resultado_1.png
+resultado_2.png,archivo/suelto/resultado_2.png

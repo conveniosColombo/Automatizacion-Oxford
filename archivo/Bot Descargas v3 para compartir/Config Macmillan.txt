@@ -1,0 +1,19 @@
+# Configuracion del sistema Macmillan Education Everywhere (MEE)
+
+# Libros a trabajar, escritos tal como aparecen debajo de la portada en "Mi Estanteria".
+# Para varios, separalos con coma. Ejemplo - Speak Your Mind, Learning Well
+Libros : Speak Your Mind
+
+# Niveles dentro del libro, tal como aparecen en las pestañas (Level 1, Level 2...).
+# Para varios, separalos con coma. Escribe "Todos" para recorrer todas las pestañas.
+# Dejalo en blanco si el libro no tiene niveles.
+Niveles : Level 1
+
+# Opcion del nivel a la que entra el bot (la lista con Macmillan Education Everywhere App,
+# Teacher's Resource Centre, Test Generator, ePlanner...).
+Recurso : Macmillan Education Everywhere App
+
+# Clases que aparecen en Progress, tal como se ven en cada tarjeta.
+# Para varias, separalas con coma. Escribe "Todas" para recorrer todas las que aparezcan.
+# Ejemplo - A1.1-12PM04 JOSE CELESTINO MUTIS, A1.1-12PM05 JOSE CELESTINO MUTIS
+Clases : Todas

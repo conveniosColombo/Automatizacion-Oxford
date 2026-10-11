@@ -1,0 +1,24 @@
+# Configuracion del sistema Q10
+# Escribe cada valor tal como aparece en la pantalla de Q10 (respeta mayusculas y tildes).
+
+# Rol con el que se entra (ventana "Seleccione el rol" despues de la contrasena)
+Rol : Administrativo
+
+# Informes a descargar, escritos tal cual aparecen en la pagina "Informes" de Q10.
+# Para varios, separalos con coma. Ejemplo - Estudiantes matriculados, Consolidado de notas, Cartera - pagos
+Informes : Inasistencias por curso
+
+# ---------------------------------------------------------------------------------------------
+# FILTROS DE LOS INFORMES
+# - A la izquierda, el nombre del filtro tal como aparece en la pantalla del informe (sin el *).
+# - A la derecha, la opcion a escoger, tal cual aparece en la lista.
+# - Si un filtro se deja en blanco, o no existe en el informe, el bot lo salta.
+# - Escríbelos en el mismo orden de la pantalla: cada lista carga sus opciones segun la anterior.
+# - Puedes agregar otros filtros con el mismo formato (Nombre : valor).
+# - Para varios valores, separalos con coma: el bot descarga un reporte por cada uno.
+#   Escribe "Todos" para descargar un reporte por cada opcion de la lista. Ejemplo - Curso : Todos
+# ---------------------------------------------------------------------------------------------
+Sede - jornada : B2G - Única
+Programa : YES BOGOTA 2026-2
+Período : B2G_YES BOGOTA-2 C1_SEP_2026
+Curso :  Todos

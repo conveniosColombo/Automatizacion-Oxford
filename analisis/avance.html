@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatización de Reportes - Convenios</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .slide {
+            width: 960px;
+            height: 540px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            padding: 40px 50px;
+            box-sizing: border-box;
+            overflow: hidden;
+            page-break-after: always;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                background-color: white;
+                gap: 0;
+            }
+
+            .slide {
+                box-shadow: none;
+                border: none;
+                border-radius: 0;
+                page-break-after: always;
+                width: 100vw;
+                height: 100vh;
+                padding: 5vh 5vw;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Diapositiva 1 -->
+    <div class="slide">
+        <div class="flex justify-between items-start mb-8">
+            <div>
+                <p class="text-blue-600 font-bold text-xs tracking-wider mb-2 uppercase">Área de Convenios ·
+                    Automatización</p>
+                <h1 class="text-3xl font-bold text-slate-900 mb-2">Automatización de reportes de estudiantes</h1>
+                <p class="text-slate-600 text-sm">Cero trabajo manual, análisis al 100%, histórico en base de datos.</p>
+            </div>
+            <div class="bg-slate-100 text-slate-500 text-xs font-semibold px-3 py-1 rounded-full">Septiembre – Noviembre
+                2026</div>
+        </div>
+        <div class="grid grid-cols-3 gap-6 mt-12">
+            <div class="border border-slate-200 rounded-xl p-6 bg-white shadow-sm">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="bg-blue-50 text-blue-600 text-xs font-bold px-2 py-1 rounded">BOT-003</span>
+                </div>
+                <h2 class="text-xl font-bold text-slate-900">Q10</h2>
+                <p class="text-slate-500 text-xs mb-8">Informes Académicos</p>
+                <p class="text-orange-500 font-bold text-xs flex items-center"><span class="mr-1">◐</span> En desarrollo
+                </p>
+            </div>
+            <div class="border border-slate-200 rounded-xl p-6 bg-white shadow-sm">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="bg-blue-50 text-blue-600 text-xs font-bold px-2 py-1 rounded">BOT-004</span>
+                </div>
+                <h2 class="text-xl font-bold text-slate-900">Oxford English Hub</h2>
+                <p class="text-slate-500 text-xs mb-8">Reportes de Progreso</p>
+                <p class="text-green-600 font-bold text-xs flex items-center"><span class="mr-1">✔</span> Completado</p>
+            </div>
+            <div class="border border-slate-200 rounded-xl p-6 bg-white shadow-sm">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="bg-blue-50 text-blue-600 text-xs font-bold px-2 py-1 rounded">BOT-005</span>
+                </div>
+                <h2 class="text-xl font-bold text-slate-900">Macmillan Education</h2>
+                <p class="text-slate-500 text-xs mb-8">Everywhere Progreso</p>
+                <p class="text-blue-600 font-bold text-xs flex items-center"><span class="mr-1">◐</span> Completado en
+                    validación</p>
+            </div>
+        </div>
+        <div class="absolute bottom-10 left-12 right-12 flex justify-between items-center text-slate-400 text-xs">
+            <p>Alcance: Extracción · Transformación · Carga</p>
+            <p>Página 1 de 6</p>
+        </div>
+    </div>
+
+    <!-- Diapositiva 2 -->
+    <div class="slide">
+        <div class="mb-8">
+            <p class="text-blue-600 font-bold text-xs tracking-wider mb-2 uppercase">Madurez Operativa</p>
+            <h1 class="text-3xl font-bold text-slate-900">Antes vs. Ahora</h1>
+        </div>
+        <div class="flex flex-col gap-4 mt-8">
+            <div class="grid grid-cols-[120px_1fr_1fr] gap-4 text-xs font-bold text-slate-500 mb-2 px-4">
+                <div>FASE</div>
+                <div class="bg-slate-100 py-2 px-4 rounded text-center">ANTES (MANUAL)</div>
+                <div class="bg-blue-50 text-blue-600 py-2 px-4 rounded text-center">AHORA (AVANCE ACTUAL)</div>
+            </div>
+            <div class="grid grid-cols-[120px_1fr_1fr] gap-4 items-center px-4">
+                <div class="font-bold text-slate-700 text-sm">Extracción</div>
+                <div
+                    class="border border-slate-200 p-4 rounded-lg text-slate-600 text-sm h-full flex items-center bg-white">
+                    Descarga manual repetitiva clase a clase con riesgo de error.</div>
+                <div
+                    class="border border-blue-200 bg-blue-50/30 p-4 rounded-lg text-slate-700 text-sm h-full flex items-center">
+                    <span class="text-blue-600 font-bold mr-2">✔</span> Interfaces gráficas con descarga guiada en
+                    desarrollo (Q10, Oxford y Macmillan).
+                </div>
+            </div>
+            <div class="grid grid-cols-[120px_1fr_1fr] gap-4 items-center px-4">
+                <div class="font-bold text-slate-700 text-sm">Transformación</div>
+                <div
+                    class="border border-slate-200 p-4 rounded-lg text-slate-600 text-sm h-full flex flex-col justify-center bg-white">
+                    Limpieza manual en Power Query propensa a fallas frecuentes.</div>
+                <div
+                    class="border border-blue-200 bg-blue-50/30 p-4 rounded-lg text-slate-700 text-sm h-full flex flex-col justify-center">
+                    <div><span class="text-blue-600 font-bold mr-2">✔</span> Dos scripts listos (Macmillan y Oxford).
+                    </div>
+                    <div class="text-xs text-slate-500 mt-1 ml-5">Pruebas exitosas en Oxford. Iniciando pruebas en
+                        Macmillan.</div>
+                </div>
+            </div>
+            <div class="grid grid-cols-[120px_1fr_1fr] gap-4 items-center px-4">
+                <div class="font-bold text-slate-700 text-sm">Carga</div>
+                <div
+                    class="border border-slate-200 p-4 rounded-lg text-slate-600 text-sm h-full flex items-center bg-white">
+                    Archivos dispersos consolidados y verificados a mano.</div>
+                <div
+                    class="border border-blue-200 bg-blue-50/30 p-4 rounded-lg text-slate-700 text-sm h-full flex flex-col justify-center">
+                    <div><span class="text-blue-600 font-bold mr-2">✔</span> Carga directa en base de datos local.</div>
+                    <div class="text-xs text-slate-500 mt-1 ml-5">En espera de solución de ticket TI para máquina
+                        virtual.</div>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-10 left-12 right-12 flex justify-between items-center text-slate-400 text-xs">
+            <p>Convenciones: <span class="text-blue-600 font-bold">✔</span> Listo &nbsp;&nbsp; <span
+                    class="text-orange-500 font-bold">◐</span> En desarrollo / pruebas &nbsp;&nbsp; <span
+                    class="text-slate-400 font-bold">○</span> Pendiente</p>
+        </div>
+    </div>
+
+    <!-- Diapositiva 3 -->
+    <div class="slide">
+        <div class="mb-8">
+            <p class="text-blue-600 font-bold text-xs tracking-wider mb-2 uppercase">Eficiencia Operativa</p>
+            <h1 class="text-3xl font-bold text-slate-900">Impacto esperado por plataforma</h1>
+        </div>
+        <div class="flex gap-10 mt-12 items-center">
+            <div class="bg-blue-50 border border-blue-100 rounded-2xl p-8 w-1/3">
+                <p class="text-blue-800 font-bold text-xs tracking-wide mb-4">AHORRO TOTAL ESTIMADO</p>
+                <h2 class="text-6xl font-bold text-blue-600 mb-4">80–95%</h2>
+                <p class="text-slate-700 text-sm font-medium">Menos tiempo operativo dedicado a generar reportes.</p>
+                <p class="text-slate-400 text-xs mt-6">* Estimado; se validará con las pruebas de los nuevos cortes.</p>
+            </div>
+            <div class="w-2/3 flex flex-col gap-8">
+                <div>
+                    <div class="flex justify-between text-sm font-bold mb-2"><span class="text-slate-800">BOT-003:
+                            Q10</span><span class="text-blue-600">6h → 1h/mes</span></div>
+                    <div class="h-4 bg-slate-100 rounded-full flex overflow-hidden">
+                        <div class="bg-orange-300 w-[20%] h-full relative z-0"></div>
+                        <div class="bg-blue-600 w-[5%] h-full relative z-10 -ml-[5%]"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-sm font-bold mb-2"><span class="text-slate-800">BOT-004:
+                            Oxford English Hub</span><span class="text-blue-600">5h → 1h/mes</span></div>
+                    <div class="h-4 bg-slate-100 rounded-full flex overflow-hidden">
+                        <div class="bg-orange-300 w-[18%] h-full relative z-0"></div>
+                        <div class="bg-blue-600 w-[5%] h-full relative z-10 -ml-[5%]"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-sm font-bold mb-2"><span class="text-slate-800">BOT-005:
+                            Macmillan Education</span><span class="text-blue-600">20h → 1h/mes</span></div>
+                    <div class="h-4 bg-slate-100 rounded-full flex overflow-hidden">
+                        <div class="bg-orange-300 w-[80%] h-full relative z-0"></div>
+                        <div class="bg-blue-600 w-[5%] h-full relative z-10 -ml-[5%]"></div>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-6 mt-2 text-xs text-slate-500 font-medium">
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-orange-300 rounded-sm mr-2"></div> Antes (horas manuales)
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-blue-600 rounded-sm mr-2"></div> Después (automatizado)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diapositiva 4 -->
+    <div class="slide">
+        <div class="mb-6">
+            <p class="text-blue-600 font-bold text-xs tracking-wider mb-1 uppercase">Ruta de Trabajo</p>
+            <h1 class="text-3xl font-bold text-slate-900">Cumplimiento del cronograma</h1>
+        </div>
+        <div class="flex justify-between gap-4 mb-6">
+            <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 flex-1 flex items-center justify-between">
+                <div><span class="text-xl font-bold text-blue-700 block leading-none mb-1">6/9</span><span
+                        class="text-slate-500 text-[10px]">Fases listas o en validación</span></div>
+            </div>
+            <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 flex-1 flex items-center justify-between">
+                <div><span class="text-xl font-bold text-blue-700 block leading-none mb-1">0</span><span
+                        class="text-slate-500 text-[10px]">Fases retrasadas a hoy</span></div>
+            </div>
+            <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 flex-1 flex items-center justify-between">
+                <div><span class="text-xl font-bold text-blue-700 block leading-none mb-1 text-sm">Oxford
+                        Listos</span><span class="text-slate-500 text-[10px]">Pruebas exitosas. Iniciando
+                        Macmillan.</span></div>
+            </div>
+        </div>
+        <div class="border border-slate-200 rounded-lg bg-white overflow-hidden text-[10px]">
+            <div
+                class="grid grid-cols-[140px_1fr_1fr_1fr_1fr_1fr_1fr_1fr] bg-slate-50 border-b border-slate-200 font-bold text-slate-500 py-2 px-4 text-center items-center">
+                <div class="text-left">PLATAFORMA / BOT</div>
+                <div>21/09</div>
+                <div>28/09</div>
+                <div>05/10</div>
+                <div>12/10</div>
+                <div>19/10</div>
+                <div>26/10</div>
+                <div>04/11</div>
+            </div>
+            <div class="relative px-4 py-3">
+                <div class="absolute top-0 bottom-0 left-[265px] w-0.5 bg-orange-400 z-0"></div>
+                <div
+                    class="absolute -top-3 left-[242px] bg-orange-500 text-white text-[9px] font-bold px-2 py-0.5 rounded z-10 flex items-center">
+                    HOY · 09/10 ▼</div>
+
+                <div class="grid grid-cols-[140px_1fr] items-center py-2 relative z-10 border-b border-slate-100">
+                    <div class="font-bold text-slate-800"><span class="text-blue-600 block text-[9px]">BOT-003</span>
+                        Q10</div>
+                    <div class="relative h-6 flex gap-1 items-center">
+                        <div
+                            class="absolute left-0 w-[45%] h-full bg-blue-500 rounded text-white font-bold flex items-center justify-center shadow-sm">
+                            Extracción (En curso)</div>
+                        <div
+                            class="absolute left-[46%] w-[20%] h-full bg-green-700 rounded text-white font-bold flex items-center justify-center shadow-sm">
+                            Transf. ★</div>
+                        <div
+                            class="absolute left-[67%] w-[12%] h-full bg-slate-100 border border-slate-300 border-dashed rounded text-slate-500 flex items-center justify-center">
+                            Carga</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-[140px_1fr] items-center py-2 relative z-10 border-b border-slate-100 mt-2">
+                    <div class="font-bold text-slate-800"><span class="text-blue-600 block text-[9px]">BOT-004</span>
+                        Oxford</div>
+                    <div class="relative h-6 flex gap-1 items-center">
+                        <div
+                            class="absolute left-[50%] w-[15%] h-full bg-green-700 rounded text-white font-bold flex items-center justify-center shadow-sm">
+                            Extracción ★</div>
+                        <div
+                            class="absolute left-[66%] w-[15%] h-full bg-green-700 rounded text-white font-bold flex items-center justify-center shadow-sm">
+                            Transf. ★</div>
+                        <div
+                            class="absolute left-[82%] w-[15%] h-full bg-slate-100 border border-slate-300 border-dashed rounded text-slate-500 flex items-center justify-center">
+                            Carga</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-[140px_1fr] items-center py-2 relative z-10 mt-2">
+                    <div class="font-bold text-slate-800"><span class="text-blue-600 block text-[9px]">BOT-005</span>
+                        Macmillan</div>
+                    <div class="relative h-6 flex gap-1 items-center">
+                        <div
+                            class="absolute left-[70%] w-[10%] h-full bg-blue-500 rounded text-white font-bold flex items-center justify-center shadow-sm">
+                            Extr.</div>
+                        <div
+                            class="absolute left-[81%] w-[10%] h-full bg-blue-500 rounded text-white font-bold flex items-center justify-center shadow-sm">
+                            Transf.</div>
+                        <div
+                            class="absolute left-[92%] w-[8%] h-full bg-slate-100 border border-slate-300 border-dashed rounded text-slate-500 flex items-center justify-center">
+                            Cg.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-6 left-12 right-12 flex justify-between items-center text-slate-400 text-[10px]">
+            <div class="flex gap-3">
+                <span class="flex items-center">
+                    <div class="w-2 h-2 bg-green-700 rounded-sm mr-1"></div> Completado (★ Adelantado)
+                </span>
+                <span class="flex items-center">
+                    <div class="w-2 h-2 bg-blue-500 rounded-sm mr-1"></div> En curso / Validación
+                </span>
+                <span class="flex items-center">
+                    <div class="w-2 h-2 bg-slate-100 border border-slate-300 rounded-sm mr-1"></div> Pendiente
+                </span>
+                <span class="flex items-center">
+                    <div class="w-2 h-2 bg-orange-400 rounded-sm mr-1"></div> Hoy
+                </span>
+            </div>
+            <p>Corte al 09/10/2026. Fechas según plan de trabajo.</p>
+        </div>
+    </div>
+
+    <!-- Diapositiva 5 -->
+    <div class="slide">
+        <div class="mb-10">
+            <p class="text-blue-600 font-bold text-xs tracking-wider mb-2 uppercase">Ruta de Trabajo</p>
+            <h1 class="text-3xl font-bold text-slate-900">Próximos pasos y cronograma</h1>
+        </div>
+        <div class="grid grid-cols-2 gap-8 mt-8">
+            <div class="flex gap-4">
+                <div class="text-4xl font-bold text-slate-200">1</div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">Validación Transformación</h3>
+                    <p class="text-slate-600 text-sm">Iniciar pruebas de los scripts de transformación con el convenio
+                        de Tocancipá en Macmillan.</p>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <div class="text-4xl font-bold text-slate-200">2</div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">Completar interfaces</h3>
+                    <p class="text-slate-600 text-sm">Terminar la interfaz de Q10 y desarrollar la interfaz madre
+                        unificada para Q10, Macmillan y Oxford.</p>
+                </div>
+            </div>
+            <div class="flex gap-4 mt-6">
+                <div class="text-4xl font-bold text-slate-200">3</div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">Bots en máquina virtual</h3>
+                    <p class="text-slate-600 text-sm">Programar bots para extracción automática periódica de avance de
+                        clases dentro de la VM.</p>
+                </div>
+            </div>
+            <div class="flex gap-4 mt-6">
+                <div class="text-4xl font-bold text-slate-200">4</div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">Carga en la nube</h3>
+                    <p class="text-slate-600 text-sm">Ejecutar la subida directa de los datos consolidados a la base de
+                        datos en la nube.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diapositiva 6 (Anexo) -->
+    <div class="slide">
+        <div class="mb-6 flex justify-between items-start">
+            <div>
+                <p class="text-blue-600 font-bold text-xs tracking-wider mb-1 uppercase">Detalle · Extracción</p>
+                <h1 class="text-3xl font-bold text-slate-900">Interfaces de descarga asistida</h1>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-8 h-[340px]">
+            <!-- Q10 Mockup -->
+            <div class="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm flex flex-col">
+                <div class="bg-[#0078D4] px-3 py-2 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-2"><span class="text-xs">📁</span><span
+                            class="text-[10px] font-bold">Configurar Descarga Q10 · Colombo Americano</span></div>
+                </div>
+                <div class="flex flex-1 overflow-hidden">
+                    <div class="w-1/3 border-r border-slate-100 p-3 bg-slate-50/50">
+                        <div class="text-[9px] font-bold text-blue-600 mb-2">1. SELECCIONAR INFORME</div>
+                        <div class="bg-white border border-slate-200 rounded px-2 py-1 text-[9px] text-slate-400 mb-2">
+                            Buscar informe...</div>
+                        <div
+                            class="bg-blue-50 border border-blue-200 rounded px-2 py-1 text-[9px] text-blue-800 font-bold mb-1">
+                            Inasistencias por curso</div>
+                        <div class="px-2 py-1 text-[9px] text-slate-500 mb-1">Detalle matrículas</div>
+                        <div class="px-2 py-1 text-[9px] text-slate-500">Estudiantes notas</div>
+                    </div>
+                    <div class="w-2/3 p-3 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[9px] font-bold text-blue-600 mb-3">2. CONFIGURAR FILTROS</div>
+                            <div
+                                class="border border-slate-200 rounded px-2 py-1 text-[9px] text-slate-700 mb-2 flex justify-between items-center">
+                                <span class="text-slate-400 mr-1">Sede:</span> Colombo Norte <span>▾</span></div>
+                            <div
+                                class="border border-slate-200 rounded px-2 py-1 text-[9px] text-slate-700 mb-2 flex justify-between items-center">
+                                <span class="text-slate-400 mr-1">Programa:</span> YES BOGOTA 2026-2 <span>▾</span>
+                            </div>
+                            <div
+                                class="border border-slate-200 rounded px-2 py-1 text-[9px] text-slate-700 flex justify-between items-center">
+                                <span class="text-slate-400 mr-1">Período:</span> B2G_YES BOGOTA C1 <span>▾</span></div>
+                        </div>
+                        <div class="flex justify-end mt-4">
+                            <div class="bg-[#0078D4] text-white text-[9px] font-bold px-3 py-1.5 rounded">▶ EJECUTAR BOT
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-t border-slate-100 p-3 bg-slate-50">
+                    <div class="text-[10px] font-bold text-slate-800 mb-1">BOT-003 · Q10</div>
+                    <ul class="text-[9px] text-slate-600 list-none space-y-0.5">
+                        <li><span class="text-blue-500 mr-1">✔</span>Selección asistida de sede y período.</li>
+                        <li><span class="text-blue-500 mr-1">✔</span>Descarga automática de informes académicos.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Oxford Mockup -->
+            <div class="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm flex flex-col">
+                <div class="flex border-b border-slate-100">
+                    <div class="bg-[#0F172A] w-10 flex flex-col items-center py-2 gap-3 text-white/50 text-xs">
+                        <span class="text-yellow-500 font-bold">OX</span><span>🏠</span><span>⚙</span>
+                    </div>
+                    <div class="flex-1 p-3">
+                        <div class="text-[10px] font-bold text-slate-800 mb-3">Oxford English Hub · Configurador</div>
+                        <div class="text-[9px] font-bold text-slate-500 mb-2">PERFILES DE DESCARGA</div>
+
+                        <div
+                            class="border border-yellow-400 rounded p-2 mb-2 bg-yellow-50/30 flex justify-between items-center">
+                            <div>
+                                <div class="text-[9px] font-bold text-slate-800">Perfil importado ← Activo</div>
+                                <div class="text-[8px] text-slate-400">ID: 18xaf · 1 clase seleccionada</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <div class="bg-green-700 text-white text-[8px] font-bold px-2 py-1 rounded">▶ EJECUTAR
+                                </div>
+                                <div class="bg-yellow-400 text-yellow-900 text-[8px] font-bold px-2 py-1 rounded">Cargar
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border border-slate-200 rounded p-2 flex justify-between items-center">
+                            <div>
+                                <div class="text-[9px] font-bold text-slate-600">Nuevo perfil (Plantilla)</div>
+                                <div class="text-[8px] text-slate-400">ID: -- · 0 clases</div>
+                            </div>
+                            <div class="bg-[#0F172A] text-white text-[8px] font-bold px-2 py-1 rounded">Cargar</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-3 bg-slate-50 mt-auto">
+                    <div class="text-[10px] font-bold text-slate-800 mb-1">BOT-004 · Oxford English Hub</div>
+                    <ul class="text-[9px] text-slate-600 list-none space-y-0.5">
+                        <li><span class="text-blue-500 mr-1">✔</span>Carga y configuración de perfiles.</li>
+                        <li><span class="text-blue-500 mr-1">✔</span>Descarga directa de progreso estudiantil.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

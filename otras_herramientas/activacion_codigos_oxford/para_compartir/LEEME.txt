@@ -1,0 +1,33 @@
+﻿USUARIOS - Activacion de codigos de Oxford English Hub
+=======================================================
+
+No necesitas instalar nada. Solo necesitas Microsoft Edge o Google Chrome.
+
+PREPARAR LA PLANILLA
+1. Abre "codigos_oxford.xlsx" (esta junto a "Usuarios.exe") y llena una fila por estudiante:
+     Usuario        : usuario de Oxford del estudiante
+     Contrasena     : su clave de Oxford
+     Codigo_Ebook   : codigo del libro digital (ej. 1111-2222-3333)
+     Codigo_Practica: codigo de la practica online (ej. S-111-222-3333)
+     Organizacion   : ID de la organizacion. Solo se usa si Oxford lo pide al entrar;
+                      puedes dejarla vacia si ya la recuerda.
+   Deja vacias las columnas "Estado" y "Detalle": las llena el programa.
+   Los datos van como TEXTO, sin formulas (si vienen de otro Excel, pega como Valores).
+2. GUARDA y CIERRA la planilla. Si queda abierta en Excel, el programa no puede escribir en ella.
+
+USARLO
+1. Doble clic en "Usuarios.exe".
+2. Se abre una ventana negra y un navegador que hace todo solo. No lo toques mientras trabaja.
+3. Por cada estudiante: entra, activa el ebook y la practica, y cierra la sesion.
+4. Al terminar cada estudiante escribe en la planilla:
+     Estado  = ACTIVADO (todo bien, incluye codigos que ya estaban activados) o ERROR
+     Detalle = que paso
+5. Si hay un ERROR, queda una foto de la pantalla en la carpeta "Capturas".
+6. Presiona Enter en la ventana negra para cerrar.
+
+SI ALGO FALLA
+- La ventana negra muestra el mensaje del error. Envialo a quien te compartio el programa.
+- Si Windows muestra "Windows protegio su PC": clic en "Mas informacion" y luego "Ejecutar de todas formas".
+  Si el antivirus lo bloquea, pide a Sistemas que lo autorice.
+
+IMPORTANTE: la planilla tiene claves de estudiantes. No la compartas ni la dejes en carpetas publicas.

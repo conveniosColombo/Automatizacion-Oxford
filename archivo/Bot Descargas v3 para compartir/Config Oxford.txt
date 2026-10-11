@@ -1,0 +1,15 @@
+# Escribe el ID del curso tal como aparece en la columna "ID" de la lista "My Organizations"
+# (respeta mayusculas y minusculas). Ejemplos - f9nfc = Cohorte 1 AM SDDE 2026 / k6qh3 = Cohorte 1 PM SDDE 2026
+ID : NlemE
+
+# Nombre de las clases a descargar, tal como aparece en la lista de Classes.
+# Para varias clases, separalas con coma. Ejemplo - B1-2-5PM24 GT, B1.2-5PM112 GT
+Clases : B1-2-5PM24 GT, B1.2-5PM112 GT, B1.2-5PM113 GT, B1.2-5PM114 IAV, B1.2-5PM115 IAV, B1.2-5PM22 BPO, B1.2-5PM23 BPO, B1.2-5PM26 TIC, B1.2-5PM27 TIC, B1.2-5PM28 IAV
+
+# Parametros de "Progress settings", escritos tal como aparecen en esa ventana.
+# Scores - Show latest attempt / Show best attempt (u otra opcion de la lista)
+# Show figures as - Percentages / Fractions
+# Show scores for - All activities / Completed activities
+Scores : Show best attempt
+Show figures as : Percentages
+Show scores for : All activities

@@ -1,0 +1,28 @@
+BOT OXFORD - Descarga de reportes de progreso (Oxford English Hub)
+====================================================================
+
+No necesitas instalar nada. Solo necesitas Microsoft Edge (ya viene con Windows).
+
+PRIMERA VEZ
+1. Copia esta carpeta completa a tu computador (por ejemplo al Escritorio).
+2. Abre "Credenciales Oxford.txt" y escribe TU correo y TU clave de Oxford
+   (reemplaza todo el texto "escribe_aqui..."). Guarda con Ctrl+G.
+3. Abre "Config Oxford.txt" y escribe:
+     - ID : el ID de tu organizacion (columna "ID" de "My Organizations")
+     - Clases : los nombres de tus clases, separados por coma
+   Guarda los cambios.
+
+CADA VEZ QUE LO USES
+1. Doble clic en "Bot Oxford.exe".
+2. Espera: se abre una ventana negra y un navegador que hace todo solo.
+   No toques el navegador mientras trabaja.
+3. Al terminar, los CSV quedan en la carpeta "Descargas".
+4. Presiona Enter en la ventana negra para cerrar.
+
+SI ALGO FALLA
+- La ventana negra muestra un mensaje "FALLO: ...". Envialo a quien te compartio el bot.
+- La primera vez puede tardar unos segundos en abrir (se esta preparando).
+- Si Windows muestra "Windows protegio su PC": clic en "Mas informacion" y luego "Ejecutar de todas formas".
+  Si el antivirus lo bloquea, pide a Sistemas que lo autorice.
+
+IMPORTANTE: no compartas tu archivo de credenciales con nadie.

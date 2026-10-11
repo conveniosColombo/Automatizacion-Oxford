@@ -1,0 +1,20 @@
+17:43:00  ===== BOT AUTOMATICO =====   2026-09-22 17:43:00
+17:43:00  carpeta: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford
+17:43:00  sistemas: Oxford, Macmillan | sin ventana: no | reintentos: 1 | tope por sistema: 30 min
+17:43:00  a ejecutar: Oxford, Macmillan
+
+17:43:00  --- Oxford (intento 1) ---
+17:47:08  --- Oxford: OK, 10 archivo(s), 4.1 min ---
+
+17:47:08  --- Macmillan (intento 1) ---
+18:17:08  Macmillan: paso de 30 minutos; se corta el intento
+18:17:08  --- Macmillan: FALLO, 34 archivo(s), 30.0 min ---
+
+18:17:08  --- Macmillan (intento 2) ---
+18:45:04  --- Macmillan: OK, 35 archivo(s), 27.9 min ---
+
+18:45:04  ===== RESUMEN =====
+18:45:04    Oxford       OK                  10 archivo(s)     4.1 min
+18:45:04    Macmillan    OK                  35 archivo(s)    27.9 min   (intentos: 2)
+
+18:45:04  registro: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Registros\2026-09-22_1743_resumen.log

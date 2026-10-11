@@ -1,0 +1,51 @@
+BOT DESCARGAS v5 - Oxford English Hub, Q10 y Macmillan (MEE)
+=============================================================
+
+No necesitas instalar nada. Solo necesitas Google Chrome o Microsoft Edge (Edge ya viene con Windows).
+
+NUEVO EN LA v5: todo se configura en el Excel "Bot Descargas.xlsx". Ya no hay archivos .txt.
+Y para Q10 hay ademas una app, "Configurar Q10.exe", que arma esa parte del Excel con un
+formulario guiado en vez de escribirla a mano.
+
+PRIMERA VEZ
+1. Copia esta carpeta completa a tu computador (por ejemplo al Escritorio).
+2. Abre "Bot Descargas.xlsx" y lee la hoja "Inicio".
+3. Hoja "Accesos": escribe tu usuario y tu contraseña en cada sistema que uses.
+   Si no usas un sistema, pon "No" en la columna "Usar" y no aparecera en el menu.
+4. Revisa la hoja de cada sistema (Oxford, Q10, Macmillan).
+   Para Q10 tambien puedes usar "Configurar Q10.exe" (ver mas abajo) en vez de escribir
+   directo en la hoja.
+5. Guarda (Ctrl + G) y CIERRA el Excel.
+
+CADA VEZ QUE LO USES
+1. Doble clic en "Bot Descargas v5.exe".
+2. Escribe el numero del sistema y presiona Enter (o el numero de "Todos").
+3. Espera: se abre un navegador que hace todo solo. No lo toques mientras trabaja.
+   Si Q10 pide "verificacion de seguridad", resuelvela y presiona Enter en la ventana negra.
+4. Los archivos quedan en "Descargas\Oxford", "Descargas\Q10" y "Descargas\Macmillan",
+   dentro de ESTA misma carpeta.
+5. Presiona Enter en la ventana negra para cerrar.
+
+"CONFIGURAR Q10.EXE" (formulario para armar las descargas de Q10)
+1. Doble clic en "Configurar Q10.exe".
+2. Paso 1: escoge el informe de Q10 que quieres bajar (busca por nombre arriba).
+   Si el informe no esta en la lista, usa "+ Informe nuevo" para parametrizarlo: le pones
+   el nombre, la direccion en Q10 y, uno por uno, sus filtros (con sus opciones); si un
+   filtro depende de otro (como Programa depende de Sede), lo marcas ahi mismo.
+3. Paso 2: llena los filtros de ese informe (puedes escoger de la lista o escribir el
+   valor tal cual). Dale a "+ Agregar a la lista de descargas".
+4. Repite para cada informe que quieras. Al final, "Guardar configuracion" (escribe el
+   Excel) o "EJECUTAR BOT DE DESCARGA" (guarda y ademas abre el navegador).
+5. El icono de engranaje (izquierda) abre "Ajustes generales": Rol, Formato y por donde
+   entra el bot (Menu/Submenu/Buscar/Accion), para cuando no es la pantalla de Informes.
+Lo que armes aqui se guarda en "catalogo_q10.json" (los informes que parametrizaste) y en
+"Bot Descargas.xlsx" (lo que vas a descargar la proxima vez que corras el bot).
+
+SI ALGO FALLA
+- La ventana negra muestra un mensaje "FALLO: ...". Envialo junto con las imagenes de la
+  carpeta "Capturas", que se guardan al terminar cada sistema.
+- "No pude abrir Bot Descargas.xlsx": el Excel esta abierto. Guardalo, cierralo y vuelve a intentar.
+- Si borras el Excel o "catalogo_q10.json", se crean de nuevo (vacios) la proxima vez que los abras.
+- Si Windows muestra "Windows protegio su PC": clic en "Mas informacion" y luego "Ejecutar de todas formas".
+
+IMPORTANTE: el Excel guarda tus contraseñas. No lo compartas con nadie.

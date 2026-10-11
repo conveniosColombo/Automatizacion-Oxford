@@ -1,0 +1,135 @@
+12:37:08  ===== BOT AUTOMATICO =====   2026-09-22 12:37:08
+12:37:08  carpeta: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford
+12:37:08  sistemas: Oxford, Macmillan | sin ventana: no | reintentos: 1 | tope por sistema: 30 min
+12:37:08  a ejecutar: Oxford, Macmillan
+
+12:37:08  --- Oxford (intento 1) ---
+12:37:08  --- Oxford: FALLO, 0 archivo(s), 0.0 min ---
+
+12:37:08  --- Oxford (intento 2) ---
+12:37:08  --- Oxford: OK, 0 archivo(s), 0.0 min ---
+
+12:37:08  --- Macmillan (intento 1) ---
+12:37:08  --- Macmillan: OK, 0 archivo(s), 0.0 min ---
+
+12:37:08  ===== RESUMEN =====
+12:37:08    Oxford       OK                   0 archivo(s)     0.0 min   (intentos: 2)
+12:37:08    Macmillan    OK                   0 archivo(s)     0.0 min
+
+12:37:08  registro: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Registros\2026-09-22_1237_resumen.log
+12:37:08  codigo de salida: 0   (esperado 0)
+
+12:37:08  ########## 3. Un sistema no levanta ni reintentando ##########
+12:37:08  ===== BOT AUTOMATICO =====   2026-09-22 12:37:0812:37:08  ===== BOT AUTOMATICO =====   2026-09-22 12:37:08
+
+12:37:08  carpeta: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford12:37:08  carpeta: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford
+
+12:37:08  sistemas: Oxford, Macmillan | sin ventana: no | reintentos: 1 | tope por sistema: 30 min12:37:08  sistemas: Oxford, Macmillan | sin ventana: no | reintentos: 1 | tope por sistema: 30 min
+
+12:37:08  a ejecutar: Oxford, Macmillan
+12:37:08  a ejecutar: Oxford, Macmillan
+
+
+12:37:08  --- Oxford (intento 1) ---12:37:08  --- Oxford (intento 1) ---
+
+12:37:08  --- Oxford: OK, 0 archivo(s), 0.0 min ---
+12:37:08  --- Oxford: OK, 0 archivo(s), 0.0 min ---
+
+
+12:37:08  --- Macmillan (intento 1) ---12:37:08  --- Macmillan (intento 1) ---
+
+12:37:08  --- Macmillan: FALLO, 0 archivo(s), 0.0 min ---
+12:37:08  --- Macmillan: FALLO, 0 archivo(s), 0.0 min ---
+
+
+12:37:08  --- Macmillan (intento 2) ---12:37:08  --- Macmillan (intento 2) ---
+
+12:37:08  --- Macmillan: FALLO, 0 archivo(s), 0.0 min ---
+12:37:08  --- Macmillan: FALLO, 0 archivo(s), 0.0 min ---
+
+
+12:37:08  ===== RESUMEN =====12:37:08  ===== RESUMEN =====
+
+12:37:08    Oxford       OK                   0 archivo(s)     0.0 min12:37:08    Oxford       OK                   0 archivo(s)     0.0 min
+
+12:37:08    Macmillan    FALLO                0 archivo(s)     0.0 min   (intentos: 2)12:37:08    Macmillan    FALLO                0 archivo(s)     0.0 min   (intentos: 2)
+
+
+12:37:08  registro: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Registros\2026-09-22_1237_resumen.log
+12:37:08  registro: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Registros\2026-09-22_1237_resumen.log
+
+12:37:08  codigo de salida: 1   (esperado 1)12:37:08  codigo de salida: 1   (esperado 1)
+
+
+12:37:08  ########## 4. 'Todos' sale de los Config que haya ##########
+12:37:08  ########## 4. 'Todos' sale de los Config que haya ##########
+
+12:37:08  ===== BOT AUTOMATICO =====   2026-09-22 12:37:0812:37:08  ===== BOT AUTOMATICO =====   2026-09-22 12:37:0812:37:08  ===== BOT AUTOMATICO =====   2026-09-22 12:37:08
+
+
+12:37:08  carpeta: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford12:37:08  carpeta: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford12:37:08  carpeta: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford
+
+
+12:37:08  sistemas: Oxford, Macmillan | sin ventana: no | reintentos: 1 | tope por sistema: 30 min12:37:08  sistemas: Oxford, Macmillan | sin ventana: no | reintentos: 1 | tope por sistema: 30 min12:37:08  sistemas: Oxford, Macmillan | sin ventana: no | reintentos: 1 | tope por sistema: 30 min
+
+
+12:37:08  a ejecutar: Macmillan, Oxford, Q10
+12:37:08  a ejecutar: Macmillan, Oxford, Q10
+12:37:08  a ejecutar: Macmillan, Oxford, Q10
+
+
+
+12:37:08  --- Macmillan (intento 1) ---12:37:08  --- Macmillan (intento 1) ---12:37:08  --- Macmillan (intento 1) ---
+
+
+12:37:08  --- Macmillan: OK, 0 archivo(s), 0.0 min ---
+12:37:08  --- Macmillan: OK, 0 archivo(s), 0.0 min ---
+12:37:08  --- Macmillan: OK, 0 archivo(s), 0.0 min ---
+
+
+
+12:37:08  --- Oxford (intento 1) ---12:37:08  --- Oxford (intento 1) ---12:37:08  --- Oxford (intento 1) ---
+
+
+12:37:08  --- Oxford: OK, 0 archivo(s), 0.0 min ---
+12:37:08  --- Oxford: OK, 0 archivo(s), 0.0 min ---
+12:37:08  --- Oxford: OK, 0 archivo(s), 0.0 min ---
+
+
+
+12:37:08  --- Q10 (intento 1) ---12:37:08  --- Q10 (intento 1) ---12:37:08  --- Q10 (intento 1) ---
+
+
+12:37:08  --- Q10: OK, 0 archivo(s), 0.0 min ---
+12:37:08  --- Q10: OK, 0 archivo(s), 0.0 min ---
+12:37:08  --- Q10: OK, 0 archivo(s), 0.0 min ---
+
+
+
+12:37:08  ===== RESUMEN =====12:37:08  ===== RESUMEN =====12:37:08  ===== RESUMEN =====
+
+
+12:37:08    Macmillan    OK                   0 archivo(s)     0.0 min12:37:08    Macmillan    OK                   0 archivo(s)     0.0 min12:37:08    Macmillan    OK                   0 archivo(s)     0.0 min
+
+
+12:37:08    Oxford       OK                   0 archivo(s)     0.0 min12:37:08    Oxford       OK                   0 archivo(s)     0.0 min12:37:08    Oxford       OK                   0 archivo(s)     0.0 min
+
+
+12:37:08    Q10          OK                   0 archivo(s)     0.0 min12:37:08    Q10          OK                   0 archivo(s)     0.0 min12:37:08    Q10          OK                   0 archivo(s)     0.0 min
+
+
+
+12:37:08  registro: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Registros\2026-09-22_1237_resumen.log
+12:37:08  registro: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Registros\2026-09-22_1237_resumen.log
+12:37:08  registro: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Registros\2026-09-22_1237_resumen.log
+
+
+12:37:08  codigo de salida: 0   (esperado 0)12:37:08  codigo de salida: 0   (esperado 0)12:37:08  codigo de salida: 0   (esperado 0)
+
+
+
+12:37:08  TODO BIEN
+12:37:08  TODO BIEN
+12:37:08  TODO BIEN
+
+

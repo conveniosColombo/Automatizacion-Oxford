@@ -1,0 +1,53 @@
+12:46:50  registro: 2026-09-22_1246_Macmillan.log
+12:46:50  ===== Macmillan =====   2026-09-22 12:46:50
+12:47:06  Paso 1: sesion iniciada en Macmillan.
+12:47:06    Clic en el libro: Speak Your Mind
+12:47:10  Paso 2: libro 'Speak Your Mind' abierto.
+12:47:10    Clic en el nivel: Level 1
+12:47:14  Paso 3: nivel 'Level 1' abierto.
+12:47:14    Clic en: Macmillan Education Everywhere App
+12:47:29  Paso 4: 'Macmillan Education Everywhere App' abierto.
+12:47:29    Clic en: View (View in browser)
+12:47:31    (se abrio en una pestaña nueva)
+12:47:40  Paso 5: contenido abierto en el navegador.
+12:47:40    Clic en: rechazar cookies opcionales
+12:47:43    Clic en: Continue (sin marcar 'Keep me logged in')
+12:47:47  Paso 6: aviso de sesion cerrado, My library a la vista.
+12:47:47    Clic en: School work
+12:47:49  Paso 7: School work desplegado.
+12:47:49    Clic en: Progress
+12:47:55  Paso 8: Progress abierto.
+12:47:55    Curso: Speak Your Mind
+12:47:58    Clic en el curso: Speak Your Mind Level 1
+12:48:00  Paso 9: curso 'Speak Your Mind Level 1' puesto en el filtro.
+12:48:00    Clic en: Go
+12:48:06  Paso 10: filtros aplicados con Go.
+12:48:07    Paginas de clases: 7
+12:48:09    --- pagina 1 de 7: 10 clase(s) ---
+12:48:09    Clic en View details: A1.1-8AM02 JAIME GARZÓN
+12:48:15  Paso 11: clase 'A1.1-8AM02 JAIME GARZÓN' abierta.
+12:48:15    Clic en: Export
+12:48:18  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1248_Speak_Your_Mind_Level_1_A1.1-8AM02_JAIME_GARZÓN.csv
+12:48:24    Clic en View details: A1.2-1PM01 SAN CAYETANO
+12:48:30  Paso 11: clase 'A1.2-1PM01 SAN CAYETANO' abierta.
+12:48:30    Clic en: Export
+12:48:32  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1248_Speak_Your_Mind_Level_1_A1.2-1PM01_SAN_CAYETANO.csv
+12:48:39    Clic en View details: A1.2-1PM06 EL UVAL
+12:48:45  Paso 11: clase 'A1.2-1PM06 EL UVAL' abierta.
+12:48:45    Clic en: Export
+12:48:47  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1248_Speak_Your_Mind_Level_1_A1.2-1PM06_EL_UVAL.csv
+12:48:53    Clic en View details: TCP_A1_1-130PM_TC_LMJ_05
+12:48:59  Paso 11: clase 'TCP_A1_1-130PM_TC_LMJ_05' abierta.
+12:48:59    Clic en: Export
+12:49:02  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1249_Speak_Your_Mind_Level_1_TCP_A1_1-130PM_TC_LMJ_05.csv
+12:49:08    Clic en View details: TCP_A1_1-130PM_TC_LMV_18
+12:49:14  Paso 11: clase 'TCP_A1_1-130PM_TC_LMV_18' abierta.
+12:49:34    FALLO en la clase TCP_A1_1-130PM_TC_LMV_18: ValueError: No encontre el boton 'Export' de la clase
+12:49:39    Clic en View details: TCP_A1_1-130PM_TC_LMV_20
+12:49:45  Paso 11: clase 'TCP_A1_1-130PM_TC_LMV_20' abierta.
+12:50:05    FALLO en la clase TCP_A1_1-130PM_TC_LMV_20: ValueError: No encontre el boton 'Export' de la clase
+12:50:12    Clic en View details: TCP_A1_1-130PM_TC_LMV_23
+12:50:18  Paso 11: clase 'TCP_A1_1-130PM_TC_LMV_23' abierta.
+12:50:36    FALLO en la clase TCP_A1_1-130PM_TC_LMV_23: ValueError: No encontre el boton 'Export' de la clase
+12:50:36    FALLO en el nivel Level 1: TargetClosedError: Page.go_back: Target page, context or browser has been closed
+12:50:36  Macmillan: terminado.

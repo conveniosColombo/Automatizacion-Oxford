@@ -1,0 +1,22 @@
+# Configuracion del bot cuando corre SOLO (maquina virtual / tarea programada).
+# Esto no cambia nada del modo normal con menu: solo aplica a 'Ejecutar botv4 automatico.bat'.
+
+# Sistemas que se ejecutan, en este orden y uno despues del otro.
+# Cada uno necesita su propio "Config <Sistema>.txt" y "Credenciales <Sistema>.txt".
+# Escribe "Todos" para ejecutar todos los que esten configurados.
+Sistemas : Oxford, Macmillan
+
+# Mostrar el navegador mientras trabaja.
+#   No  = se ve la ventana (util para mirar que hace; necesita una sesion de Windows abierta)
+#   Si  = trabaja escondido (unica opcion si la tarea corre sin que nadie inicie sesion)
+Sin ventana : No
+
+# Si un sistema falla, cuantas veces se vuelve a intentar antes de darlo por perdido (0 a 5).
+# Sirve para las caidas pasajeras de las paginas.
+Reintentos : 1
+
+# Tope de tiempo por sistema. Si se pasa, se corta ese sistema y se sigue con el siguiente,
+# asi una pagina colgada nunca deja la tarea corriendo para siempre.
+# Medido el 22/09/2026: Oxford tarda ~4 min y Macmillan ~28 min (son 35 clases, una por una).
+# Con 30 minutos Macmillan se cortaba justo al final y se reintentaba entero: una hora perdida.
+Minutos por sistema : 60

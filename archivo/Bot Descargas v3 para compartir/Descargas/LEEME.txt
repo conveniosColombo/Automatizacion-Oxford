@@ -1,0 +1,10 @@
+﻿Aqui quedan los archivos que baja el bot, separados por sistema:
+
+  Descargas\Oxford      los CSV del Progress de Oxford English Hub
+  Descargas\Q10         los informes de Q10
+  Descargas\Macmillan   los CSV de Macmillan (MEE)
+
+El nombre de cada archivo empieza con la fecha y la hora de la descarga, asi que
+las corridas de distintos dias no se pisan entre si.
+
+No hace falta crear nada a mano: si borras estas carpetas, el bot las vuelve a crear.

@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "activo": "c77c2",
+  "perfiles": [
+    {
+      "id": "554bc",
+      "nombre_perfil": "Speak Your MIND",
+      "libro": "Speak Your Mind",
+      "nivel": "Level 1",
+      "recurso": "Macmillan Education Everywhere App",
+      "clases": [
+        "A1.1-8AM02 JAIME GARZÓN"
+      ],
+      "scores_mode": "Show all attempts",
+      "formato": "CSV",
+      "todas_clases": false,
+      "ultima_ejecucion": "Ultima ejecucion: 09/10/2026 11:34  ·  OK"
+    },
+    {
+      "id": "c77c2",
+      "nombre_perfil": "Speak Your Mind",
+      "libro": "Speak Your Mind",
+      "nivel": "Level 2",
+      "recurso": "Macmillan Education Everywhere App",
+      "clases": [
+        "A2-2 MCE MEDIADO / PLUS-1PM32- JULIO 2024",
+        "A2-1 MCE MEDIADO -- PLUS-1PM32-JUNIO 2024"
+      ],
+      "scores_mode": "Show all attempts",
+      "formato": "CSV",
+      "todas_clases": false,
+      "ultima_ejecucion": "Ultima ejecucion: 09/10/2026 11:51  ·  OK"
+    }
+  ],
+  "credenciales": {
+    "usuario": "mcarreno.macmillan",
+    "password": "mcarreno.macmillan",
+    "url": "https://www.macmillaneducationeverywhere.com"
+  },
+  "ajustes": {
+    "ruta_descargas": "C:\\Users\\sebastian.mendez\\Downloads\\Macmillan",
+    "navegador_visible": true,
+    "pausa_entre_clases": 1.0,
+    "libros_personalizados": {
+      "Speak Your Mind Level 1": [
+        "A1.1-8AM02 JAIME GARZÓN"
+      ],
+      "Speak Your Mind Level": [
+        "A1.1-8AM02 JAIME GARZÓN"
+      ],
+      "Speak Your Mind": [
+        "A1.1-8AM02 JAIME GARZÓN"
+      ],
+      "Speak Your Mind Level 2": [
+        "A1.1-8AM02 JAIME GARZÓN"
+      ]
+    }
+  }
+}

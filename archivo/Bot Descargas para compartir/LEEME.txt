@@ -1,0 +1,32 @@
+BOT DESCARGAS - Oxford English Hub y Q10
+========================================
+
+No necesitas instalar nada. Solo necesitas Microsoft Edge (ya viene con Windows).
+
+PRIMERA VEZ
+1. Copia esta carpeta completa a tu computador (por ejemplo al Escritorio).
+2. Llena tus credenciales (reemplaza todo el texto "escribe_aqui..." y guarda con Ctrl+G):
+     - "Credenciales Oxford.txt" : tu correo y tu clave de Oxford
+     - "Credenciales Q10.txt"    : tu usuario y tu clave de Q10
+   Si solo usas uno de los dos sistemas, borra el "Config" del otro y no aparecera en el menu.
+3. Revisa los "Config":
+     - "Config Oxford.txt" : ID de la organizacion, clases y ajustes de Progress
+     - "Config Q10.txt"    : informes y filtros (Sede, Programa, Periodo, Curso...)
+       Curso : Todos  -> descarga un reporte por cada curso de la lista
+
+CADA VEZ QUE LO USES
+1. Doble clic en "Bot Descargas.exe".
+2. Escribe el numero del sistema (1 Oxford, 2 Q10, 3 Todos) y presiona Enter.
+3. Espera: se abre un navegador que hace todo solo. No lo toques mientras trabaja.
+   Si Q10 pide "verificacion de seguridad", resuelvela en el navegador y presiona Enter en la ventana negra.
+4. Los archivos quedan en "Descargas\Oxford" y "Descargas\Q10".
+5. Presiona Enter en la ventana negra para cerrar.
+
+SI ALGO FALLA
+- La ventana negra muestra un mensaje "FALLO: ...". Envialo a quien te compartio el bot,
+  junto con la imagen de la carpeta "Capturas".
+- La primera vez puede tardar unos segundos en abrir (se esta preparando).
+- Si Windows muestra "Windows protegio su PC": clic en "Mas informacion" y luego "Ejecutar de todas formas".
+  Si el antivirus lo bloquea, pide a Sistemas que lo autorice.
+
+IMPORTANTE: no compartas tus archivos de credenciales con nadie.

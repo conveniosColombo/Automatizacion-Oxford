@@ -1,0 +1,23 @@
+1:  Ingresar  al sistema
+2 : aparece una ventana y le dan donde dice  +8 
+
+3: les abre ptra ventana  con los convenios que hay disponible
+
+4: selecionamos el curso  SSDE ( ejemplo)
+
+5 : click en mi organización
+6 :  click en clases
+7 : click dentro del nombre del curso
+8 :  porgress  le dan al curso quye tenga el procentaje
+9 :  aparace  la lista 
+10: le dan en progress setting
+11 : progress settings
+
+Parámetros Progres (
+scores = show best attempt
+show figures as : Fractions
+show scores for :  all activities
+)
+damos en click en la ventina emergente
+click descargar csv
+

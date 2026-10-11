@@ -1,0 +1,11 @@
+# ID del convenio en My Organizations
+ID : 18xaf
+
+# Clases separadas por coma
+Clases : B1.2-5PM109 SDDE_2026-2
+
+# Progress settings
+Scores : Show best attempt
+Show figures as : Fractions
+Show scores for : All activities
+Ruta Descargas : C:/Users/sebastian.mendez/OneDrive - CENTRO COLOMBO AMERICANO/Convenios's files - OXFORD TUTORIALS/Descargas PM CORTE 1

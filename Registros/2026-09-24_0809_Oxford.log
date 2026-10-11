@@ -1,0 +1,22 @@
+08:09:28  registro: 2026-09-24_0809_Oxford.log
+08:09:28  ===== Oxford =====   2026-09-24 08:09:28
+08:09:45  Paso 1: sesion iniciada.
+08:09:48  Paso 2: menu de la cuenta abierto.
+08:09:51  Paso 3: clic en '+ more', lista de convenios abierta.
+08:09:51    Clic en el curso: SDDE
+08:09:56  Paso 4: curso con ID 'NlemE' abierto.
+08:10:02  Paso 5: My Organization abierto.
+08:10:05  Paso 6: Classes abierto.
+08:10:05    Clic en la clase: B1-2-5PM24 GT
+08:10:09  Paso 7: clase 'B1-2-5PM24 GT' abierta.
+08:10:10  FALLO en la clase B1-2-5PM24 GT: TargetClosedError: Page.wait_for_timeout: Target page, context or browser has been closed
+08:10:10  FALLO en la clase B1.2-5PM112 GT: TargetClosedError: Page.goto: Target page, context or browser has been closed
+08:10:10  FALLO en la clase B1.2-5PM113 GT: TargetClosedError: Page.goto: Target page, context or browser has been closed
+08:10:10  FALLO en la clase B1.2-5PM114 IAV: TargetClosedError: Page.goto: Target page, context or browser has been closed
+08:10:10  FALLO en la clase B1.2-5PM115 IAV: TargetClosedError: Page.goto: Target page, context or browser has been closed
+08:10:10  FALLO en la clase B1.2-5PM22 BPO: TargetClosedError: Page.goto: Target page, context or browser has been closed
+08:10:10  FALLO en la clase B1.2-5PM23 BPO: TargetClosedError: Page.goto: Target page, context or browser has been closed
+08:10:10  FALLO en la clase B1.2-5PM26 TIC: TargetClosedError: Page.goto: Target page, context or browser has been closed
+08:10:10  FALLO en la clase B1.2-5PM27 TIC: TargetClosedError: Page.goto: Target page, context or browser has been closed
+08:10:10  FALLO en la clase B1.2-5PM28 IAV: TargetClosedError: Page.goto: Target page, context or browser has been closed
+08:10:10  Oxford: terminado.

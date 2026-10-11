@@ -1,0 +1,233 @@
+17:47:08  registro: 2026-09-22_1747_Macmillan.log
+17:47:08  ===== Macmillan =====   2026-09-22 17:47:08
+17:47:23  Paso 1: sesion iniciada en Macmillan.
+17:47:23    Clic en el libro: Speak Your Mind
+17:47:27  Paso 2: libro 'Speak Your Mind' abierto.
+17:47:27    Clic en el nivel: Level 1
+17:47:31  Paso 3: nivel 'Level 1' abierto.
+17:47:31    Clic en: Macmillan Education Everywhere App
+17:47:46  Paso 4: 'Macmillan Education Everywhere App' abierto.
+17:47:46    Clic en: View (View in browser)
+17:47:48    (se abrio en una pestaña nueva)
+17:47:57  Paso 5: contenido abierto en el navegador.
+17:47:57    Clic en: rechazar cookies opcionales
+17:48:00    Clic en: Continue (sin marcar 'Keep me logged in')
+17:48:03  Paso 6: aviso de sesion cerrado, My library a la vista.
+17:48:03    Clic en: School work
+17:48:06  Paso 7: School work desplegado.
+17:48:06    Clic en: Progress
+17:48:11  Paso 8: Progress abierto.
+17:48:11    Curso: Speak Your Mind
+17:48:14    Clic en el curso: Speak Your Mind Level 1
+17:48:16  Paso 9: curso 'Speak Your Mind Level 1' puesto en el filtro.
+17:48:16    Clic en: Go
+17:48:21  Paso 10: filtros aplicados con Go.
+17:48:22    Paginas de clases: 7
+17:48:24    --- pagina 1 de 7: 10 clase(s) ---
+17:48:24    Clic en View details: A1.1-8AM02 JAIME GARZÓN
+17:48:30  Paso 11: clase 'A1.1-8AM02 JAIME GARZÓN' abierta.
+17:48:30    Clic en: Export
+17:48:33  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1748_Speak_Your_Mind_Level_1_A1.1-8AM02_JAIME_GARZÓN.csv
+17:48:38    Clic en View details: A1.2-1PM01 SAN CAYETANO
+17:48:44  Paso 11: clase 'A1.2-1PM01 SAN CAYETANO' abierta.
+17:48:44    Clic en: Export
+17:48:47  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1748_Speak_Your_Mind_Level_1_A1.2-1PM01_SAN_CAYETANO.csv
+17:48:52    Clic en View details: A1.2-1PM06 EL UVAL
+17:48:58  Paso 11: clase 'A1.2-1PM06 EL UVAL' abierta.
+17:48:58    Clic en: Export
+17:49:00  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1749_Speak_Your_Mind_Level_1_A1.2-1PM06_EL_UVAL.csv
+17:49:05    Clic en View details: TCP_A1_1-130PM_TC_LMJ_05
+17:49:11  Paso 11: clase 'TCP_A1_1-130PM_TC_LMJ_05' abierta.
+17:49:11    Clic en: Export
+17:49:14  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1749_Speak_Your_Mind_Level_1_TCP_A1_1-130PM_TC_LMJ_05.csv
+17:49:19    Clic en View details: TCP_A1_1-130PM_TC_LMV_18
+17:49:24  Paso 11: clase 'TCP_A1_1-130PM_TC_LMV_18' abierta.
+17:49:44    FALLO en la clase TCP_A1_1-130PM_TC_LMV_18: ValueError: No encontre el boton 'Export' de la clase
+17:49:50    Clic en View details: TCP_A1_1-130PM_TC_LMV_20
+17:49:56  Paso 11: clase 'TCP_A1_1-130PM_TC_LMV_20' abierta.
+17:50:16    FALLO en la clase TCP_A1_1-130PM_TC_LMV_20: ValueError: No encontre el boton 'Export' de la clase
+17:50:21    Clic en View details: TCP_A1_1-130PM_TC_LMV_23
+17:50:27  Paso 11: clase 'TCP_A1_1-130PM_TC_LMV_23' abierta.
+17:50:47    FALLO en la clase TCP_A1_1-130PM_TC_LMV_23: ValueError: No encontre el boton 'Export' de la clase
+17:50:53    Clic en View details: TCP_A1_1-130PM_TC_LMV_25
+17:50:58  Paso 11: clase 'TCP_A1_1-130PM_TC_LMV_25' abierta.
+17:51:18    FALLO en la clase TCP_A1_1-130PM_TC_LMV_25: ValueError: No encontre el boton 'Export' de la clase
+17:51:24    Clic en View details: TCP_A1_1-330PM_LF_LMJ_14
+17:51:30  Paso 11: clase 'TCP_A1_1-330PM_LF_LMJ_14' abierta.
+17:51:50    FALLO en la clase TCP_A1_1-330PM_LF_LMJ_14: ValueError: No encontre el boton 'Export' de la clase
+17:51:55    Clic en View details: TCP_A1_1-400PM_TI_LMV_35
+17:52:01  Paso 11: clase 'TCP_A1_1-400PM_TI_LMV_35' abierta.
+17:52:21    FALLO en la clase TCP_A1_1-400PM_TI_LMV_35: ValueError: No encontre el boton 'Export' de la clase
+17:52:32    --- pagina 2 de 7: 10 clase(s) ---
+17:52:33    FALLO en la clase A1-5 MCE MEDIADO / PLUS-1PM31 - NOVIEMBRE 2024: ValueError: No encontre la clase 'A1-5 MCE MEDIADO / PLUS-1PM31 - NOVIEMBRE 2024'. En Progress hay: ['A1-5 MCE MEDIADO / PLUS-1PM31 - NOVIEMBRE 2024', 'A1-5 MCE MEDIADO / PRIME-7PM73- JUNIO 2024', 'A1.1-12PM04 JOSÉ CELESTINO MUTIS', 'A1.1-12PM05 JOSÉ CELESTINO MUTIS', 'A1.2-8AM03 EL UVAL', 'TCP_A1_1-130PM_TC_LMJ_03', 'TCP_A1_1-130PM_TC_LMJ_08', 'TCP_A1_1-130PM_TC_LMV_21', 'TCP_A1_1-330PM_TC_LMJ_16', 'TCP_A1_1-400PM_TI_LMV_38']
+17:52:43    FALLO en la clase A1-5 MCE MEDIADO / PRIME-7PM73- JUNIO 2024: ValueError: No encontre la clase 'A1-5 MCE MEDIADO / PRIME-7PM73- JUNIO 2024'. En Progress hay: ['A1-5 MCE MEDIADO / PLUS-1PM31 - NOVIEMBRE 2024', 'A1-5 MCE MEDIADO / PRIME-7PM73- JUNIO 2024', 'A1.1-12PM04 JOSÉ CELESTINO MUTIS', 'A1.1-12PM05 JOSÉ CELESTINO MUTIS', 'A1.2-8AM03 EL UVAL', 'TCP_A1_1-130PM_TC_LMJ_03', 'TCP_A1_1-130PM_TC_LMJ_08', 'TCP_A1_1-130PM_TC_LMV_21', 'TCP_A1_1-330PM_TC_LMJ_16', 'TCP_A1_1-400PM_TI_LMV_38']
+17:52:50    Clic en View details: A1.1-12PM04 JOSÉ CELESTINO MUTIS
+17:52:56  Paso 11: clase 'A1.1-12PM04 JOSÉ CELESTINO MUTIS' abierta.
+17:52:56    Clic en: Export
+17:52:59  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1752_Speak_Your_Mind_Level_1_A1.1-12PM04_JOSÉ_CELESTINO_MUTIS.csv
+17:53:08    Clic en View details: A1.1-12PM05 JOSÉ CELESTINO MUTIS
+17:53:14  Paso 11: clase 'A1.1-12PM05 JOSÉ CELESTINO MUTIS' abierta.
+17:53:14    Clic en: Export
+17:53:17  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1753_Speak_Your_Mind_Level_1_A1.1-12PM05_JOSÉ_CELESTINO_MUTIS.csv
+17:53:26    Clic en View details: A1.2-8AM03 EL UVAL
+17:53:32  Paso 11: clase 'A1.2-8AM03 EL UVAL' abierta.
+17:53:32    Clic en: Export
+17:53:35  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1753_Speak_Your_Mind_Level_1_A1.2-8AM03_EL_UVAL.csv
+17:53:44    Clic en View details: TCP_A1_1-130PM_TC_LMJ_03
+17:53:50  Paso 11: clase 'TCP_A1_1-130PM_TC_LMJ_03' abierta.
+17:53:50    Clic en: Export
+17:53:53  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1753_Speak_Your_Mind_Level_1_TCP_A1_1-130PM_TC_LMJ_03.csv
+17:54:02    Clic en View details: TCP_A1_1-130PM_TC_LMJ_08
+17:54:08  Paso 11: clase 'TCP_A1_1-130PM_TC_LMJ_08' abierta.
+17:54:08    Clic en: Export
+17:54:11  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1754_Speak_Your_Mind_Level_1_TCP_A1_1-130PM_TC_LMJ_08.csv
+17:54:20    Clic en View details: TCP_A1_1-130PM_TC_LMV_21
+17:54:26  Paso 11: clase 'TCP_A1_1-130PM_TC_LMV_21' abierta.
+17:54:46    FALLO en la clase TCP_A1_1-130PM_TC_LMV_21: ValueError: No encontre el boton 'Export' de la clase
+17:55:00    Clic en View details: TCP_A1_1-330PM_TC_LMJ_16
+17:55:08  Paso 11: clase 'TCP_A1_1-330PM_TC_LMJ_16' abierta.
+17:55:08    Clic en: Export
+17:55:14  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1755_Speak_Your_Mind_Level_1_TCP_A1_1-330PM_TC_LMJ_16.csv
+17:55:28    Clic en View details: TCP_A1_1-400PM_TI_LMV_38
+17:55:37  Paso 11: clase 'TCP_A1_1-400PM_TI_LMV_38' abierta.
+17:55:57    FALLO en la clase TCP_A1_1-400PM_TI_LMV_38: ValueError: No encontre el boton 'Export' de la clase
+17:56:19    --- pagina 3 de 7: 10 clase(s) ---
+17:56:19    Clic en View details: A1.1-1PM02 SAN CAYETANO
+17:56:28  Paso 11: clase 'A1.1-1PM02 SAN CAYETANO' abierta.
+17:56:28    Clic en: Export
+17:56:34  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1756_Speak_Your_Mind_Level_1_A1.1-1PM02_SAN_CAYETANO.csv
+17:56:47    Clic en View details: A1.1-1PM05 EL VERJON
+17:56:56  Paso 11: clase 'A1.1-1PM05 EL VERJON' abierta.
+17:56:56    Clic en: Export
+17:57:02  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1757_Speak_Your_Mind_Level_1_A1.1-1PM05_EL_VERJON.csv
+17:57:15    Clic en View details: A1.1-2PM01 QUIBA ALTA
+17:57:24  Paso 11: clase 'A1.1-2PM01 QUIBA ALTA' abierta.
+17:57:24    Clic en: Export
+17:57:30  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1757_Speak_Your_Mind_Level_1_A1.1-2PM01_QUIBA_ALTA.csv
+17:57:43    Clic en View details: A1.1-2PM03 QUIBA ALTA
+17:57:51  Paso 11: clase 'A1.1-2PM03 QUIBA ALTA' abierta.
+17:57:52    Clic en: Export
+17:57:58  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1757_Speak_Your_Mind_Level_1_A1.1-2PM03_QUIBA_ALTA.csv
+17:58:12    Clic en View details: A1.2-8AM01 JAIME GARZÓN
+17:58:21  Paso 11: clase 'A1.2-8AM01 JAIME GARZÓN' abierta.
+17:58:21    Clic en: Export
+17:58:27  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1758_Speak_Your_Mind_Level_1_A1.2-8AM01_JAIME_GARZÓN.csv
+17:58:39    Clic en View details: TCP_A1_1-330PM_LF_LMJ_30
+17:58:48  Paso 11: clase 'TCP_A1_1-330PM_LF_LMJ_30' abierta.
+17:58:48    Clic en: Export
+17:58:54  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1758_Speak_Your_Mind_Level_1_TCP_A1_1-330PM_LF_LMJ_30.csv
+17:59:08    Clic en View details: TCP_A1_1-330PM_LF_LMJ_31
+17:59:17  Paso 11: clase 'TCP_A1_1-330PM_LF_LMJ_31' abierta.
+17:59:17    Clic en: Export
+17:59:23  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1759_Speak_Your_Mind_Level_1_TCP_A1_1-330PM_LF_LMJ_31.csv
+17:59:37    Clic en View details: TCP_A1_1-330PM_TC_LF_14
+17:59:45  Paso 11: clase 'TCP_A1_1-330PM_TC_LF_14' abierta.
+18:00:05    FALLO en la clase TCP_A1_1-330PM_TC_LF_14: ValueError: No encontre el boton 'Export' de la clase
+18:00:19    Clic en View details: TCP_A1_1-330PM_TC_LMJ_15
+18:00:28  Paso 11: clase 'TCP_A1_1-330PM_TC_LMJ_15' abierta.
+18:00:48    FALLO en la clase TCP_A1_1-330PM_TC_LMJ_15: ValueError: No encontre el boton 'Export' de la clase
+18:01:01    Clic en View details: TCP_A1_2-130PM_TC_LMV_24
+18:01:09  Paso 11: clase 'TCP_A1_2-130PM_TC_LMV_24' abierta.
+18:01:29    FALLO en la clase TCP_A1_2-130PM_TC_LMV_24: ValueError: No encontre el boton 'Export' de la clase
+18:01:53    --- pagina 4 de 7: 10 clase(s) ---
+18:01:54    FALLO en la clase A1-4 MCE MEDIADO / PLUS-1PM31-OCTUBRE 2024: ValueError: No encontre la clase 'A1-4 MCE MEDIADO / PLUS-1PM31-OCTUBRE 2024'. En Progress hay: ['A1-4 MCE MEDIADO / PLUS-1PM31-OCTUBRE 2024', 'A1.1-2PM02 QUIBA ALTA', 'INTP_A1-1_0810AM_NZ02-01-Niza-Febrero 2026', 'INTV_A1-5_0710PM-02-DICIEMBRE 2024', 'TA1.1-8AM01- IED TÉCNICO COMERCIAL', 'TCP_A1_1-130PM_TC_LMJ_04', 'TCP_A1_1-130PM_TC_LMV_19', 'TCP_A1_1-330PM_LF_LMJ_32', 'TCP_A1_1-330PM_TC_LMJ_13', 'TCP_A1_1-400PM_TI_LMV_37']
+18:02:06    Clic en View details: A1.1-2PM02 QUIBA ALTA
+18:02:15  Paso 11: clase 'A1.1-2PM02 QUIBA ALTA' abierta.
+18:02:15    Clic en: Export
+18:02:21  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1802_Speak_Your_Mind_Level_1_A1.1-2PM02_QUIBA_ALTA.csv
+18:02:34    Clic en View details: INTP_A1-1_0810AM_NZ02-01-Niza-Febrero 2026
+18:02:42  Paso 11: clase 'INTP_A1-1_0810AM_NZ02-01-Niza-Febrero 2026' abierta.
+18:02:42    Clic en: Export
+18:02:48  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1802_Speak_Your_Mind_Level_1_INTP_A1-1_0810AM_NZ02-01-Niza-Febrero_2026.csv
+18:03:02    Clic en View details: INTV_A1-5_0710PM-02-DICIEMBRE 2024
+18:03:10  Paso 11: clase 'INTV_A1-5_0710PM-02-DICIEMBRE 2024' abierta.
+18:03:11    Clic en: Export
+18:03:16  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1803_Speak_Your_Mind_Level_1_INTV_A1-5_0710PM-02-DICIEMBRE_2024.csv
+18:03:29    Clic en View details: TA1.1-8AM01- IED TÉCNICO COMERCIAL
+18:03:38  Paso 11: clase 'TA1.1-8AM01- IED TÉCNICO COMERCIAL' abierta.
+18:03:38    Clic en: Export
+18:03:44  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1803_Speak_Your_Mind_Level_1_TA1.1-8AM01-_IED_TÉCNICO_COMERCIAL.csv
+18:03:57    Clic en View details: TCP_A1_1-130PM_TC_LMJ_04
+18:04:06  Paso 11: clase 'TCP_A1_1-130PM_TC_LMJ_04' abierta.
+18:04:06    Clic en: Export
+18:04:12  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1804_Speak_Your_Mind_Level_1_TCP_A1_1-130PM_TC_LMJ_04.csv
+18:04:25    Clic en View details: TCP_A1_1-130PM_TC_LMV_19
+18:04:33  Paso 11: clase 'TCP_A1_1-130PM_TC_LMV_19' abierta.
+18:04:53    FALLO en la clase TCP_A1_1-130PM_TC_LMV_19: ValueError: No encontre el boton 'Export' de la clase
+18:05:06    Clic en View details: TCP_A1_1-330PM_LF_LMJ_32
+18:05:15  Paso 11: clase 'TCP_A1_1-330PM_LF_LMJ_32' abierta.
+18:05:15    Clic en: Export
+18:05:21  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1805_Speak_Your_Mind_Level_1_TCP_A1_1-330PM_LF_LMJ_32.csv
+18:05:34    Clic en View details: TCP_A1_1-330PM_TC_LMJ_13
+18:05:43  Paso 11: clase 'TCP_A1_1-330PM_TC_LMJ_13' abierta.
+18:05:43    Clic en: Export
+18:05:49  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1805_Speak_Your_Mind_Level_1_TCP_A1_1-330PM_TC_LMJ_13.csv
+18:06:03    Clic en View details: TCP_A1_1-400PM_TI_LMV_37
+18:06:11  Paso 11: clase 'TCP_A1_1-400PM_TI_LMV_37' abierta.
+18:06:31    FALLO en la clase TCP_A1_1-400PM_TI_LMV_37: ValueError: No encontre el boton 'Export' de la clase
+18:06:55    --- pagina 5 de 7: 10 clase(s) ---
+18:06:56    FALLO en la clase A1-3 MCE MEDIADO / PRIME-7PM73-ABRIL 2024: ValueError: No encontre la clase 'A1-3 MCE MEDIADO / PRIME-7PM73-ABRIL 2024'. En Progress hay: ['A1-3 MCE MEDIADO / PRIME-7PM73-ABRIL 2024', 'A1.1-5PM01 ÁREA ANDINA', 'A1.2-11AM01 EL DESTINO', 'TCP_A1_1-130PM_TC_LMJ_01', 'TCP_A1_1-130PM_TC_LMJ_02', 'TCP_A1_1-130PM_TC_LMJ_06', 'TCP_A1_1-130PM_TC_LMV_27', 'TCP_A1_1-330PM_TC_LMJ_12', 'TCP_A1_1-330PM_TC_LMJ_17', 'TCP_A1_2-130PM_TC_LMJ_07']
+18:07:07    Clic en View details: A1.1-5PM01 ÁREA ANDINA
+18:07:17  Paso 11: clase 'A1.1-5PM01 ÁREA ANDINA' abierta.
+18:07:17    Clic en: Export
+18:07:23  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1807_Speak_Your_Mind_Level_1_A1.1-5PM01_ÁREA_ANDINA.csv
+18:07:38    Clic en View details: A1.2-11AM01 EL DESTINO
+18:07:46  Paso 11: clase 'A1.2-11AM01 EL DESTINO' abierta.
+18:07:46    Clic en: Export
+18:07:52  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1807_Speak_Your_Mind_Level_1_A1.2-11AM01_EL_DESTINO.csv
+18:08:06    Clic en View details: TCP_A1_1-130PM_TC_LMJ_01
+18:08:15  Paso 11: clase 'TCP_A1_1-130PM_TC_LMJ_01' abierta.
+18:08:15    Clic en: Export
+18:08:21  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1808_Speak_Your_Mind_Level_1_TCP_A1_1-130PM_TC_LMJ_01.csv
+18:08:34    Clic en View details: TCP_A1_1-130PM_TC_LMJ_02
+18:08:43  Paso 11: clase 'TCP_A1_1-130PM_TC_LMJ_02' abierta.
+18:08:43    Clic en: Export
+18:08:49  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1808_Speak_Your_Mind_Level_1_TCP_A1_1-130PM_TC_LMJ_02.csv
+18:09:03    Clic en View details: TCP_A1_1-130PM_TC_LMJ_06
+18:09:11  Paso 11: clase 'TCP_A1_1-130PM_TC_LMJ_06' abierta.
+18:09:31    FALLO en la clase TCP_A1_1-130PM_TC_LMJ_06: ValueError: No encontre el boton 'Export' de la clase
+18:09:45    Clic en View details: TCP_A1_1-130PM_TC_LMV_27
+18:09:54  Paso 11: clase 'TCP_A1_1-130PM_TC_LMV_27' abierta.
+18:10:14    FALLO en la clase TCP_A1_1-130PM_TC_LMV_27: ValueError: No encontre el boton 'Export' de la clase
+18:10:26    Clic en View details: TCP_A1_1-330PM_TC_LMJ_12
+18:10:35  Paso 11: clase 'TCP_A1_1-330PM_TC_LMJ_12' abierta.
+18:10:35    Clic en: Export
+18:10:41  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1810_Speak_Your_Mind_Level_1_TCP_A1_1-330PM_TC_LMJ_12.csv
+18:10:54    Clic en View details: TCP_A1_1-330PM_TC_LMJ_17
+18:11:02  Paso 11: clase 'TCP_A1_1-330PM_TC_LMJ_17' abierta.
+18:11:22    FALLO en la clase TCP_A1_1-330PM_TC_LMJ_17: ValueError: No encontre el boton 'Export' de la clase
+18:11:35    Clic en View details: TCP_A1_2-130PM_TC_LMJ_07
+18:11:44  Paso 11: clase 'TCP_A1_2-130PM_TC_LMJ_07' abierta.
+18:11:44    Clic en: Export
+18:11:51  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1811_Speak_Your_Mind_Level_1_TCP_A1_2-130PM_TC_LMJ_07.csv
+18:12:13    --- pagina 6 de 7: 10 clase(s) ---
+18:12:13    Clic en View details: A1.2-1PM04 EL VERJÓN
+18:12:22  Paso 11: clase 'A1.2-1PM04 EL VERJÓN' abierta.
+18:12:22    Clic en: Export
+18:12:28  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1812_Speak_Your_Mind_Level_1_A1.2-1PM04_EL_VERJÓN.csv
+18:12:41    Clic en View details: TCP_A1_1-130PM_TC_LMJ_09
+18:12:49  Paso 11: clase 'TCP_A1_1-130PM_TC_LMJ_09' abierta.
+18:12:49    Clic en: Export
+18:12:55  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1812_Speak_Your_Mind_Level_1_TCP_A1_1-130PM_TC_LMJ_09.csv
+18:13:09    Clic en View details: TCP_A1_1-130PM_TC_LMJ_10
+18:13:18  Paso 11: clase 'TCP_A1_1-130PM_TC_LMJ_10' abierta.
+18:13:18    Clic en: Export
+18:13:23  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1813_Speak_Your_Mind_Level_1_TCP_A1_1-130PM_TC_LMJ_10.csv
+18:13:37    Clic en View details: TCP_A1_1-130PM_TC_LMV_22
+18:13:46  Paso 11: clase 'TCP_A1_1-130PM_TC_LMV_22' abierta.
+18:14:06    FALLO en la clase TCP_A1_1-130PM_TC_LMV_22: ValueError: No encontre el boton 'Export' de la clase
+18:14:20    Clic en View details: TCP_A1_1-330PM_TC_LMJ_11
+18:14:28  Paso 11: clase 'TCP_A1_1-330PM_TC_LMJ_11' abierta.
+18:14:28    Clic en: Export
+18:14:34  Paso 12: CSV guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Macmillan\2026-09-22_1814_Speak_Your_Mind_Level_1_TCP_A1_1-330PM_TC_LMJ_11.csv
+18:14:47    Clic en View details: TCP_A1_1-330PM_TC_LMV_28
+18:14:56  Paso 11: clase 'TCP_A1_1-330PM_TC_LMV_28' abierta.
+18:15:16    FALLO en la clase TCP_A1_1-330PM_TC_LMV_28: ValueError: No encontre el boton 'Export' de la clase
+18:15:28    Clic en View details: TCP_A1_1-330PM_TC_LMV_29
+18:15:37  Paso 11: clase 'TCP_A1_1-330PM_TC_LMV_29' abierta.
+18:15:57    FALLO en la clase TCP_A1_1-330PM_TC_LMV_29: ValueError: No encontre el boton 'Export' de la clase
+18:16:11    Clic en View details: TCP_A1_1-400PM_TI_LMV_34
+18:16:19  Paso 11: clase 'TCP_A1_1-400PM_TI_LMV_34' abierta.
+18:16:39    FALLO en la clase TCP_A1_1-400PM_TI_LMV_34: ValueError: No encontre el boton 'Export' de la clase
+18:16:53    Clic en View details: TCP_A1_1-400PM_TI_LMV_36
+18:17:02  Paso 11: clase 'TCP_A1_1-400PM_TI_LMV_36' abierta.

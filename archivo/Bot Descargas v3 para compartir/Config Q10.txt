@@ -1,0 +1,76 @@
+# Configuracion del sistema Q10
+# Escribe cada valor tal como aparece en la pantalla de Q10 (respeta mayusculas y tildes).
+
+# Rol con el que se entra (ventana "Seleccione el rol" despues de la contrasena)
+Rol : Administrativo
+
+# Menu de la barra azul por donde entra el bot: Informes, Academico, Institucional o Tesoreria.
+# Y Submenu, la opcion dentro de ese menu. Como los menus de Q10 tienen varios niveles, se
+# escriben separados por ">".  Ejemplo:
+#     Menu : Academico
+#     Submenu : Educacion virtual v2 > Cursos virtuales
+# Si no pones Submenu, el bot abre el menu y te lista que opciones tiene.
+# Tambien se puede escribir "Tipo" en vez de "Menu".
+#
+# Solo lo entiende la v3, y por ahora SOLO "Informes" tiene acciones programadas: con los demas
+# el bot navega hasta la pantalla, deja una captura en la carpeta Capturas y avisa donde quedo.
+# Si se deja comentado, la v3 entra por Informes igual.
+Menu : Informes
+Submenu : Generales
+
+# Solo para las pantallas con buscador (como Cursos virtuales): que escribir en el
+# "Buscar cursos virtuales...". Si se deja vacio, el bot se trae la lista completa.
+#Buscar : SDDE
+
+# Que hacer con esa lista:
+#   (vacio)     guarda la tabla que se ve, recorriendo todas las paginas, en un CSV
+#   Usuarios    entra a CADA curso de la lista, abre su seccion "Usuarios" y baja el
+#               archivo del boton "Exportar" (uno por curso). Los cursos sin usuarios se saltan.
+#Accion : Usuarios
+
+# Informes a descargar. Puedes escribirlos de tres formas:
+#   - el nombre tal cual aparece en la pagina "Informes"       Listado de cursos
+#   - el nombre y su seccion, si el nombre esta repetido       Estudiantes (Comunidad en Excel)
+#   - su direccion, que es la forma mas segura                 ListadoCursos
+# Para varios, separalos con coma.
+#
+# PRUEBA: cuatro informes de distinto tipo, para ver que el bot los maneja todos.
+#   ListadoCursos          - abre el visor y exporta a XLSX
+#   EstudiantesMatriculados- deja el reporte "generandose" y luego da clic en Abrir reporte
+#   EstadisticaMatriculas  - visor, un solo filtro (Periodo)
+#   Docentes               - Excel directo, con Estado y lista de campos
+Informes : Inasistencias por curso
+
+# Informe que NO genera archivo (pinta el resultado en la pantalla). Descomentalo para ver el aviso:
+# Informes : ListadoCursos, ProyeccionRecaudo
+
+# Con que formato exportar desde el visor: XLSX, XLS, PDF, CSV, DOC, HTML o IMAGEN
+Formato : XLSX
+
+# ---------------------------------------------------------------------------------------------
+# FILTROS DE LOS INFORMES
+# - A la izquierda, el nombre del filtro como aparece en la pantalla (sin el *, los signos ¿ ? no importan).
+# - A la derecha, la opcion a escoger, tal cual aparece en la lista.
+# - Si un filtro se deja en blanco, no existe en el informe o esta escondido, el bot lo salta.
+# - Escríbelos en el mismo orden de la pantalla: cada lista carga sus opciones segun la anterior.
+# - Puedes agregar otros filtros con el mismo formato (Nombre : valor).
+# - COMA = un reporte por cada valor.  Ejemplo - Sede - jornada : B2B - Única,B2G - Única
+#   Escribe "Todos" para un reporte por cada opcion de la lista (o para usar la opcion "Todos" si existe).
+# - PUNTO Y COMA = varias opciones dentro del MISMO reporte (listas multiples y la lista de campos).
+#   Ejemplo - Campos : Documento; Nombre; Correo
+# - Fechas: "01/09/2026 - 30/09/2026" o un preset del calendario (Hoy, Este mes, Últimos 7 días, Todas).
+# - Interruptores: Si / No.   Autocompletar de personas: escribe el nombre y el bot lo busca.
+# ---------------------------------------------------------------------------------------------
+#Sede - jornada : B2B - Única
+#Programa : Todos
+#Período : B2B_GENERATION_SEP_2026
+#Estado : Todos
+#Incluir estudiantes graduados : No
+#Incluir archivados : No
+#Campos : Todos
+
+# Filtros que estaban antes de la prueba (vuelve a dejarlos cuando termines):
+Sede - jornada : B2G - Única
+Programa : YES BOGOTA 2026-2
+Período : B2G_YES BOGOTA-2 C1_SEP_2026
+Curso : Todos

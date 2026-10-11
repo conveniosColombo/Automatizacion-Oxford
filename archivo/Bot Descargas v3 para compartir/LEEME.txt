@@ -1,0 +1,54 @@
+BOT DESCARGAS v3 - Oxford English Hub, Q10 y Macmillan (MEE)
+=============================================================
+
+No necesitas instalar nada. Solo necesitas Google Chrome o Microsoft Edge (Edge ya viene con Windows).
+
+PRIMERA VEZ
+1. Copia esta carpeta completa a tu computador (por ejemplo al Escritorio).
+2. Llena tus credenciales (reemplaza el texto "escribe_aqui..." y guarda con Ctrl+G):
+     - "Credenciales Oxford.txt"    : tu correo y tu clave de Oxford
+     - "Credenciales Q10.txt"       : tu usuario y tu clave de Q10
+     - "Credenciales Macmillan.txt" : tu usuario y tu clave de Macmillan
+   Si solo usas uno de los sistemas, borra los "Config" de los otros y no apareceran en el menu.
+3. Revisa los "Config":
+     - "Config Oxford.txt"    : ID de la organizacion, clases y ajustes de Progress
+     - "Config Q10.txt"       : informes y filtros (Sede, Programa, Periodo, Curso...)
+                                Curso : Todos  -> un reporte por cada curso de la lista
+     - "Config Macmillan.txt" : libros, niveles y clases
+                                Niveles : Todos / Clases : Todas -> recorre todo
+
+CADA VEZ QUE LO USES
+1. Doble clic en "Bot Descargas v3.exe".
+2. Escribe el numero del sistema y presiona Enter (o el numero de "Todos").
+3. Espera: se abre un navegador que hace todo solo. No lo toques mientras trabaja.
+   Si Q10 pide "verificacion de seguridad", resuelvela y presiona Enter en la ventana negra.
+4. Los archivos quedan en "Descargas\Oxford", "Descargas\Q10" y "Descargas\Macmillan",
+   dentro de ESTA misma carpeta (las carpetas ya vienen creadas). El bot siempre trabaja
+   al lado del .exe: si mueves la carpeta completa a otro lado, sigue funcionando igual.
+5. Presiona Enter en la ventana negra para cerrar.
+
+QUE TRAE DE NUEVO LA v3 (todo en Q10)
+- Entiende las cuatro formas en que Q10 entrega un informe: el visor PDF, los que se
+  "generan" y hay que abrir despues, los que bajan el Excel de una, y los que solo
+  muestran el resultado en pantalla (esos avisa que no generan archivo).
+- Filtros de todo tipo: listas, listas de varias opciones, botones de opcion,
+  interruptores Si/No, listas de campos y rangos de fechas.
+- Al terminar cada informe deja un resumen: cuantos archivos bajo, cuales salieron
+  sin datos y cuales fallaron, con el motivo de cada uno.
+- Tambien puede entrar por otros menus ademas de Informes. En "Config Q10.txt" estan
+  las lineas de ejemplo (Menu, Submenu, Buscar, Accion) comentadas con "#": sirven para
+  bajar los usuarios de cada curso de "Academico > Educacion virtual v2 > Cursos virtuales".
+  Quitales el "#" solo si vas a usar eso; mientras esten comentadas, el bot hace lo de siempre.
+
+CUANTO TARDA
+Macmillan y Q10 recorren muchas clases, asi que pueden tardar varios minutos.
+Es normal ver el navegador trabajando solo un buen rato.
+
+SI ALGO FALLA
+- La ventana negra muestra un mensaje "FALLO: ...". Envialo junto con las imagenes de la
+  carpeta "Capturas", que se guardan al terminar cada sistema.
+- La primera vez puede tardar unos segundos en abrir (se esta preparando).
+- Si Windows muestra "Windows protegio su PC": clic en "Mas informacion" y luego "Ejecutar de todas formas".
+  Si el antivirus lo bloquea, pide a Sistemas que lo autorice.
+
+IMPORTANTE: no compartas tus archivos de credenciales con nadie.

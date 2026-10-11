@@ -1,0 +1,6 @@
+08:10:11  registro: 2026-09-24_0810_Macmillan.log
+08:10:11  ===== Macmillan =====   2026-09-24 08:10:11
+08:10:15  FALLO en Macmillan: TargetClosedError: Locator.click: Target page, context or browser has been closed
+08:10:16  registro: 2026-09-24_0810_Macmillan.log
+08:10:16  ===== Macmillan =====   2026-09-24 08:10:16
+08:10:23  FALLO en Macmillan: TargetClosedError: Locator.fill: Target page, context or browser has been closed
