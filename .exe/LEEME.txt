@@ -1,0 +1,31 @@
+HERRAMIENTAS DE AUTOMATIZACION - CENTRO COLOMBO AMERICANO
+=========================================================
+
+Para abrir la aplicacion: doble clic en "Herramientas Colombo.exe".
+Ahi estan las tres herramientas (Q10, Macmillan y Oxford) y el boton "Volver al menu".
+
+IMPORTANTE: los cuatro .exe deben estar SIEMPRE juntos en la misma carpeta.
+
+   Herramientas Colombo.exe   la aplicacion (menu + las tres pantallas)
+   Bot Q10.exe                el robot que descarga de Q10
+   Bot Macmillan.exe          el robot que descarga de Macmillan
+   Bot Oxford.exe             el robot que descarga de Oxford
+
+Si quieres compartirla con otra persona, copia la carpeta completa (sin los archivos que
+se crean solos, ver abajo, porque pueden tener tus usuarios y claves).
+
+REQUISITOS
+- Windows 10 u 11.
+- Google Chrome o Microsoft Edge instalado (Edge ya viene con Windows).
+- No hace falta instalar Python.
+
+ARCHIVOS QUE SE CREAN SOLOS, junto a los .exe
+- Bot Descargas.xlsx, catalogo_q10.json ........ configuracion de Q10
+- perfiles_macmillan.json y similares .......... perfiles de Macmillan
+- perfiles_oxford.json, Config Oxford.txt,
+  Credenciales Oxford.txt ...................... perfiles y claves de Oxford
+- Descargas\ y Capturas\ ....................... lo que bajan los robots y las capturas de errores
+
+PARA GENERAR DE NUEVO LOS .exe (despues de cambiar el codigo)
+Desde la carpeta principal del proyecto:
+   .venv\Scripts\python.exe empaquetado\construir_exe.py

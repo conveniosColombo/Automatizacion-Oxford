@@ -1504,6 +1504,14 @@ class VistaQ10(ctk.CTkFrame):
         archivo, no desde archivos.CARPETA: si no, se termina lanzando el bot.py de OTRA
         version (o el de la raiz del proyecto).
         """
+        if getattr(sys, "frozen", False):
+            # Empaquetado: el bot es "Bot Q10.exe", junto a esta aplicacion
+            bot_exe = Path(sys.executable).resolve().parent / "Bot Q10.exe"
+            if not bot_exe.exists():
+                raise FileNotFoundError(f"No encontre '{bot_exe.name}' junto a la aplicacion ({bot_exe.parent})")
+            subprocess.Popen([str(bot_exe), "Q10"], cwd=str(bot_exe.parent),
+                             creationflags=subprocess.CREATE_NEW_CONSOLE)
+            return
         raiz_botv5 = MOTOR_Q10
         bot_py = raiz_botv5 / "bot.py"
         if not bot_py.exists():

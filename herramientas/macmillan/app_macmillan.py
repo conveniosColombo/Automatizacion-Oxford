@@ -41,17 +41,17 @@ from tema_colombo import Marca, tipografia  # noqa: E402
 _TIPO = tipografia()
 
 # ──────────────────────────────────────────────────────────── Rutas
-if getattr(sys, "frozen", False):
-    BASE = Path(sys.executable).parent
-else:
-    BASE = Path(__file__).parent
+ES_EXE = getattr(sys, "frozen", False)
+BASE = Path(sys.executable).parent if ES_EXE else Path(__file__).parent
 
 PERFILES_JSON   = BASE / "perfiles_macmillan.json"
 CONFIG_BOT_JSON = BASE / "config_macmillan_activo.json"
 CATALOGO_JSON   = BASE / "catalogo_clases_macmillan.json"   # lo escribe el bot
 # herramientas/macmillan/ -> raiz del proyecto; el robot esta en bots/macmillan/
-RAIZ            = BASE.parents[1]
-BOT_SCRIPT      = RAIZ / "bots" / "macmillan" / "automatizar_macmillan.py"
+# Empaquetado: el robot es "Bot Macmillan.exe", junto a esta aplicacion
+RAIZ            = BASE if ES_EXE else BASE.parents[1]
+BOT_EXE         = BASE / "Bot Macmillan.exe"
+BOT_SCRIPT      = BOT_EXE if ES_EXE else RAIZ / "bots" / "macmillan" / "automatizar_macmillan.py"
 VENV_PYTHON     = RAIZ / ".venv" / "Scripts" / "python.exe"
 MEE_URL         = "https://www.macmillaneducationeverywhere.com"
 
@@ -222,7 +222,8 @@ def cargar_datos() -> dict:
     d = datos_defecto()
     if not PERFILES_JSON.exists():
         # Primer arranque: perfil de ejemplo
-        demo = perfil_nuevo("Get Involved! American Edition",
+        demo = perfil_nuevo("Get Involved! American Edition", "Level 1",
+                            "Macmillan Education Everywhere App",
                             ["INTRO - Level Intro - Class 5",
                              "Level 1 - Class 2", "Level 2 - Class 1"],
                             "Show all attempts", "CSV", id_="554bc")
@@ -1355,7 +1356,8 @@ class BotRunner(threading.Thread):
     def _run_real(self) -> None:
         self.emit("indeterminado")
         py = str(VENV_PYTHON) if VENV_PYTHON.exists() else sys.executable
-        cmd = [py, str(BOT_SCRIPT), "--config", str(CONFIG_BOT_JSON)]
+        cmd = ([str(BOT_EXE), "--config", str(CONFIG_BOT_JSON)] if ES_EXE
+               else [py, str(BOT_SCRIPT), "--config", str(CONFIG_BOT_JSON)])
         self.log(f"Lanzando bot: {BOT_SCRIPT.name}")
         self._proc = subprocess.Popen(
             cmd, cwd=str(BASE), stdin=subprocess.DEVNULL,

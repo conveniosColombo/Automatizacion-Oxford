@@ -42,6 +42,7 @@ else:
 PERFILES_JSON    = PRACTICA / "perfiles_oxford.json"
 CREDENCIALES_TXT = ROOT / "Credenciales Oxford.txt"
 CONFIG_TXT       = ROOT / "Config Oxford.txt"
+BOT_EXE          = ROOT / "Bot Oxford.exe"        # empaquetado: junto a esta aplicacion
 BOT_SCRIPT       = ROOT / "bots" / "oxford" / "automatizar_oxford.py"
 VENV_PYTHON      = ROOT / ".venv" / "Scripts" / "python.exe"
 
@@ -1170,6 +1171,10 @@ class VistaOxford(ctk.CTkFrame):
         if not todas and not p.get("clases"):
             return  # _guardar ya mostro el mensaje
         es_exe = getattr(sys, "frozen", False)
+        if es_exe and not BOT_EXE.exists():
+            messagebox.showerror("Bot no encontrado",
+                                 f"No se encontro '{BOT_EXE.name}' junto a la aplicacion:\n{ROOT}")
+            return
         if not es_exe and not BOT_SCRIPT.exists():
             messagebox.showerror(
                 "Bot no encontrado",
@@ -1189,7 +1194,7 @@ class VistaOxford(ctk.CTkFrame):
                                     "Se abrira una ventana con el progreso en tiempo real."):
             return
         try:
-            cmd = [sys.executable, "--bot"] if es_exe else [py, str(BOT_SCRIPT)]
+            cmd = [str(BOT_EXE)] if es_exe else [py, str(BOT_SCRIPT)]
             if todas:
                 cmd.append("--todas")
             ven = VentanaProgreso(self, p["nombre"], n_clases)

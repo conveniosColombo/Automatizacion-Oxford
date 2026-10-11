@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import re
 import sys
 import shutil
@@ -7,13 +8,32 @@ import unicodedata
 from pathlib import Path
 
 # Configurar rutas para poder importar desde botv3
-CARPETA = Path(__file__).resolve().parent
-ROOT = CARPETA.parents[1]          # bots/macmillan/ -> raiz del proyecto
-sys.path.insert(0, str(CARPETA / "motor_botv3"))
+ES_EXE = getattr(sys, "frozen", False)
+# Empaquetado: todo va junto al ejecutable. En desarrollo: bots/macmillan/ -> raiz del proyecto
+CARPETA = Path(sys.executable).resolve().parent if ES_EXE else Path(__file__).resolve().parent
+ROOT = CARPETA if ES_EXE else CARPETA.parents[1]
+if not ES_EXE:
+    sys.path.insert(0, str(CARPETA / "motor_botv3"))
+if getattr(sys, "frozen", False):
+    # Empaquetado: Playwright buscaria los navegadores dentro del .exe; se usan los del equipo
+    os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", str(Path(os.environ.get("LOCALAPPDATA", "")) / "ms-playwright"))
 
 from playwright.sync_api import sync_playwright
 from sistemas.macmillan.paginas import InicioMacmillan
 from core.errores import resumen
+
+def abrir_navegador(p, visible):
+    """Chromium de Playwright; si el equipo no lo tiene (caso tipico del .exe), Chrome o Edge."""
+    try:
+        return p.chromium.launch(headless=not visible)
+    except Exception as sin_chromium:
+        for canal in ("chrome", "msedge"):
+            try:
+                return p.chromium.launch(channel=canal, headless=not visible)
+            except Exception:
+                pass
+        raise sin_chromium
+
 
 def renombrar_descarga(archivo_origen, nombre_base, carpeta_destino, formato="CSV"):
     """Mueve y renombra el archivo descargado a la carpeta final, SIN convertirlo.
@@ -40,7 +60,7 @@ def renombrar_descarga(archivo_origen, nombre_base, carpeta_destino, formato="CS
     return destino_final
 
 # lo lee la pantalla de configuracion, que vive en herramientas/macmillan/
-CATALOGO = ROOT / "herramientas" / "macmillan" / "catalogo_clases_macmillan.json"
+CATALOGO = (ROOT if ES_EXE else ROOT / "herramientas" / "macmillan") / "catalogo_clases_macmillan.json"
 
 
 def registrar_catalogo(progreso, libro, nivel, primera_pagina):
@@ -108,7 +128,7 @@ def ejecutar():
     try:
         with sync_playwright() as p:
             print(f"Iniciando Chromium con Playwright ({'visible' if visible else 'headless'})...")
-            browser = p.chromium.launch(headless=not visible)
+            browser = abrir_navegador(p, visible)
             context = browser.new_context(accept_downloads=True)
             page = context.new_page()
             page.set_default_timeout(30_000)

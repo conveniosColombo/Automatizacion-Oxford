@@ -4,11 +4,15 @@ Doble clic: muestra el menu con los sistemas que tienen 'Usar = Si' en la hoja A
 'bot.py Q10' o 'bot.py Todos': ejecuta sin preguntar (sirve para programarlo).
 Si la planilla no existe, la crea vacia y explica que llenar.
 """
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 ES_EXE = getattr(sys, "frozen", False)
+if getattr(sys, "frozen", False):
+    # Empaquetado: Playwright buscaria los navegadores dentro del .exe; se usan los del equipo
+    os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", str(Path(os.environ.get("LOCALAPPDATA", "")) / "ms-playwright"))
 VENV = Path(__file__).resolve().parents[2] / ".venv"  # entorno virtual del proyecto (raiz: bots/q10 -> 2 arriba)
 
 # Con doble clic se abre con el Python global, que no tiene Playwright: relanzar con el del proyecto

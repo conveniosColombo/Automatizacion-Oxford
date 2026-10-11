@@ -1,4 +1,4 @@
-# Herramientas de automatización - Centro Colombo Americano
+﻿# Herramientas de automatización - Centro Colombo Americano
 
 Para abrir la aplicación: doble clic en **`Abrir herramientas Colombo.bat`**.
 
@@ -13,6 +13,8 @@ Para abrir la aplicación: doble clic en **`Abrir herramientas Colombo.bat`**.
 | `Descargas/` · `Capturas/` | Lo que bajan los robots y las capturas cuando algo falla. |
 | `analisis/` | Cuadernos y reportes de transformación y validación, e insumos. |
 | `otras_herramientas/` | Herramientas aparte, como la activación de códigos de Oxford. |
+| `.exe/` | Los ejecutables listos para usar: la aplicación unificada y los tres robots (ver su `LEEME.txt`). |
+| `empaquetado/` | Script que genera los `.exe`: `.venv\Scripts\python.exe empaquetado\construir_exe.py`. |
 | `archivo/` | Versiones viejas y pruebas. Nada se borró; `MOVIMIENTOS.csv` lista cada cambio de lugar. |
 
 ## Proceso automático (se dejó en la raíz a propósito)
@@ -25,3 +27,4 @@ hay que revisar esa tarea antes de moverlos.
 
 ## Dónde cambiar la marca
 Colores y tipografía: solo en `aplicacion/tema_colombo.py`.
+
