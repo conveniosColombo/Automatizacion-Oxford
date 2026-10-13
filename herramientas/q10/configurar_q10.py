@@ -1038,18 +1038,21 @@ class DialogoInformeNuevo(ctk.CTkToplevel):
 # ------------------------------------------------------------- ajustes generales ---
 FORMATOS = ("XLSX", "XLS", "PDF", "CSV", "DOC", "HTML", "IMAGEN")
 MENUS = ("Informes", "Académico", "Institucional", "Tesorería")
+LINK_Q10_POR_DEFECTO = "https://site2.q10.com/User/Login"
 
 
 class DialogoAjustesGenerales(ctk.CTkToplevel):
     """Lo que antes eran las primeras lineas de 'Config Q10.txt': Rol, Formato y por donde
     entra el bot (Menu/Submenu/Buscar/Accion). Aplica a TODOS los informes de la cola."""
 
-    def __init__(self, master, campos_actuales: dict, al_guardar: Callable[[dict], None]):
+    def __init__(self, master, campos_actuales: dict, al_guardar: Callable[[dict, dict], None],
+                 acceso_actual: dict | None = None):
         super().__init__(master)
         self.al_guardar = al_guardar
+        acceso_actual = acceso_actual or {}
         self.title("Ajustes generales")
-        self.geometry("480x560")
-        self.minsize(480, 560)
+        self.geometry("480x700")
+        self.minsize(480, 600)
         self.configure(fg_color=Tema.FONDO)
         self.grab_set()
 
@@ -1060,6 +1063,19 @@ class DialogoAjustesGenerales(ctk.CTkToplevel):
 
         scroll = ctk.CTkScrollableFrame(self, fg_color="transparent")
         scroll.pack(fill="both", expand=True, padx=20)
+
+        ctk.CTkLabel(scroll, text="Acceso a Q10", font=Tema.SECCION,
+                    text_color=Tema.PRIMARIO, anchor="w").pack(fill="x", pady=(0, 2))
+        ctk.CTkLabel(scroll, text="Con estos datos entra el bot a Q10. Se guardan en la hoja "
+                                  "'Accesos' de la planilla: no compartas ese archivo.",
+                    font=Tema.AYUDA, text_color=Tema.TEXTO_SUAVE, justify="left",
+                    wraplength=420).pack(anchor="w", pady=(0, 4))
+        self.usuario = self._campo(scroll, "Usuario", "", acceso_actual.get("user", ""))
+        self.clave = self._campo(scroll, "Contraseña", "", acceso_actual.get("password", ""),
+                                 mostrar="•")
+        self.link = self._campo(scroll, "Link de ingreso", "",
+                                acceso_actual.get("link") or LINK_Q10_POR_DEFECTO)
+        ctk.CTkFrame(scroll, fg_color=Tema.BORDE, height=1).pack(fill="x", pady=(14, 8))
 
         self.rol = self._campo(scroll, "Rol",
                                'La opción de la ventana "Seleccione el rol" que sale después '
@@ -1103,12 +1119,14 @@ class DialogoAjustesGenerales(ctk.CTkToplevel):
                      hover_color=Tema.PRIMARIO_HOVER, text_color="white",
                      command=self._guardar).grid(row=0, column=1, sticky="ew", padx=(6, 0))
 
-    def _campo(self, master, etiqueta, ayuda, valor) -> ctk.CTkEntry:
+    def _campo(self, master, etiqueta, ayuda, valor, mostrar: str | None = None) -> ctk.CTkEntry:
         ctk.CTkLabel(master, text=etiqueta, font=Tema.ETIQUETA, text_color=Tema.TEXTO,
                     anchor="w").pack(fill="x", pady=(6, 0))
-        ctk.CTkLabel(master, text=ayuda, font=Tema.AYUDA, text_color=Tema.TEXTO_SUAVE,
-                    anchor="w", justify="left", wraplength=420).pack(fill="x")
-        entrada = ctk.CTkEntry(master, fg_color=Tema.SUPERFICIE, border_color=Tema.BORDE, height=32)
+        if ayuda:
+            ctk.CTkLabel(master, text=ayuda, font=Tema.AYUDA, text_color=Tema.TEXTO_SUAVE,
+                        anchor="w", justify="left", wraplength=420).pack(fill="x")
+        entrada = ctk.CTkEntry(master, fg_color=Tema.SUPERFICIE, border_color=Tema.BORDE, height=32,
+                               show=mostrar or "")
         entrada.insert(0, valor)
         entrada.pack(fill="x", pady=(2, 0))
         return entrada
@@ -1133,6 +1151,10 @@ class DialogoAjustesGenerales(ctk.CTkToplevel):
             "submenu": self.submenu.get().strip(),
             "buscar": self.buscar.get().strip(),
             "accion": "" if self.accion.get() == "(vacío)" else self.accion.get(),
+        }, {
+            "user": self.usuario.get().strip(),
+            "password": self.clave.get(),
+            "link": self.link.get().strip(),
         })
         self.destroy()
 
@@ -1477,13 +1499,18 @@ class VistaQ10(ctk.CTkFrame):
     # --------------------------------------------------------- ajustes generales ---
     def _abrir_ajustes(self):
         campos = planilla_excel.campos_actuales(archivos.PLANILLA, "Q10")
-        DialogoAjustesGenerales(self, campos, al_guardar=self._guardar_ajustes)
+        acceso = planilla_excel.acceso_de(archivos.PLANILLA, "Q10")
+        DialogoAjustesGenerales(self, campos, al_guardar=self._guardar_ajustes, acceso_actual=acceso)
 
-    def _guardar_ajustes(self, nuevos_campos: dict):
-        """Guarda Rol/Formato/Menu... sin tocar los Informes y Filtros que ya estuvieran guardados."""
+    def _guardar_ajustes(self, nuevos_campos: dict, acceso: dict | None = None):
+        """Guarda Rol/Formato/Menu... sin tocar los Informes y Filtros que ya estuvieran guardados,
+        y el acceso (usuario, contraseña y link) en la hoja Accesos."""
         valores = self._valores_de_la_planilla()
         valores["campos"] = nuevos_campos
         planilla_excel.actualizar_hoja_sistema(archivos.PLANILLA, "Q10", valores)
+        if acceso is not None:
+            planilla_excel.guardar_acceso(archivos.PLANILLA, "Q10", acceso.get("user", ""),
+                                          acceso.get("password", ""), acceso.get("link", ""))
 
     @staticmethod
     def _valores_de_la_planilla() -> dict:
@@ -1504,6 +1531,12 @@ class VistaQ10(ctk.CTkFrame):
         archivo, no desde archivos.CARPETA: si no, se termina lanzando el bot.py de OTRA
         version (o el de la raiz del proyecto).
         """
+        acceso = planilla_excel.acceso_de(archivos.PLANILLA, "Q10")
+        if not (acceso.get("user") and acceso.get("password") and acceso.get("link")):
+            self.after(300, self._abrir_ajustes)       # abre la ventana donde se escriben
+            raise ValueError("Faltan tus datos de acceso a Q10 (usuario, contraseña y link). "
+                             "Se abrió 'Ajustes generales': escríbelos en 'Acceso a Q10', guarda "
+                             "y vuelve a ejecutar.")
         if getattr(sys, "frozen", False):
             # Empaquetado: el bot es "Bot Q10.exe", junto a esta aplicacion
             bot_exe = Path(sys.executable).resolve().parent / "Bot Q10.exe"

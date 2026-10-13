@@ -372,6 +372,62 @@ def campos_actuales(ruta, sistema):
         return {}
 
 
+def acceso_de(ruta, sistema):
+    """{'user', 'password', 'link'} guardados en la hoja Accesos para ese sistema; {} si no hay."""
+    if not ruta.exists():
+        return {}
+    try:
+        return Planilla(ruta).accesos().get(sistema.lower(), {})
+    except Exception:
+        return {}
+
+
+def guardar_acceso(ruta, sistema, usuario, clave, link):
+    """Escribe Usuario, Contrasena y Link de ese sistema en la hoja Accesos, sin tocar lo demas.
+
+    La usa el formulario "Configurar Q10" para que nadie tenga que abrir el Excel a mano.
+    Si la planilla no existe, la crea; si el sistema no tiene fila, la agrega.
+    """
+    from openpyxl import load_workbook
+    from openpyxl.utils import get_column_letter
+    from openpyxl.utils.cell import range_boundaries
+
+    if not ruta.exists():
+        crear(ruta)
+    try:
+        libro = load_workbook(ruta)
+    except PermissionError:
+        raise PermissionError(f"No pude abrir '{ruta.name}'. Si esta abierto en Excel, "
+                              "guardalo y cierralo, y vuelve a intentar.")
+    if ACCESOS not in libro.sheetnames:
+        _hoja_accesos(libro.create_sheet(ACCESOS, 1), None)
+    ws = libro[ACCESOS]
+
+    # Los encabezados estan en la fila 5; se buscan por nombre, no por posicion
+    columnas = {normalizar(ws.cell(row=5, column=c).value): c
+                for c in range(1, ws.max_column + 1) if ws.cell(row=5, column=c).value}
+    c_sistema, c_usar, c_usuario, c_clave, c_link = (columnas[normalizar(n)] for n in COLUMNAS_ACCESOS)
+
+    fila = next((f for f in range(6, ws.max_row + 1)
+                 if normalizar(texto(ws.cell(row=f, column=c_sistema).value)) == normalizar(sistema)), None)
+    if fila is None:
+        fila = next((f for f in range(6, ws.max_row + 2)
+                     if not texto(ws.cell(row=f, column=c_sistema).value)), ws.max_row + 1)
+        ws.cell(row=fila, column=c_sistema, value=sistema)
+        tabla = ws.tables.get(ACCESOS)
+        if tabla:                                   # que la fila nueva quede dentro de la tabla
+            c1, f1, c2, f2 = range_boundaries(tabla.ref)
+            tabla.ref = f"{get_column_letter(c1)}{f1}:{get_column_letter(c2)}{max(f2, fila)}"
+
+    if not texto(ws.cell(row=fila, column=c_usar).value):
+        ws.cell(row=fila, column=c_usar, value="Sí")
+    for columna, valor in ((c_usuario, usuario), (c_clave, clave), (c_link, link)):
+        celda = ws.cell(row=fila, column=columna, value=valor or None)
+        celda.number_format = "@"                   # texto: que Excel no cambie nada
+    libro.save(ruta)
+    return ruta
+
+
 def _estilos():
     from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 

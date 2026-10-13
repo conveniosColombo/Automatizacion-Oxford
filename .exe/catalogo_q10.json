@@ -6,10 +6,10 @@
       "direccion": "InasistenciasJustificacion",
       "filtros": [
         {
-          "nombre": "Sede",
+          "nombre": "Sede - jornada",
           "tipo": "lista",
           "obligatorio": true,
-          "ayuda": "La sede donde se dicta el curso.",
+          "ayuda": "",
           "opciones": [
             "Centro",
             "Norte",
@@ -19,94 +19,37 @@
           "opciones_por": {}
         },
         {
-          "nombre": "Jornada",
-          "tipo": "segmentado",
-          "obligatorio": true,
-          "ayuda": "Jornada disponible en esa sede.",
-          "opciones": [],
-          "depende_de": "Sede",
-          "opciones_por": {
-            "Centro": [
-              "Mañana",
-              "Tarde",
-              "Noche"
-            ],
-            "Norte": [
-              "Mañana",
-              "Tarde"
-            ],
-            "Kennedy": [
-              "Tarde",
-              "Noche"
-            ]
-          }
-        },
-        {
           "nombre": "Programa",
           "tipo": "lista",
           "obligatorio": true,
-          "ayuda": "Programa activo en esa jornada.",
-          "opciones": [],
-          "depende_de": "Jornada",
-          "opciones_por": {
-            "Mañana": [
-              "Inglés Adultos - B2G",
-              "Inglés Adultos - B2B"
-            ],
-            "Tarde": [
-              "Inglés Kids",
-              "Inglés Adultos - B2G"
-            ],
-            "Noche": [
-              "Inglés Adultos - B2B"
-            ]
-          }
+          "ayuda": "",
+          "opciones": [
+            "YES BOGOTA 2026-2"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
         },
         {
           "nombre": "Período",
           "tipo": "lista",
           "obligatorio": true,
-          "ayuda": "Periodo académico del programa.",
-          "opciones": [],
-          "depende_de": "Programa",
-          "opciones_por": {
-            "Inglés Adultos - B2G": [
-              "2026-8",
-              "2026-7"
-            ],
-            "Inglés Adultos - B2B": [
-              "2026-8",
-              "2026-6"
-            ],
-            "Inglés Kids": [
-              "2026-8"
-            ]
-          }
+          "ayuda": "",
+          "opciones": [
+            "B2G_YES BOGOTA-2 C1_SEP_2026"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
         },
         {
           "nombre": "Curso",
           "tipo": "varios",
           "obligatorio": true,
-          "ayuda": "Seleccione \"Todos\" o cursos específicos. Genera un reporte por curso.",
-          "opciones": [],
-          "depende_de": "Período",
-          "opciones_por": {
-            "2026-8": [
-              "B2G-A1",
-              "B2G-A2",
-              "B2G-B1",
-              "B2G-B2",
-              "B2G-B3"
-            ],
-            "2026-7": [
-              "B2G-A1",
-              "B2G-A2"
-            ],
-            "2026-6": [
-              "B2B-01",
-              "B2B-02"
-            ]
-          }
+          "ayuda": "",
+          "opciones": [
+            "C1.1-7PM217 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
         }
       ],
       "formatos": [

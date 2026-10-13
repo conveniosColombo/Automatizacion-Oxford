@@ -66,19 +66,26 @@ CATALOGO = (ROOT if ES_EXE else ROOT / "herramientas" / "macmillan") / "catalogo
 def registrar_catalogo(progreso, libro, nivel, primera_pagina):
     """Guarda las clases que Macmillan lista para este libro y nivel, para que el panel las ofrezca
     en 'Organizacion'. Lee todas las paginas del listado; si algo falla, deja al menos la primera.
-    Nunca debe frenar la descarga."""
+    Nunca debe frenar la descarga.
+
+    Devuelve {clase: numero de pagina del listado}, para poder ir directo a la pagina de cada clase
+    (el listado muestra 10 por pagina y "View details" solo existe para las de la pagina abierta)."""
     clases = list(primera_pagina)
+    ubicacion = {c: 1 for c in primera_pagina}
     try:
         paginas = progreso.total_paginas()
         if paginas > 1:
             for n in range(2, paginas + 1):
                 progreso.ir_a_pagina(n)
-                clases += [c for c in progreso.clases() if c not in clases]
-            progreso.presionar_go()  # vuelve a la pagina 1 con los mismos filtros
+                nuevas = progreso.clases()
+                for c in nuevas:
+                    ubicacion.setdefault(c, n)
+                clases += [c for c in nuevas if c not in clases]
+            ir_a_primera_pagina(progreso)
     except Exception as error:
         print(f"Aviso: no pude leer todas las paginas de clases para el catalogo: {resumen(error)}")
         try:
-            progreso.presionar_go()
+            ir_a_primera_pagina(progreso)
         except Exception:
             pass
     try:
@@ -88,13 +95,38 @@ def registrar_catalogo(progreso, libro, nivel, primera_pagina):
         print(f"Catalogo: {len(clases)} clase(s) guardadas para {libro} {nivel or ''}".rstrip())
     except Exception as error:
         print(f"Aviso: no pude guardar el catalogo de clases: {resumen(error)}")
+    return ubicacion
+
+
+def ir_a_primera_pagina(progreso):
+    """Deja el listado en la pagina 1. 'Go' no la reinicia (conserva la pagina en la que se estaba),
+    asi que se usa el enlace '1' del paginador; sin paginador ya esta en la unica pagina."""
+    enlaces = progreso.page.locator(progreso.ENLACE_PAGINA)
+    if not enlaces.count():
+        return
+    uno = enlaces.filter(has_text=progreso.texto_exacto("1"))
+    if uno.count():
+        uno.first.scroll_into_view_if_needed()
+        uno.first.click()
+        progreso.esperar(2_000)
+        progreso.esperar_clases()
+    else:
+        progreso.presionar_go()
+
+
+def ir_a_pagina_de(progreso, pagina):
+    """Va a la pagina del listado indicada, partiendo SIEMPRE de la pagina 1."""
+    ir_a_primera_pagina(progreso)
+    if pagina > 1:
+        progreso.ir_a_pagina(pagina)
 
 
 def ejecutar():
-    if hasattr(sys.stdout, 'reconfigure'):
-        sys.stdout.reconfigure(errors='replace')
-    if hasattr(sys.stderr, 'reconfigure'):
-        sys.stderr.reconfigure(errors='replace')
+    # line_buffering: con la salida redirigida a la pantalla, Python acumulaba todo y lo soltaba
+    # al terminar (el progreso parecia congelado). UTF-8: es como la pantalla lee la salida.
+    for flujo in (sys.stdout, sys.stderr):
+        if hasattr(flujo, 'reconfigure'):
+            flujo.reconfigure(encoding='utf-8', errors='replace', line_buffering=True)
         
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True, help="Ruta al JSON con la configuracion")
@@ -165,20 +197,26 @@ def ejecutar():
 
             # Descargar cada clase pedida
             clases_disponibles = progreso.clases()
-            registrar_catalogo(progreso, libro_nombre, libro_nivel, clases_disponibles)
+            ubicacion = registrar_catalogo(progreso, libro_nombre, libro_nivel, clases_disponibles)
+            todas_las_clases = list(ubicacion)      # las de TODAS las paginas del listado
 
             if todas_clases:
-                clases_a_procesar = clases_disponibles
+                clases_a_procesar = todas_las_clases
             else:
-                # Filtrar ignorando diferencias minimas
-                clases_a_procesar = [c for c in clases_disponibles if c in clases]
+                pedidas = {progreso.normalizar(c) for c in clases}
+                clases_a_procesar = [c for c in todas_las_clases if progreso.normalizar(c) in pedidas]
+                faltan = [c for c in clases if progreso.normalizar(c) not in
+                          {progreso.normalizar(x) for x in todas_las_clases}]
+                if faltan:
+                    print(f"Aviso: estas clases no existen en {libro_nombre} {libro_nivel or ''}: {faltan}")
                 if not clases_a_procesar:
-                    print(f"Aviso: No se encontraron las clases {clases} en la plataforma. Hay: {clases_disponibles}")
+                    print(f"Aviso: No se encontraron las clases {clases} en la plataforma. Hay: {todas_las_clases}")
             
             for i, clase in enumerate(clases_a_procesar, 1):
                 print(f"Clase {i}/{len(clases_a_procesar)}: {clase}")
                 print(f"   Scores: {perfil.get('scores_mode', 'Show all attempts')}")
                 try:
+                    ir_a_pagina_de(progreso, ubicacion.get(clase, 1))
                     detalle = progreso.abrir_clase(clase)
                     archivo_descargado = detalle.exportar()
                     

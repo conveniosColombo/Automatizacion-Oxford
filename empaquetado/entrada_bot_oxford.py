@@ -16,7 +16,7 @@ sys.path.insert(0, str(RAIZ / "bots" / "oxford"))
 
 for flujo in (sys.stdout, sys.stderr):
     if hasattr(flujo, "reconfigure"):
-        flujo.reconfigure(encoding="utf-8", errors="replace")   # la pantalla lee la salida en UTF-8
+        flujo.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)   # UTF-8 y en tiempo real
 
 import automatizar_oxford  # noqa: E402
 

@@ -1347,7 +1347,12 @@ class BotRunner(threading.Thread):
             if BOT_SCRIPT.exists():
                 self._run_real()
             else:
-                self._run_simulacion()
+                # Antes aqui se corria una SIMULACION que fingia descargar. Ya no: si falta el
+                # robot hay que decirlo, no aparentar que todo salio bien.
+                self.log(f"No se encontro el robot de Macmillan: {BOT_SCRIPT}", "err")
+                if ES_EXE:
+                    self.log("Copia 'Bot Macmillan.exe' a la MISMA carpeta que esta aplicacion.", "err")
+                self.emit("fin", False, "No se descargo nada: falta el robot de Macmillan.")
         except Exception as e:                       # noqa: BLE001
             self.log(f"Error inesperado: {e}", "err")
             self.emit("fin", False, f"Error: {e}")
