@@ -80,7 +80,9 @@ class Bot:
             print("Opcion no valida.")
 
     def ejecutar(self, esperar_enter=True):
+        """Devuelve los sistemas que fallaron (lista vacia = todo bien)."""
         elegidos = self.elegir(self.disponibles())
+        fallaron = []
 
         with sync_playwright() as p:
             navegador = abrir_navegador(p)
@@ -94,6 +96,7 @@ class Bot:
                     sistema(page).ejecutar()
                     print(f"{sistema.NOMBRE}: terminado.")
                 except Exception as error:
+                    fallaron.append(sistema.NOMBRE)
                     print(f"FALLO en {sistema.NOMBRE}: {resumen(error)}")
 
                 for numero, pestana in enumerate(contexto.pages, start=1):
@@ -103,12 +106,21 @@ class Bot:
             if esperar_enter:
                 input("\nPresiona Enter para cerrar el navegador...")
             navegador.close()
+        return fallaron
 
 
 if __name__ == "__main__":
+    # Lanzado desde "Configurar Q10": la interfaz lee esta salida y muestra el log, asi que no hay
+    # nadie que presione Enter al final; el resultado se informa con el codigo de salida
+    # (0 = todo bien, 1 = algun sistema fallo, 2 = error antes de empezar).
+    DESDE_INTERFAZ = bool(os.environ.get("COLOMBO_INTERFAZ"))
     try:
-        Bot(sys.argv[1:]).ejecutar()
+        fallaron = Bot(sys.argv[1:]).ejecutar(esperar_enter=not DESDE_INTERFAZ)
+        if DESDE_INTERFAZ:
+            sys.exit(1 if fallaron else 0)
     except Exception as error:
-        # Sin esto la consola se cierra sola y no se alcanza a leer el error
         print(f"FALLO: {resumen(error)}")
+        if DESDE_INTERFAZ:
+            sys.exit(2)
+        # Sin esto la consola se cierra sola y no se alcanza a leer el error
         input("Presiona Enter para cerrar...")

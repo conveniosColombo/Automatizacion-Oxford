@@ -52,7 +52,10 @@ class LoginQ10(Pagina):
 
     def _esperar_captcha(self):
         if self.page.locator(self.CAPTCHA).is_visible():
-            input("  Q10 pide verificacion de seguridad: resuelvela en el navegador y presiona Enter aqui...")
+            # print con salto de linea (y flush) para que la interfaz alcance a leer el aviso
+            print("  Q10 pide verificacion de seguridad: resuelvela en el navegador y presiona Enter aqui...",
+                  flush=True)
+            input()
 
     def _elegir_rol(self, rol):
         opciones = self.page.locator(self.ROLES)
@@ -1104,7 +1107,11 @@ class FormularioInforme(Pagina):
             "el => el.selectedIndex >= 0 ? el.options[el.selectedIndex].text : ''").strip()
 
     def opciones(self, nombre):
-        """Opciones de una lista (sin "Seleccione"), o None si el filtro no es una lista."""
+        """Opciones de una lista (sin "Seleccione"), o None si el filtro no es una lista.
+
+        Una lista sin opciones (un "Curso" opcional que se queda en "Todos") devuelve [], no falla:
+        quien llama decide si dejarla como esta.
+        """
         fila = self.fila_del_filtro(nombre)
         if fila is None:
             return None
@@ -1115,7 +1122,7 @@ class FormularioInforme(Pagina):
         try:
             expect(opciones.nth(1)).to_be_attached(timeout=15_000)
         except AssertionError:
-            raise ValueError(f"La lista '{nombre}' no tiene opciones")
+            return []
         return [o.strip() for o in opciones.all_inner_texts()
                 if o.strip() and self.normalizar(o) != "seleccione"]
 

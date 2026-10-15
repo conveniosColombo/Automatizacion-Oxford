@@ -56,6 +56,145 @@
         "XLSX"
       ],
       "activo": true
+    },
+    {
+      "nombre": "Estudiantes notas y observaciones",
+      "categoria": "Gestion Academica",
+      "direccion": "Estudiantes notas y observaciones",
+      "filtros": [
+        {
+          "nombre": "Sede - jornada",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "B2G - Única"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Programa",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "YES BOGOTA 2026-2"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Asignatura",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "Todos"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Período",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "B2G_YES BOGOTA-2 C1_SEP_2026"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "¿Incluir cursos archivados?",
+          "tipo": "interruptor",
+          "obligatorio": false,
+          "ayuda": "",
+          "opciones": [],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Curso",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "Todos"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        }
+      ],
+      "formatos": [
+        "XLSX"
+      ],
+      "activo": true
+    },
+    {
+      "nombre": "Detalle actualizado matrículas",
+      "categoria": "Gestion Academica",
+      "direccion": "Detalle actualizado matrículas",
+      "filtros": [
+        {
+          "nombre": "Período",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "B2G_YES BOGOTA-2 C1_SEP_2026"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Sede - jornada",
+          "tipo": "lista",
+          "obligatorio": false,
+          "ayuda": "",
+          "opciones": [
+            "B2G - Única"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Programa",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "YES BOGOTA 2026-2"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "¿Incluir cursos archivados?",
+          "tipo": "interruptor",
+          "obligatorio": false,
+          "ayuda": "",
+          "opciones": [],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Curso",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "B1.1-6AM1 SDDE_2026-2"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        }
+      ],
+      "formatos": [
+        "XLSX"
+      ],
+      "activo": true
     }
   ]
 }

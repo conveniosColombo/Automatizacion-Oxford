@@ -1,0 +1,3 @@
+[17:02:53]  Registro guardado en: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\.exe\Registros\log_q10_20261014_170253.txt
+[17:02:56]  ============================================================
+[17:02:56]  Detenido por el usuario. 0 de 0 reporte(s) descargado(s) · 0 sin datos · 0 con error · código de salida 1

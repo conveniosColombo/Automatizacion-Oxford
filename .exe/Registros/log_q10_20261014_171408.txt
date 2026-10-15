@@ -1,0 +1,25 @@
+[17:14:08]  Registro guardado en: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\.exe\Registros\log_q10_20261014_171408.txt
+[17:14:22]  ===== Q10 =====
+[17:14:22]    Rol: Administrativo
+[17:14:22]  Paso 1: sesion iniciada en Q10.
+[17:14:22]  Paso 2: Informes abierto.
+[17:14:43]    Aviso: 'Detalle actualizado matr�culas' aparece 2 veces (['', '']); uso el primero. Para escoger, escribe 'Nombre (Seccion)' en el Config
+[17:14:43]    Clic en el informe: Detalle actualizado matriculas  (/Reportes/Excel/GestionAcademica/DetalleActualizadoMatriculas)
+[17:14:43]  Paso 3: informe 'Detalle actualizado matr�culas' abierto.
+[17:14:43]    Per�odo: B2G_YES BOGOTA-2 C1_SEP_2026
+[17:14:43]    Sede - jornada: B2G - �nica
+[17:14:43]    Programa: YES BOGOTA 2026-2
+[17:14:43]    �Incluir cursos archivados?: No (ya estaba asi)
+[17:14:43]    Curso: la lista trae 218 opciones -> ['00_00-SDDE', 'B1.1-6AM1 SDDE_2026-2', 'B1.1-6AM2 SDDE_2026-2', 'B1.1-6AM3 SDDE_2026-2']
+[17:14:43]    Curso: el campo ya dice 'vacio'; se deja asi (Q10 lo toma como todos)
+[17:14:43]    Clic en: Exportar reporte
+[17:14:43]    Clic en: Abrir reporte
+[17:14:43]    Clic en: Volver a generar
+[17:14:43]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-14_1714_Detalle_actualizado_matr�culas_Todos.xlsx
+[17:14:43]  Paso 4: informe 'Detalle actualizado matr�culas' terminado.
+[17:14:43]    Resumen de 'Detalle actualizado matr�culas': 1 archivo(s) descargado(s)
+[17:14:43]      OK        2026-10-14_1714_Detalle_actualizado_matr�culas_Todos.xlsx
+[17:14:44]  Q10: terminado.
+[17:14:44]  Pestana 1: https://site3.q10.com/Informes  -> captura en resultado_Q10_1.png
+[17:14:44]  ============================================================
+[17:14:44]  Todo salió bien. 1 de 1 reporte(s) descargado(s) · 0 sin datos · 0 con error · código de salida 0

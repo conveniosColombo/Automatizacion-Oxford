@@ -1,4 +1,4 @@
-"""Configurar Q10 - formulario de escritorio para armar las descargas del bot.
+﻿"""Configurar Q10 - formulario de escritorio para armar las descargas del bot.
 
 Reemplaza el llenado manual de la hoja Q10 de 'Bot Descargas.xlsx' por un formulario guiado.
 El catalogo de informes (que filtros tiene cada uno, en que orden y con que opciones) se lee y
@@ -10,11 +10,15 @@ Solo usa customtkinter, tkinter y la libreria estandar. Python 3.13 + Windows 11
 """
 from __future__ import annotations
 
+import os
+import queue
 import re
 import subprocess
 import sys
+import threading
 import unicodedata
 from abc import ABC, abstractmethod
+from datetime import datetime
 from pathlib import Path
 from typing import Callable
 
@@ -164,36 +168,93 @@ class BaseFiltroControl(ctk.CTkFrame, ABC):
 
 
 class ControlLista(BaseFiltroControl):
-    """Lista desplegable (CTkComboBox), pero editable: las opciones son una ayuda, no una
-    camisa de fuerza. El usuario puede escoger de la lista O escribir el valor el mismo
-    (por ejemplo, cuando ya sabe el nombre exacto y no quiere esperar a que cargue la lista)."""
+    """Lista de valores: se escribe o se PEGA un valor por linea (como las clases de Oxford o
+    Macmillan) y el bot busca cada uno, generando un reporte por valor. Si el filtro trae
+    opciones sugeridas, un desplegable las agrega a la lista con un clic.
+
+    valor() entrega los valores separados por ", " (el formato que ya entienden la bandeja,
+    la planilla y el bot). Una sola linea = un solo reporte, como siempre.
+    """
 
     def _construir_control(self):
         opciones = self.filtro.opciones or []
-        self.variable = ctk.StringVar(value="")
-        widget = ctk.CTkComboBox(
-            self, values=opciones, variable=self.variable,
-            fg_color=Tema.SUPERFICIE, border_color=Tema.BORDE, button_color=Tema.PRIMARIO,
-            button_hover_color=Tema.PRIMARIO_HOVER, dropdown_hover_color=Tema.FONDO,
-            command=lambda _=None: self._notificar_cambio())
-        # Si solo hay UNA opcion guardada (como un filtro ya parametrizado con su valor de
-        # siempre), se deja puesta: el formulario abre listo para usar, no vacio.
-        widget.set(opciones[0] if len(opciones) == 1 else "")
-        # Tambien avisar cuando el usuario ESCRIBE (no solo cuando escoge de la lista). El texto
-        # lo recibe el Entry INTERNO del combobox, no el widget contenedor: hay que atarlo ahi.
-        widget._entry.bind("<KeyRelease>", lambda _e: self._notificar_cambio())
-        widget.grid(row=1, column=0, sticky="ew")
-        return widget
+        marco = ctk.CTkFrame(self, fg_color="transparent")
+        marco.grid(row=1, column=0, sticky="ew")
+        marco.grid_columnconfigure(0, weight=1)
+        self._marco = marco
+
+        self._sugerencias = None
+        if opciones:
+            self._sugerencias = ctk.CTkComboBox(
+                marco, values=opciones, state="readonly",
+                fg_color=Tema.SUPERFICIE, border_color=Tema.BORDE, button_color=Tema.PRIMARIO,
+                button_hover_color=Tema.PRIMARIO_HOVER, dropdown_hover_color=Tema.FONDO,
+                command=self._agregar_sugerencia)
+            self._sugerencias.set("Escoger de la lista…")
+            self._sugerencias.grid(row=0, column=0, sticky="ew", pady=(0, 4))
+
+        self._caja = ctk.CTkTextbox(marco, height=70, fg_color=Tema.SUPERFICIE,
+                                    border_color=Tema.BORDE, border_width=2,
+                                    text_color=Tema.TEXTO, font=Tema.TEXTO_NORMAL)
+        self._caja.grid(row=1, column=0, sticky="ew")
+        self._caja.bind("<KeyRelease>", lambda _e: self._cambio_texto())
+        self._caja.bind("<<Paste>>", lambda _e: self.after(50, self._cambio_texto))
+
+        self._aviso = ctk.CTkLabel(marco, text="", font=Tema.AYUDA, anchor="w",
+                                   text_color=Tema.ADVERTENCIA)
+        self._aviso.grid(row=2, column=0, sticky="ew", pady=(2, 0))
+        ctk.CTkLabel(marco, text="Un valor por línea: puede pegar la lista completa.",
+                     font=Tema.AYUDA, text_color=Tema.TEXTO_SUAVE, anchor="w").grid(
+            row=3, column=0, sticky="ew")
+
+        # Si solo hay UNA opcion guardada (filtro ya parametrizado con su valor de siempre),
+        # se deja puesta: el formulario abre listo para usar, no vacio.
+        if len(opciones) == 1:
+            self._caja.insert("1.0", opciones[0])
+        return self._caja
+
+    def _cambio_texto(self):
+        total = len(self.valores())
+        self._aviso.configure(
+            text=f"Se generarán {total} reportes, uno por cada valor." if total > 1 else "")
+        self._notificar_cambio()
+
+    def _agregar_sugerencia(self, opcion: str):
+        if normalizar(opcion) not in {normalizar(v) for v in self.valores()}:
+            actual = self._caja.get("1.0", "end").rstrip("\n")
+            self._caja.insert("end", ("\n" if actual.strip() else "") + opcion)
+        self._sugerencias.set("Escoger de la lista…")
+        self._cambio_texto()
+
+    def valores(self) -> list[str]:
+        """Una linea = un valor; sin vacios ni repetidos, en el orden en que se escribieron."""
+        vistos, valores = set(), []
+        for linea in self._caja.get("1.0", "end").splitlines():
+            linea = linea.strip().strip(",;").strip()
+            if linea and normalizar(linea) not in vistos:
+                vistos.add(normalizar(linea))
+                valores.append(linea)
+        return valores
 
     def valor(self) -> str:
-        return self.variable.get().strip()
+        return ", ".join(self.valores())
 
     def limpiar(self):
-        self._widget.set("")
+        estado = self._caja.cget("state")
+        self._caja.configure(state="normal")
+        self._caja.delete("1.0", "end")
+        self._caja.configure(state=estado)
+        self._aviso.configure(text="")
 
     def poner_opciones(self, opciones: list[str]):
-        self._widget.configure(values=opciones)
+        if self._sugerencias is not None:
+            self._sugerencias.configure(values=opciones)
         self.limpiar()
+
+    def _cambiar_estado(self, estado: str):
+        self._caja.configure(state=estado)
+        if self._sugerencias is not None:
+            self._sugerencias.configure(state="readonly" if estado == "normal" else "disabled")
 
 
 class ControlVarios(BaseFiltroControl):
@@ -415,7 +476,31 @@ class ControlVarios(BaseFiltroControl):
             casilla.configure(state=color if not self.var_todos.get() else "disabled")
 
 
+class ControlInterruptor(BaseFiltroControl):
+    """Interruptor Sí / No (como '¿Incluir cursos archivados?'). Siempre tiene valor: arranca en No."""
+
+    def _construir_control(self):
+        widget = ctk.CTkSegmentedButton(
+            self, values=["Sí", "No"], fg_color=Tema.FONDO,
+            selected_color=Tema.PRIMARIO, selected_hover_color=Tema.PRIMARIO_HOVER,
+            unselected_color=Tema.SUPERFICIE, text_color=Tema.TEXTO,
+            command=lambda _=None: self._notificar_cambio())
+        widget.set("No")
+        widget.grid(row=1, column=0, sticky="w")
+        return widget
+
+    def valor(self) -> str:
+        return self._widget.get()
+
+    def limpiar(self):
+        self._widget.set("No")
+
+    def poner_opciones(self, opciones: list[str]):
+        self.limpiar()
+
+
 FABRICA_CONTROLES: dict[str, type[BaseFiltroControl]] = {
+    "interruptor": ControlInterruptor,
     "lista": ControlLista,
     "segmentado": ControlLista,  # antes eran botones fijos; ahora es el mismo campo editable
     "varios": ControlVarios,
@@ -524,12 +609,18 @@ class FormularioDinamico(ctk.CTkFrame):
         """Regla de la cascada: limpiar y refiltrar TODO lo que depende de este, en cadena."""
         self.mensaje.configure(text="")
         filtro_padre = next(f for f in self.informe.filtros if f.nombre == nombre)
-        valor_padre = self.controles[nombre].valor()
+        control_padre = self.controles[nombre]
+        valor_padre = control_padre.valor()
+        # Con varios valores (fichas) las opciones del hijo son la union de las de cada uno
+        valores_padre = (control_padre.valores() if isinstance(control_padre, ControlLista)
+                         else [valor_padre] if valor_padre else [])
 
         for hijo in self._hijos_directos(nombre):
             control_hijo = self.controles[hijo.nombre]
             if valor_padre:
-                opciones = hijo.opciones_por.get(valor_padre, [])
+                opciones = []
+                for v in valores_padre:
+                    opciones += [o for o in hijo.opciones_por.get(v, []) if o not in opciones]
                 control_hijo.poner_opciones(opciones)
                 control_hijo.habilitar()
             else:
@@ -668,11 +759,11 @@ class SelectorInformes(ctk.CTkFrame):
         self._filtrar()
 
 
-NOMBRE_TIPO = {"lista": "Campo de texto (con sugerencias)", "segmentado": "Campo de texto (con sugerencias)",
-              "varios": "Varios / Todos"}
+NOMBRE_TIPO = {"lista": "Lista de valores (pegar o escribir)", "segmentado": "Lista de valores (pegar o escribir)",
+              "varios": "Varios / Todos", "interruptor": "Sí / No (interruptor)"}
 # En "Informe nuevo" solo se ofrecen estos dos: "segmentado" (botones) ya no se usa para crear
 # informes nuevos, pero se deja reconocido para que los informes viejos lo sigan abriendo bien.
-TIPOS_NUEVOS = ("lista", "varios")
+TIPOS_NUEVOS = ("lista", "varios", "interruptor")
 SIN_PADRE = "(Ninguno)"
 
 
@@ -1008,6 +1099,10 @@ class DialogoInformeNuevo(ctk.CTkToplevel):
         filtros: list[FiltroDef] = []
         for fila in self.filas:
             if not fila.nombre:
+                continue
+            if fila.tipo == "interruptor":      # Sí / No: no lleva opciones ni depende de otro
+                filtros.append(FiltroDef(nombre=fila.nombre, tipo="interruptor",
+                                         obligatorio=False))
                 continue
             if fila.depende_de is None and not fila.opciones:
                 errores.append(f'Configure las opciones de "{fila.nombre}".')
@@ -1399,6 +1494,301 @@ class Sidebar(ctk.CTkFrame):
             corner_radius=8, command=comando)
 
 
+# ----------------------------------------------------------------- log del bot ---
+class EjecucionBot:
+    """Corre el bot como subproceso y manda cada linea de su salida a una cola.
+
+    Lee la salida en un hilo para no congelar la interfaz. Cada evento de la cola es una tupla:
+    ("linea", texto) o ("fin", codigo_de_salida).
+    """
+
+    def __init__(self, comando: list[str], cwd: str):
+        self.cola: queue.Queue = queue.Queue()
+        self.detenido = False
+        # La salida del bot llega por una tuberia: sin esto Python la guarda en un buffer y el
+        # log aparecería a trozos al final, no en vivo. COLOMBO_INTERFAZ le avisa al bot que no
+        # espere "Enter" al terminar (la interfaz no tiene consola).
+        entorno = {**os.environ, "PYTHONUNBUFFERED": "1", "PYTHONIOENCODING": "utf-8",
+                   "COLOMBO_INTERFAZ": "1"}
+        self.proceso = subprocess.Popen(
+            comando, cwd=cwd, env=entorno, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace",
+            creationflags=subprocess.CREATE_NO_WINDOW)
+        threading.Thread(target=self._leer, daemon=True).start()
+
+    def _leer(self):
+        for linea in self.proceso.stdout:
+            linea = linea.rstrip()
+            if linea:
+                self.cola.put(("linea", linea))
+        self.cola.put(("fin", self.proceso.wait()))
+
+    def activo(self) -> bool:
+        return self.proceso.poll() is None
+
+    def enviar_enter(self):
+        """Contesta el 'presiona Enter' del bot (por ejemplo, despues de resolver un captcha)."""
+        try:
+            self.proceso.stdin.write("\n")
+            self.proceso.stdin.flush()
+        except Exception:
+            pass
+
+    def detener(self):
+        """Termina el bot Y el navegador que abrio (taskkill /T mata todo el arbol de procesos)."""
+        self.detenido = True
+        if self.activo():
+            subprocess.run(["taskkill", "/PID", str(self.proceso.pid), "/T", "/F"],
+                           capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
+
+
+class VentanaProgresoQ10(ctk.CTkToplevel):
+    """Muestra en vivo lo que hace el bot y, al terminar, si salio todo bien o hubo errores."""
+
+    COLORES = {"ok": Tema.EXITO, "err": Tema.ERROR, "warn": Tema.ADVERTENCIA,
+               "paso": Tema.PRIMARIO, "info": Tema.TEXTO}
+
+    def __init__(self, master, ejecucion: EjecucionBot, resumen_pendientes: str,
+                 carpetas: list[Path], al_terminar: Callable[[], None]):
+        super().__init__(master)
+        self.ejecucion = ejecucion
+        self.carpetas = carpetas
+        self.al_terminar = al_terminar
+        self.terminado = False
+        self.descargados = self.fallos = self.sin_datos = 0
+        self.hechos = self.total = 0
+        self.title("Descarga de Q10 en curso")
+        self.geometry("820x560")
+        self.minsize(640, 420)
+        self.configure(fg_color=Tema.FONDO)
+        self.protocol("WM_DELETE_WINDOW", self._cerrar)
+
+        RAIZ_REGISTROS = archivos.CARPETA / "Registros"
+        self.ruta_log = RAIZ_REGISTROS / f"log_q10_{datetime.now():%Y%m%d_%H%M%S}.txt"
+        self._archivo_log = None
+        try:
+            RAIZ_REGISTROS.mkdir(parents=True, exist_ok=True)
+            self._archivo_log = open(self.ruta_log, "w", encoding="utf-8")
+        except OSError:
+            pass            # sin archivo de log igual se ve en pantalla
+
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+
+        # Estado grande: lo primero que se mira
+        self.banner = ctk.CTkFrame(self, fg_color=Tema.PRIMARIO, corner_radius=0)
+        self.banner.grid(row=0, column=0, sticky="ew")
+        self.estado = ctk.CTkLabel(self.banner, text="⏳  Descargando…", font=(Tema.FUENTE, 17, "bold"),
+                                   text_color="white", anchor="w")
+        self.estado.pack(fill="x", padx=20, pady=(14, 0))
+        self.detalle = ctk.CTkLabel(self.banner, text=resumen_pendientes, font=Tema.AYUDA,
+                                    text_color="white", anchor="w", justify="left", wraplength=760)
+        self.detalle.pack(fill="x", padx=20, pady=(0, 12))
+
+        fila = ctk.CTkFrame(self, fg_color="transparent")
+        fila.grid(row=1, column=0, sticky="ew", padx=16, pady=(12, 0))
+        fila.grid_columnconfigure(0, weight=1)
+        self.barra = ctk.CTkProgressBar(fila, mode="indeterminate", height=8,
+                                        progress_color=Tema.PRIMARIO, fg_color=Tema.BORDE)
+        self.barra.grid(row=0, column=0, sticky="ew", padx=(0, 16))
+        self.barra.start()
+        self.contadores = ctk.CTkLabel(fila, text=self._texto_contadores(), font=Tema.ETIQUETA,
+                                       text_color=Tema.TEXTO)
+        self.contadores.grid(row=0, column=1)
+
+        self.caja = ctk.CTkTextbox(self, fg_color=Tema.SUPERFICIE, border_width=1,
+                                   border_color=Tema.BORDE, corner_radius=Tema.RADIO,
+                                   font=("Consolas", 12), wrap="word")
+        self.caja.grid(row=2, column=0, sticky="nsew", padx=16, pady=12)
+        for etiqueta, color in self.COLORES.items():
+            self.caja._textbox.tag_config(etiqueta, foreground=color)
+        self.caja._textbox.tag_config("paso", font=("Consolas", 12, "bold"))
+        self.caja.configure(state="disabled")
+
+        pie = ctk.CTkFrame(self, fg_color="transparent")
+        pie.grid(row=3, column=0, sticky="ew", padx=16, pady=(0, 14))
+        pie.grid_columnconfigure(1, weight=1)
+        self.boton_detener = ctk.CTkButton(
+            pie, text="⏹  Detener", font=Tema.BOTON, height=36, width=110,
+            fg_color=Tema.ERROR, hover_color=Tema.ERROR_HOVER, text_color="white",
+            command=self._detener)
+        self.boton_detener.grid(row=0, column=0, sticky="w")
+        self.boton_continuar = ctk.CTkButton(
+            pie, text="Ya lo resolví — Continuar", font=Tema.BOTON, height=36,
+            fg_color=Tema.ADVERTENCIA, hover_color=Tema.ADVERTENCIA, text_color="white",
+            command=self._continuar)
+        self.boton_carpeta = ctk.CTkButton(
+            pie, text="📂 Abrir descargas", font=Tema.BOTON, height=36,
+            fg_color=Tema.SUPERFICIE, hover_color=Tema.FONDO, text_color=Tema.PRIMARIO,
+            border_width=1, border_color=Tema.PRIMARIO, command=self._abrir_carpeta)
+        self.boton_carpeta.grid(row=0, column=2, padx=(0, 8))
+        self.boton_log = ctk.CTkButton(
+            pie, text="📄 Ver archivo de log", font=Tema.BOTON, height=36,
+            fg_color=Tema.SUPERFICIE, hover_color=Tema.FONDO, text_color=Tema.PRIMARIO,
+            border_width=1, border_color=Tema.PRIMARIO, command=self._abrir_log)
+        self.boton_log.grid(row=0, column=3)
+
+        self._escribir(f"Registro guardado en: {self.ruta_log}", "info")
+        self.after(100, self._revisar_cola)
+
+    # ------------------------------------------------------------------ lectura ---
+    def _revisar_cola(self):
+        try:
+            while True:
+                tipo, dato = self.ejecucion.cola.get_nowait()
+                if tipo == "linea":
+                    self._procesar_linea(dato)
+                else:
+                    self._finalizar(dato)
+                    return
+        except queue.Empty:
+            pass
+        self.after(150, self._revisar_cola)
+
+    @staticmethod
+    def _clasificar(linea: str) -> str:
+        bajo = linea.lower()
+        if re.match(r"\s*fallo\b", bajo) or "traceback" in bajo or "error" in bajo:
+            return "err"
+        if "sin datos" in bajo or "se salta" in bajo or "no pude" in bajo or "no existe" in bajo \
+                or "verificacion de seguridad" in bajo:
+            return "warn"
+        if "guardado" in bajo or re.match(r"\s+ok\s{2,}", bajo) or "terminado" in bajo:
+            return "ok"
+        if re.match(r"(paso \d|=====)", bajo.strip()):
+            return "paso"
+        return "info"
+
+    def _mostrar_avance(self, hechos: int, total: int):
+        """'Descargando 3 de 40': el total crece cuando el bot descubre cuantos valores trae una lista."""
+        self.hechos, self.total = hechos, total
+        if total <= 0:
+            return
+        if self.barra.cget("mode") != "determinate":
+            self.barra.stop()
+            self.barra.configure(mode="determinate")
+        self.barra.set(min(hechos / total, 1))
+        self.contadores.configure(text=self._texto_contadores())
+        if not self.terminado and not self.boton_continuar.winfo_ismapped():
+            self.estado.configure(text=f"⏳  Descargando… {hechos} de {total} reportes")
+
+    def _procesar_linea(self, linea: str):
+        coincide = re.match(r"\[\[PROGRESO\]\]\s+(\d+)\s+(\d+)", linea)
+        if coincide:                      # linea interna del bot: alimenta el avance, no se muestra
+            self._mostrar_avance(int(coincide.group(1)), int(coincide.group(2)))
+            return
+        nivel = self._clasificar(linea)
+        # Contadores: los "FALLO ..." del resumen final repiten los de arriba, no se vuelven a contar
+        if re.match(r"\s*(reporte guardado en|guardado en)", linea.lower()):
+            self.descargados += 1
+        elif re.match(r"\s*fallo\s{3,}", linea.lower()):
+            pass
+        elif re.match(r"\s*fallo\b", linea.lower()):
+            self.fallos += 1
+        elif re.match(r"\s+sin datos\s", linea.lower()) or "la busqueda no devolvio" in linea.lower():
+            self.sin_datos += 1
+        self.contadores.configure(text=self._texto_contadores())
+        self._escribir(linea, nivel)
+        if "verificacion de seguridad" in linea.lower():
+            self.estado.configure(text="⚠  Q10 pide una verificación de seguridad")
+            self.boton_continuar.grid(row=0, column=1, padx=8)
+
+    def _texto_contadores(self) -> str:
+        avance = f"{self.hechos} de {self.total} reportes    " if self.total else ""
+        return (f"{avance}✔ {self.descargados} descargado(s)    ⚠ {self.sin_datos} sin datos    "
+                f"✖ {self.fallos} con error")
+
+    def _escribir(self, texto: str, nivel: str = "info"):
+        marca = f"[{datetime.now():%H:%M:%S}]  "
+        self.caja.configure(state="normal")
+        self.caja._textbox.insert("end", marca, "info")
+        self.caja._textbox.insert("end", texto + "\n", nivel)
+        self.caja.configure(state="disabled")
+        self.caja._textbox.see("end")
+        if self._archivo_log:
+            try:
+                self._archivo_log.write(marca + texto + "\n")
+                self._archivo_log.flush()
+            except OSError:
+                pass
+
+    # ------------------------------------------------------------------- final ---
+    def _finalizar(self, codigo: int):
+        self.terminado = True
+        self.barra.stop()
+        self.barra.configure(mode="determinate", progress_color=Tema.EXITO)
+        self.barra.set(1 if codigo == 0 or not self.total else min(self.hechos / self.total, 1))
+        self.boton_detener.grid_remove()
+        self.boton_continuar.grid_remove()
+
+        if self.ejecucion.detenido:
+            color, titulo = Tema.ADVERTENCIA, "⏹  Detenido por el usuario"
+        elif codigo == 0 and self.fallos == 0 and self.descargados > 0:
+            color, titulo = Tema.EXITO, "✔  Todo salió bien"
+        elif codigo == 0 and self.fallos == 0:
+            color, titulo = Tema.ADVERTENCIA, "⚠  Terminó, pero no se descargó ningún archivo"
+        elif self.descargados > 0:
+            color, titulo = Tema.ADVERTENCIA, "⚠  Terminó con errores (hubo descargas parciales)"
+        else:
+            color, titulo = Tema.ERROR, "✖  Hubo un error: no se descargó nada"
+        resumen = (f"{self.descargados} de {max(self.total, self.descargados)} reporte(s) descargado(s) · "
+                   f"{self.sin_datos} sin datos · "
+                   f"{self.fallos} con error · código de salida {codigo}")
+        self.barra.configure(progress_color=color)
+        self.banner.configure(fg_color=color)
+        self.estado.configure(text=titulo)
+        self.detalle.configure(text=resumen)
+        self.title(titulo.split("  ", 1)[-1] + " — Q10")
+        self._escribir("=" * 60, "info")
+        self._escribir(f"{titulo.split('  ', 1)[-1]}. {resumen}",
+                       "ok" if color == Tema.EXITO else "err" if color == Tema.ERROR else "warn")
+        if self._archivo_log:
+            self._archivo_log.close()
+            self._archivo_log = None
+        self.al_terminar()
+        self.lift()
+
+    # ----------------------------------------------------------------- botones ---
+    def _continuar(self):
+        self.ejecucion.enviar_enter()
+        self.boton_continuar.grid_remove()
+        self.estado.configure(text="⏳  Descargando…")
+        self._escribir("Se continuó la ejecución.", "info")
+
+    def _detener(self):
+        from tkinter import messagebox
+        if messagebox.askyesno("Detener", "¿Detener la descarga? Se cerrará el navegador.", parent=self):
+            self.ejecucion.detener()
+
+    def _cerrar(self):
+        if not self.terminado:
+            from tkinter import messagebox
+            if not messagebox.askyesno(
+                    "Descarga en curso",
+                    "El bot sigue trabajando. ¿Detenerlo y cerrar esta ventana?", parent=self):
+                return
+            self.ejecucion.detener()
+        self.destroy()
+
+    def _abrir_carpeta(self):
+        """Abre la(s) carpeta(s) donde el bot guarda: la 'Ubicación destino' de cada informe, o la
+        predeterminada (Descargas/Q10) para los que no tienen una."""
+        abiertas = 0
+        for carpeta in self.carpetas:
+            if not carpeta.exists():
+                carpeta = carpeta.parent          # aun no se creo (no bajo nada): la carpeta de arriba
+            if carpeta.exists():
+                os.startfile(carpeta)
+                abiertas += 1
+        if not abiertas:
+            self._escribir("La carpeta de descargas todavía no existe (aún no se guardó ningún archivo).",
+                           "warn")
+
+    def _abrir_log(self):
+        if self.ruta_log.exists():
+            os.startfile(self.ruta_log)
+
+
 # ------------------------------------------------------------------- ventana ---
 class VistaQ10(ctk.CTkFrame):
     """Configurador de Q10 como vista embebible en la app unificada."""
@@ -1415,6 +1805,8 @@ class VistaQ10(ctk.CTkFrame):
             pass
 
         self.catalogo = cat.cargar()
+        self._ejecucion: EjecucionBot | None = None
+        self._ventana_progreso: VentanaProgresoQ10 | None = None
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -1450,7 +1842,7 @@ class VistaQ10(ctk.CTkFrame):
 
     # ------------------------------------------------ integracion con la app unificada
     def hay_proceso_activo(self) -> bool:
-        return False        # el bot se lanza en su propia consola; no depende de esta vista
+        return self._ejecucion is not None and self._ejecucion.activo()
 
     def cerrar(self) -> None:
         pass
@@ -1537,20 +1929,35 @@ class VistaQ10(ctk.CTkFrame):
             raise ValueError("Faltan tus datos de acceso a Q10 (usuario, contraseña y link). "
                              "Se abrió 'Ajustes generales': escríbelos en 'Acceso a Q10', guarda "
                              "y vuelve a ejecutar.")
+        if self.hay_proceso_activo():
+            raise RuntimeError("Ya hay una descarga en curso. Espera a que termine o detenla "
+                               "desde la ventana de progreso.")
         if getattr(sys, "frozen", False):
             # Empaquetado: el bot es "Bot Q10.exe", junto a esta aplicacion
             bot_exe = Path(sys.executable).resolve().parent / "Bot Q10.exe"
             if not bot_exe.exists():
                 raise FileNotFoundError(f"No encontre '{bot_exe.name}' junto a la aplicacion ({bot_exe.parent})")
-            subprocess.Popen([str(bot_exe), "Q10"], cwd=str(bot_exe.parent),
-                             creationflags=subprocess.CREATE_NEW_CONSOLE)
-            return
-        raiz_botv5 = MOTOR_Q10
-        bot_py = raiz_botv5 / "bot.py"
-        if not bot_py.exists():
-            raise FileNotFoundError(f"No encontre '{bot_py}'")
-        subprocess.Popen([self._python_para_bot(), str(bot_py), "Q10"],
-                         cwd=str(raiz_botv5), creationflags=subprocess.CREATE_NEW_CONSOLE)
+            comando, cwd = [str(bot_exe), "Q10"], str(bot_exe.parent)
+        else:
+            raiz_botv5 = MOTOR_Q10
+            bot_py = raiz_botv5 / "bot.py"
+            if not bot_py.exists():
+                raise FileNotFoundError(f"No encontre '{bot_py}'")
+            comando, cwd = [self._python_para_bot(), str(bot_py), "Q10"], str(raiz_botv5)
+
+        self._ejecucion = EjecucionBot(comando, cwd)
+        resumen = "  ·  ".join(f"{i['informe']}: {BandejaPendientes._reportes_de(i)} reporte(s)"
+                               for i in pendientes)
+        # Donde guarda el bot: la "Ubicación destino" que escribió el usuario en cada informe
+        # (sin repetir), o la carpeta predeterminada para los que la dejaron vacía.
+        carpetas: list[Path] = []
+        for item in pendientes:
+            destino = item["detalle"].get("Destino", "").strip()
+            carpeta = Path(destino) if destino else archivos.CARPETA / "Descargas" / "Q10"
+            if carpeta not in carpetas:
+                carpetas.append(carpeta)
+        self._ventana_progreso = VentanaProgresoQ10(
+            self.winfo_toplevel(), self._ejecucion, resumen, carpetas, al_terminar=lambda: None)
 
     @staticmethod
     def _python_para_bot() -> str:

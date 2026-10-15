@@ -18,7 +18,7 @@ from core import archivos
 NOMBRE_ARCHIVO = "catalogo_q10.json"
 RUTA = archivos.DATOS / NOMBRE_ARCHIVO
 
-TIPOS = ("lista", "segmentado", "varios")
+TIPOS = ("lista", "segmentado", "varios", "interruptor")   # interruptor = Sí / No
 
 
 @dataclass

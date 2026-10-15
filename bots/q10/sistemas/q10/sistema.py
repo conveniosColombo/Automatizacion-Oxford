@@ -13,6 +13,15 @@ class Q10(Sistema):
     NOMBRE = "Q10"
     SIN_DATOS = "Sin resultados"
     bajados, sin_datos, fallidos = [], [], []  # se reinician en cada informe
+    # Avance de TODA la ejecucion, para que la interfaz diga "X de Y reportes". El total crece a
+    # medida que se descubren listas con varios valores (Todos / varios periodos / cursos).
+    total = hechos = 0
+
+    def avance(self, hechos=0, total=0):
+        """Suma al avance y lo informa en una linea que la interfaz lee (y no muestra)."""
+        self.hechos += hechos
+        self.total += total
+        print(f"[[PROGRESO]] {self.hechos} {self.total}", flush=True)
 
     def leer_config(self, datos):
         return ConfigQ10.desde_hoja(datos)
@@ -30,8 +39,10 @@ class Q10(Sistema):
             return self.guardar_listado(pantalla, menu)
         informes = pantalla
 
+        self.total = self.hechos = 0
         for nombre in self.config.informes:
             self.bajados, self.sin_datos, self.fallidos = [], [], []
+            self.avance(total=1)           # cada informe cuenta 1 hasta descubrir cuantos valores trae
             try:
                 if not informes.esta_abierta():
                     informes = self.barra.ir_a_informes()  # volver a la lista despues del anterior
@@ -42,6 +53,8 @@ class Q10(Sistema):
             except Exception as error:
                 print(f"FALLO en el informe {nombre}: {resumen(error)}")
             self.resumen_del_informe(nombre)
+            # Un informe que fallo antes de terminar deja reportes sin intentar: ya no se esperan
+            self.avance(hechos=self.total - self.hechos)
 
     def guardar_listado(self, pantalla, menu):
         """Busca lo que diga el Config y, segun 'Accion', guarda la tabla o entra a cada curso."""
@@ -84,6 +97,8 @@ class Q10(Sistema):
             print("  La lista no trae cursos con enlace; no hay a donde entrar.")
             return
         print(f"Paso 3: {len(cursos)} curso(s) para exportar")
+        self.total = self.hechos = 0
+        self.avance(total=len(cursos))
 
         for numero, curso in enumerate(cursos, start=1):
             nombre = curso["nombre"]
@@ -109,6 +124,7 @@ class Q10(Sistema):
                 print(f"  FALLO con '{nombre}': {mensaje}")
                 self.fallidos.append((nombre, mensaje))
             finally:
+                self.avance(hechos=1)
                 # Se sale del curso como lo haria una persona. No hace falta volver a filtrar:
                 # las direcciones ya estan recogidas y el curso se abre por la suya.
                 curso_abierto.volver_a_cursos()
@@ -169,6 +185,7 @@ class Q10(Sistema):
             archivo = self.guardar_reporte(descarga, informe, etiquetas)
             print(f"  Reporte guardado en {archivo}")
             self.bajados.append(archivo)
+            self.avance(hechos=1)
             return
         (nombre, valores), resto = filtros[0], filtros[1:]
 
@@ -183,6 +200,13 @@ class Q10(Sistema):
                                                   (*aplicados, (nombre, elegido)))
                 print(f"  Filtro '{nombre}' no existe en este informe; se salta.")
                 return self.llenar_y_exportar(formulario, informe, resto, etiquetas, aplicados)
+
+            if not opciones:
+                # Lista sin opciones propias: Q10 la toma como "todos" si no se toca
+                print(f"  {nombre}: la lista no trae opciones; se deja como esta "
+                      f"('{formulario.valor_actual(nombre) or 'Todos'}')")
+                return self.llenar_y_exportar(formulario, informe, resto, (*etiquetas, "Todos"),
+                                              aplicados)
 
             print(f"  {nombre}: la lista trae {len(opciones)} opciones -> {opciones[:4]}")
 
@@ -215,6 +239,7 @@ class Q10(Sistema):
             return self.llenar_y_exportar(formulario, informe, resto, etiquetas,
                                           (*aplicados, (nombre, elegido)))
 
+        self.avance(total=len(valores) - 1)     # este valor ya contaba como 1 reporte
         reponer_filtros = fallo_anterior = False
         for numero, valor in enumerate(valores, start=1):
             print(f"  --- {nombre} {numero} de {len(valores)} ---")
@@ -241,6 +266,7 @@ class Q10(Sistema):
                 fallo_anterior = False
             except Exception as error:
                 fallo_anterior = True
+                self.avance(hechos=1)
                 mensaje = resumen(error)
                 print(f"  FALLO con {nombre} '{valor}': {mensaje}")
                 etiqueta = " ".join((*etiquetas, valor))
