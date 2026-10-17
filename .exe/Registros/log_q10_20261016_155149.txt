@@ -1,0 +1,23 @@
+[15:51:49]  Registro guardado en: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\.exe\Registros\log_q10_20261016_155149.txt
+[15:52:04]  ===== Q10 =====
+[15:52:04]    Rol: Administrativo
+[15:52:04]  Paso 1: sesion iniciada en Q10.
+[15:52:04]  Paso 2: Informes abierto.
+[15:52:29]    Clic en el informe: Estudiantes matriculados  (/Reporte/GestionAcademica/EstudiantesMatriculados)
+[15:52:29]  Paso 3: informe 'Estudiantes Matriculados' abierto.
+[15:52:29]    Sede - jornada: B2G - �nica
+[15:52:29]    Programa: SED RURALIDAD 2026
+[15:52:29]    Per�odo: B2G_SED RURALIDAD_MAR_2026
+[15:52:29]    �Incluir estudiantes graduados?: No (ya estaba asi)
+[15:52:29]    Clic en: Cargar reporte
+[15:52:29]    Clic en: Abrir reporte
+[15:52:29]    Visor: escojo XLSX en la lista de exportar
+[15:52:29]    Clic en: Volver a generar
+[15:52:29]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\Estudiantes Matriculados\2026-10-16_1552_Estudiantes_Matriculados.xlsx
+[15:52:29]  Paso 4: informe 'Estudiantes Matriculados' terminado.
+[15:52:29]    Resumen de 'Estudiantes Matriculados': 1 archivo(s) descargado(s)
+[15:52:29]      OK        2026-10-16_1552_Estudiantes_Matriculados.xlsx
+[15:52:30]  Q10: terminado.
+[15:52:30]  Pestana 1: https://site3.q10.com/Informes  -> captura en resultado_Q10_1.png
+[15:52:30]  ============================================================
+[15:52:30]  Todo salió bien. 1 de 1 reporte(s) descargado(s) · 0 sin datos · 0 con error · código de salida 0

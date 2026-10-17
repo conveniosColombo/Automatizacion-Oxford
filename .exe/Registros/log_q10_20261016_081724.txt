@@ -1,0 +1,368 @@
+[08:17:24]  Registro guardado en: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\.exe\Registros\log_q10_20261016_081724.txt
+[08:17:40]  ===== Q10 =====
+[08:17:40]    Rol: Administrativo
+[08:17:40]  Paso 1: sesion iniciada en Q10.
+[08:17:40]  Paso 2: Informes abierto.
+[08:17:44]    Clic en el informe: Inasistencias por curso  (/Reportes/Excel/GestionAcademica/InasistenciasJustificacion)
+[08:17:44]  Paso 3: informe 'Inasistencias por curso' abierto.
+[08:17:44]    Sede - jornada: B2G - �nica
+[08:17:44]    Programa: YES BOGOTA 2026-2
+[08:17:44]    Per�odo: B2G_YES BOGOTA-2 C1_SEP_2026
+[08:17:44]    Curso: la lista trae 218 opciones -> ['C1.1-7PM217 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)', 'B2.1-7PM216 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)', 'B2.1-7PM215 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)', 'B2.1-7PM214 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)']
+[08:17:44]    Curso: Todos (218 opciones, una por una)
+[08:17:49]    --- Curso 1 de 218 ---
+[08:17:49]    Curso: C1.1-7PM217 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:17:49]    Clic en: Exportar reporte
+[08:17:49]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0817_Inasistencias_por_curso_C1.1-7PM217_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:17:53]    --- Curso 2 de 218 ---
+[08:17:53]    Los demas filtros siguen puestos; solo cambio Curso
+[08:17:53]    Curso: B2.1-7PM216 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:17:53]    Clic en: Exportar reporte
+[08:17:53]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0817_Inasistencias_por_curso_B2.1-7PM216_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:17:58]    --- Curso 3 de 218 ---
+[08:17:58]    Los demas filtros siguen puestos; solo cambio Curso
+[08:17:58]    Curso: B2.1-7PM215 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:17:58]    Clic en: Exportar reporte
+[08:17:58]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0817_Inasistencias_por_curso_B2.1-7PM215_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:18:02]    --- Curso 4 de 218 ---
+[08:18:02]    Los demas filtros siguen puestos; solo cambio Curso
+[08:18:02]    Curso: B2.1-7PM214 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:18:02]    Clic en: Exportar reporte
+[08:18:02]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0818_Inasistencias_por_curso_B2.1-7PM214_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:18:07]    --- Curso 5 de 218 ---
+[08:18:07]    Los demas filtros siguen puestos; solo cambio Curso
+[08:18:07]    Curso: B2.1-7PM213 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:18:07]    Clic en: Exportar reporte
+[08:18:07]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0818_Inasistencias_por_curso_B2.1-7PM213_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:18:12]    --- Curso 6 de 218 ---
+[08:18:12]    Los demas filtros siguen puestos; solo cambio Curso
+[08:18:12]    Curso: B2.1-7PM212 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:18:12]    Clic en: Exportar reporte
+[08:18:12]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0818_Inasistencias_por_curso_B2.1-7PM212_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:18:16]    --- Curso 7 de 218 ---
+[08:18:16]    Los demas filtros siguen puestos; solo cambio Curso
+[08:18:16]    Curso: B2.1-7PM211 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:18:16]    Clic en: Exportar reporte
+[08:18:16]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0818_Inasistencias_por_curso_B2.1-7PM211_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:18:21]    --- Curso 8 de 218 ---
+[08:18:21]    Los demas filtros siguen puestos; solo cambio Curso
+[08:18:21]    Curso: B2.1-7PM210 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:18:21]    Clic en: Exportar reporte
+[08:18:21]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0818_Inasistencias_por_curso_B2.1-7PM210_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:18:25]    --- Curso 9 de 218 ---
+[08:18:25]    Los demas filtros siguen puestos; solo cambio Curso
+[08:18:25]    Curso: B2.1-7PM209 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:18:25]    Clic en: Exportar reporte
+[08:18:25]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0818_Inasistencias_por_curso_B2.1-7PM209_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:18:30]    --- Curso 10 de 218 ---
+[08:18:30]    Los demas filtros siguen puestos; solo cambio Curso
+[08:18:30]    Curso: B2.1-7PM208 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:18:30]    Clic en: Exportar reporte
+[08:18:30]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0818_Inasistencias_por_curso_B2.1-7PM208_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:18:35]    --- Curso 11 de 218 ---
+[08:18:35]    Los demas filtros siguen puestos; solo cambio Curso
+[08:18:35]    Curso: B2.1-7PM207 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:18:35]    Clic en: Exportar reporte
+[08:18:35]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0818_Inasistencias_por_curso_B2.1-7PM207_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:18:39]    --- Curso 12 de 218 ---
+[08:18:39]    Los demas filtros siguen puestos; solo cambio Curso
+[08:18:39]    Curso: B2.1-7PM206 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:18:39]    Clic en: Exportar reporte
+[08:18:39]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0818_Inasistencias_por_curso_B2.1-7PM206_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:18:43]    --- Curso 13 de 218 ---
+[08:18:43]    Los demas filtros siguen puestos; solo cambio Curso
+[08:18:43]    Curso: B2.1-7PM205 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:18:43]    Clic en: Exportar reporte
+[08:18:43]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0818_Inasistencias_por_curso_B2.1-7PM205_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:18:48]    --- Curso 14 de 218 ---
+[08:18:48]    Los demas filtros siguen puestos; solo cambio Curso
+[08:18:48]    Curso: B2.1-6AM60 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:18:48]    Clic en: Exportar reporte
+[08:18:48]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0818_Inasistencias_por_curso_B2.1-6AM60_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:18:52]    --- Curso 15 de 218 ---
+[08:18:52]    Los demas filtros siguen puestos; solo cambio Curso
+[08:18:52]    Curso: B2.1-6AM59 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:18:52]    Clic en: Exportar reporte
+[08:18:52]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0818_Inasistencias_por_curso_B2.1-6AM59_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:18:57]    --- Curso 16 de 218 ---
+[08:18:57]    Los demas filtros siguen puestos; solo cambio Curso
+[08:18:57]    Curso: B2.1-6AM58 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:18:57]    Clic en: Exportar reporte
+[08:18:57]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0818_Inasistencias_por_curso_B2.1-6AM58_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:19:01]    --- Curso 17 de 218 ---
+[08:19:01]    Los demas filtros siguen puestos; solo cambio Curso
+[08:19:01]    Curso: B2.1-6AM57 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:19:01]    Clic en: Exportar reporte
+[08:19:01]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0819_Inasistencias_por_curso_B2.1-6AM57_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:19:05]    --- Curso 18 de 218 ---
+[08:19:05]    Los demas filtros siguen puestos; solo cambio Curso
+[08:19:05]    Curso: B2.1-6AM56 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:19:05]    Clic en: Exportar reporte
+[08:19:05]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0819_Inasistencias_por_curso_B2.1-6AM56_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:19:10]    --- Curso 19 de 218 ---
+[08:19:10]    Los demas filtros siguen puestos; solo cambio Curso
+[08:19:10]    Curso: B2.1-6AM55 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:19:10]    Clic en: Exportar reporte
+[08:19:10]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0819_Inasistencias_por_curso_B2.1-6AM55_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:19:14]    --- Curso 20 de 218 ---
+[08:19:14]    Los demas filtros siguen puestos; solo cambio Curso
+[08:19:14]    Curso: B2.1-6AM54 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:19:14]    Clic en: Exportar reporte
+[08:19:14]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0819_Inasistencias_por_curso_B2.1-6AM54_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:19:19]    --- Curso 21 de 218 ---
+[08:19:19]    Los demas filtros siguen puestos; solo cambio Curso
+[08:19:19]    Curso: B2.1-6AM53 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:19:19]    Clic en: Exportar reporte
+[08:19:19]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0819_Inasistencias_por_curso_B2.1-6AM53_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:19:23]    --- Curso 22 de 218 ---
+[08:19:23]    Los demas filtros siguen puestos; solo cambio Curso
+[08:19:23]    Curso: B2.1-6AM52 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:19:23]    Clic en: Exportar reporte
+[08:19:23]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0819_Inasistencias_por_curso_B2.1-6AM52_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:19:27]    --- Curso 23 de 218 ---
+[08:19:27]    Los demas filtros siguen puestos; solo cambio Curso
+[08:19:27]    Curso: B2.1-6AM51 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:19:27]    Clic en: Exportar reporte
+[08:19:27]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0819_Inasistencias_por_curso_B2.1-6AM51_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:19:32]    --- Curso 24 de 218 ---
+[08:19:32]    Los demas filtros siguen puestos; solo cambio Curso
+[08:19:32]    Curso: B2.1-6AM50 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:19:32]    Clic en: Exportar reporte
+[08:19:32]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0819_Inasistencias_por_curso_B2.1-6AM50_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:19:36]    --- Curso 25 de 218 ---
+[08:19:36]    Los demas filtros siguen puestos; solo cambio Curso
+[08:19:36]    Curso: B2.1-6AM49 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:19:36]    Clic en: Exportar reporte
+[08:19:36]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0819_Inasistencias_por_curso_B2.1-6AM49_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:19:41]    --- Curso 26 de 218 ---
+[08:19:41]    Los demas filtros siguen puestos; solo cambio Curso
+[08:19:41]    Curso: B2.1-6AM48 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:19:41]    Clic en: Exportar reporte
+[08:19:41]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0819_Inasistencias_por_curso_B2.1-6AM48_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:19:45]    --- Curso 27 de 218 ---
+[08:19:45]    Los demas filtros siguen puestos; solo cambio Curso
+[08:19:45]    Curso: B2.1-6AM47 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:19:45]    Clic en: Exportar reporte
+[08:19:45]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0819_Inasistencias_por_curso_B2.1-6AM47_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:19:49]    --- Curso 28 de 218 ---
+[08:19:49]    Los demas filtros siguen puestos; solo cambio Curso
+[08:19:49]    Curso: B2.1-5PM146 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:19:49]    Clic en: Exportar reporte
+[08:19:49]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0819_Inasistencias_por_curso_B2.1-5PM146_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:19:54]    --- Curso 29 de 218 ---
+[08:19:54]    Los demas filtros siguen puestos; solo cambio Curso
+[08:19:54]    Curso: B2.1-5PM145 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:19:54]    Clic en: Exportar reporte
+[08:19:54]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0819_Inasistencias_por_curso_B2.1-5PM145_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:19:58]    --- Curso 30 de 218 ---
+[08:19:58]    Los demas filtros siguen puestos; solo cambio Curso
+[08:19:58]    Curso: B2.1-5PM144 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:19:58]    Clic en: Exportar reporte
+[08:19:58]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0819_Inasistencias_por_curso_B2.1-5PM144_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:20:03]    --- Curso 31 de 218 ---
+[08:20:03]    Los demas filtros siguen puestos; solo cambio Curso
+[08:20:03]    Curso: B2.1-5PM143 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:20:03]    Clic en: Exportar reporte
+[08:20:03]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0820_Inasistencias_por_curso_B2.1-5PM143_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:20:07]    --- Curso 32 de 218 ---
+[08:20:07]    Los demas filtros siguen puestos; solo cambio Curso
+[08:20:07]    Curso: B2.1-5PM142 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:20:07]    Clic en: Exportar reporte
+[08:20:07]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0820_Inasistencias_por_curso_B2.1-5PM142_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:20:11]    --- Curso 33 de 218 ---
+[08:20:11]    Los demas filtros siguen puestos; solo cambio Curso
+[08:20:11]    Curso: B2.1-5PM141 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:20:11]    Clic en: Exportar reporte
+[08:20:11]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0820_Inasistencias_por_curso_B2.1-5PM141_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:20:16]    --- Curso 34 de 218 ---
+[08:20:16]    Los demas filtros siguen puestos; solo cambio Curso
+[08:20:16]    Curso: B2.1-5PM140 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:20:16]    Clic en: Exportar reporte
+[08:20:16]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0820_Inasistencias_por_curso_B2.1-5PM140_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:20:20]    --- Curso 35 de 218 ---
+[08:20:20]    Los demas filtros siguen puestos; solo cambio Curso
+[08:20:20]    Curso: B2.1-5PM139 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:20:20]    Clic en: Exportar reporte
+[08:20:20]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0820_Inasistencias_por_curso_B2.1-5PM139_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:20:25]    --- Curso 36 de 218 ---
+[08:20:25]    Los demas filtros siguen puestos; solo cambio Curso
+[08:20:25]    Curso: B2.1-5PM138 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:20:25]    Clic en: Exportar reporte
+[08:20:25]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0820_Inasistencias_por_curso_B2.1-5PM138_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:20:29]    --- Curso 37 de 218 ---
+[08:20:29]    Los demas filtros siguen puestos; solo cambio Curso
+[08:20:29]    Curso: B2.1-5PM137 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:20:29]    Clic en: Exportar reporte
+[08:20:29]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0820_Inasistencias_por_curso_B2.1-5PM137_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:20:33]    --- Curso 38 de 218 ---
+[08:20:33]    Los demas filtros siguen puestos; solo cambio Curso
+[08:20:33]    Curso: B1.2-8AM86 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:20:33]    Clic en: Exportar reporte
+[08:20:33]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0820_Inasistencias_por_curso_B1.2-8AM86_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:20:38]    --- Curso 39 de 218 ---
+[08:20:38]    Los demas filtros siguen puestos; solo cambio Curso
+[08:20:38]    Curso: B1.2-8AM85 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:20:38]    Clic en: Exportar reporte
+[08:20:38]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0820_Inasistencias_por_curso_B1.2-8AM85_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:20:42]    --- Curso 40 de 218 ---
+[08:20:42]    Los demas filtros siguen puestos; solo cambio Curso
+[08:20:42]    Curso: B1.2-8AM84 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:20:42]    Clic en: Exportar reporte
+[08:20:42]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0820_Inasistencias_por_curso_B1.2-8AM84_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:20:47]    --- Curso 41 de 218 ---
+[08:20:47]    Los demas filtros siguen puestos; solo cambio Curso
+[08:20:47]    Curso: B1.2-8AM83 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:20:47]    Clic en: Exportar reporte
+[08:20:47]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0820_Inasistencias_por_curso_B1.2-8AM83_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:20:51]    --- Curso 42 de 218 ---
+[08:20:51]    Los demas filtros siguen puestos; solo cambio Curso
+[08:20:51]    Curso: B1.2-8AM82 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:20:51]    Clic en: Exportar reporte
+[08:20:51]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0820_Inasistencias_por_curso_B1.2-8AM82_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:20:56]    --- Curso 43 de 218 ---
+[08:20:56]    Los demas filtros siguen puestos; solo cambio Curso
+[08:20:56]    Curso: B1.2-8AM81 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:20:56]    Clic en: Exportar reporte
+[08:20:56]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0820_Inasistencias_por_curso_B1.2-8AM81_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:21:00]    --- Curso 44 de 218 ---
+[08:21:00]    Los demas filtros siguen puestos; solo cambio Curso
+[08:21:00]    Curso: B1.2-8AM80 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:21:00]    Clic en: Exportar reporte
+[08:21:00]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0821_Inasistencias_por_curso_B1.2-8AM80_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:21:04]    --- Curso 45 de 218 ---
+[08:21:04]    Los demas filtros siguen puestos; solo cambio Curso
+[08:21:04]    Curso: B1.2-8AM79 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:21:04]    Clic en: Exportar reporte
+[08:21:04]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0821_Inasistencias_por_curso_B1.2-8AM79_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:21:09]    --- Curso 46 de 218 ---
+[08:21:09]    Los demas filtros siguen puestos; solo cambio Curso
+[08:21:09]    Curso: B1.2-8AM78 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:21:09]    Clic en: Exportar reporte
+[08:21:09]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0821_Inasistencias_por_curso_B1.2-8AM78_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:21:13]    --- Curso 47 de 218 ---
+[08:21:13]    Los demas filtros siguen puestos; solo cambio Curso
+[08:21:13]    Curso: B1.2-8AM77 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:21:13]    Clic en: Exportar reporte
+[08:21:13]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0821_Inasistencias_por_curso_B1.2-8AM77_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:21:18]    --- Curso 48 de 218 ---
+[08:21:18]    Los demas filtros siguen puestos; solo cambio Curso
+[08:21:18]    Curso: B1.2-8AM76 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:21:18]    Clic en: Exportar reporte
+[08:21:18]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0821_Inasistencias_por_curso_B1.2-8AM76_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:21:22]    --- Curso 49 de 218 ---
+[08:21:22]    Los demas filtros siguen puestos; solo cambio Curso
+[08:21:22]    Curso: B1.2-8AM75 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:21:22]    Clic en: Exportar reporte
+[08:21:22]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0821_Inasistencias_por_curso_B1.2-8AM75_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:21:26]    --- Curso 50 de 218 ---
+[08:21:26]    Los demas filtros siguen puestos; solo cambio Curso
+[08:21:26]    Curso: B1.2-8AM74 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:21:26]    Clic en: Exportar reporte
+[08:21:26]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0821_Inasistencias_por_curso_B1.2-8AM74_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:21:31]    --- Curso 51 de 218 ---
+[08:21:31]    Los demas filtros siguen puestos; solo cambio Curso
+[08:21:31]    Curso: B1.2-8AM73 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:21:31]    Clic en: Exportar reporte
+[08:21:31]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0821_Inasistencias_por_curso_B1.2-8AM73_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:21:35]    --- Curso 52 de 218 ---
+[08:21:35]    Los demas filtros siguen puestos; solo cambio Curso
+[08:21:35]    Curso: B1.2-7PM204 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:21:35]    Clic en: Exportar reporte
+[08:21:35]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0821_Inasistencias_por_curso_B1.2-7PM204_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:21:40]    --- Curso 53 de 218 ---
+[08:21:40]    Los demas filtros siguen puestos; solo cambio Curso
+[08:21:40]    Curso: B1.2-7PM203 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:21:40]    Clic en: Exportar reporte
+[08:21:40]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0821_Inasistencias_por_curso_B1.2-7PM203_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:21:44]    --- Curso 54 de 218 ---
+[08:21:44]    Los demas filtros siguen puestos; solo cambio Curso
+[08:21:44]    Curso: B1.2-7PM202 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:21:44]    Clic en: Exportar reporte
+[08:21:44]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0821_Inasistencias_por_curso_B1.2-7PM202_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:21:48]    --- Curso 55 de 218 ---
+[08:21:48]    Los demas filtros siguen puestos; solo cambio Curso
+[08:21:48]    Curso: B1.2-7PM201 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:21:48]    Clic en: Exportar reporte
+[08:21:48]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0821_Inasistencias_por_curso_B1.2-7PM201_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:21:53]    --- Curso 56 de 218 ---
+[08:21:53]    Los demas filtros siguen puestos; solo cambio Curso
+[08:21:53]    Curso: B1.2-7PM200 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:21:53]    Clic en: Exportar reporte
+[08:21:53]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0821_Inasistencias_por_curso_B1.2-7PM200_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:21:57]    --- Curso 57 de 218 ---
+[08:21:57]    Los demas filtros siguen puestos; solo cambio Curso
+[08:21:57]    Curso: B1.2-7PM199 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:21:57]    Clic en: Exportar reporte
+[08:21:57]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0821_Inasistencias_por_curso_B1.2-7PM199_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:02]    --- Curso 58 de 218 ---
+[08:22:02]    Los demas filtros siguen puestos; solo cambio Curso
+[08:22:02]    Curso: B1.2-7PM198 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:22:02]    Clic en: Exportar reporte
+[08:22:02]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0822_Inasistencias_por_curso_B1.2-7PM198_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:06]    --- Curso 59 de 218 ---
+[08:22:06]    Los demas filtros siguen puestos; solo cambio Curso
+[08:22:06]    Curso: B1.2-7PM197 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:22:06]    Clic en: Exportar reporte
+[08:22:06]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0822_Inasistencias_por_curso_B1.2-7PM197_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:10]    --- Curso 60 de 218 ---
+[08:22:10]    Los demas filtros siguen puestos; solo cambio Curso
+[08:22:10]    Curso: B1.2-7PM196 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:22:10]    Clic en: Exportar reporte
+[08:22:10]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0822_Inasistencias_por_curso_B1.2-7PM196_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:15]    --- Curso 61 de 218 ---
+[08:22:15]    Los demas filtros siguen puestos; solo cambio Curso
+[08:22:15]    Curso: B1.2-7PM195 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:22:15]    Clic en: Exportar reporte
+[08:22:15]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0822_Inasistencias_por_curso_B1.2-7PM195_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:19]    --- Curso 62 de 218 ---
+[08:22:19]    Los demas filtros siguen puestos; solo cambio Curso
+[08:22:19]    Curso: B1.2-7PM194 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:22:19]    Clic en: Exportar reporte
+[08:22:19]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0822_Inasistencias_por_curso_B1.2-7PM194_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:24]    --- Curso 63 de 218 ---
+[08:22:24]    Los demas filtros siguen puestos; solo cambio Curso
+[08:22:24]    Curso: B1.2-7PM193 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:22:24]    Clic en: Exportar reporte
+[08:22:24]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0822_Inasistencias_por_curso_B1.2-7PM193_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:28]    --- Curso 64 de 218 ---
+[08:22:28]    Los demas filtros siguen puestos; solo cambio Curso
+[08:22:28]    Curso: B1.2-7PM192 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:22:28]    Clic en: Exportar reporte
+[08:22:28]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0822_Inasistencias_por_curso_B1.2-7PM192_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:32]    --- Curso 65 de 218 ---
+[08:22:32]    Los demas filtros siguen puestos; solo cambio Curso
+[08:22:32]    Curso: B1.2-7PM191 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:22:32]    Clic en: Exportar reporte
+[08:22:32]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0822_Inasistencias_por_curso_B1.2-7PM191_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:37]    --- Curso 66 de 218 ---
+[08:22:37]    Los demas filtros siguen puestos; solo cambio Curso
+[08:22:37]    Curso: B1.2-7PM190 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:22:37]    Clic en: Exportar reporte
+[08:22:37]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0822_Inasistencias_por_curso_B1.2-7PM190_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:41]    --- Curso 67 de 218 ---
+[08:22:41]    Los demas filtros siguen puestos; solo cambio Curso
+[08:22:41]    Curso: B1.2-7PM189 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:22:41]    Clic en: Exportar reporte
+[08:22:41]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0822_Inasistencias_por_curso_B1.2-7PM189_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:46]    --- Curso 68 de 218 ---
+[08:22:46]    Los demas filtros siguen puestos; solo cambio Curso
+[08:22:46]    Curso: B1.2-7PM188 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:22:46]    Clic en: Exportar reporte
+[08:22:46]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0822_Inasistencias_por_curso_B1.2-7PM188_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:50]    --- Curso 69 de 218 ---
+[08:22:50]    Los demas filtros siguen puestos; solo cambio Curso
+[08:22:50]    Curso: B1.2-7PM187 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:22:50]    Clic en: Exportar reporte
+[08:22:50]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0822_Inasistencias_por_curso_B1.2-7PM187_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:54]    --- Curso 70 de 218 ---
+[08:22:54]    Los demas filtros siguen puestos; solo cambio Curso
+[08:22:54]    Curso: B1.2-7PM186 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:22:54]    Clic en: Exportar reporte
+[08:22:54]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0822_Inasistencias_por_curso_B1.2-7PM186_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:59]    --- Curso 71 de 218 ---
+[08:22:59]    Los demas filtros siguen puestos; solo cambio Curso
+[08:22:59]    Curso: B1.2-7PM185 SDDE_2026-2 (B2G_YES BOGOTA-2 C1_SEP_2026)
+[08:22:59]    Clic en: Exportar reporte
+[08:22:59]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\2026-10-16_0822_Inasistencias_por_curso_B1.2-7PM185_SDDE_2026-2_B2G_YES_BOGOTA-2_C1_SEP_2026_.xlsx
+[08:22:59]  ============================================================
+[08:22:59]  Detenido por el usuario. 71 de 218 reporte(s) descargado(s) · 0 sin datos · 0 con error · código de salida 1

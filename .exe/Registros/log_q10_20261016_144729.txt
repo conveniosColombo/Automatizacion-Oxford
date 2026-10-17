@@ -1,0 +1,36 @@
+[14:47:29]  Registro guardado en: C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\.exe\Registros\log_q10_20261016_144729.txt
+[14:47:46]  ===== Q10 =====
+[14:47:46]    Rol: Administrativo
+[14:47:46]  Paso 1: sesion iniciada en Q10.
+[14:47:46]  Paso 2: Informes abierto.
+[14:47:52]    Aviso: 'Detallado de cursos' aparece 2 veces (['', '']); uso el primero. Para escoger, escribe 'Nombre (Seccion)' en el Config
+[14:47:52]    Clic en el informe: Detallado de cursos  (/Reportes/Excel/GestionAcademica/DetalladoCursos)
+[14:47:52]    El informe abrio con un reporte anterior; clic en 'Volver a generar'
+[14:47:52]  Paso 3: informe 'Detallado de cursos' abierto.
+[14:48:14]    --- Per�odo 1 de 2 ---
+[14:48:14]    Per�odo: B2G_YES BOGOTA-2 C1_SEP_2026
+[14:48:14]    Sede - jornada: B2G - �nica
+[14:48:14]    Programa: YES BOGOTA 2026-2
+[14:48:14]    �Incluir cursos archivados?: S�
+[14:48:14]    Clic en: Exportar reporte
+[14:48:14]    Clic en: Abrir reporte
+[14:48:14]    Clic en: Volver a generar
+[14:48:14]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\Detalle Cursos\2026-10-16_1448_Detallado_de_cursos_B2G_YES_BOGOTA-2_C1_SEP_2026.xlsx
+[14:48:29]    --- Per�odo 2 de 2 ---
+[14:48:29]    Los demas filtros siguen puestos; solo cambio Per�odo
+[14:48:29]    Per�odo: B2G_YES BOGOTA-2 C2_SEP_2026
+[14:48:29]    Sede - jornada: B2G - �nica
+[14:48:29]    Programa: YES BOGOTA 2026-2
+[14:48:29]    �Incluir cursos archivados?: S�
+[14:48:29]    Clic en: Exportar reporte
+[14:48:29]    Clic en: Abrir reporte
+[14:48:29]    Clic en: Volver a generar
+[14:48:29]    Reporte guardado en C:\Users\sebastian.mendez\OneDrive - CENTRO COLOMBO AMERICANO\Escritorio\Automatizacion Oxford\Descargas\Q10\Detalle Cursos\2026-10-16_1448_Detallado_de_cursos_B2G_YES_BOGOTA-2_C2_SEP_2026.xlsx
+[14:48:29]  Paso 4: informe 'Detallado de cursos' terminado.
+[14:48:29]    Resumen de 'Detallado de cursos': 2 archivo(s) descargado(s)
+[14:48:29]      OK        2026-10-16_1448_Detallado_de_cursos_B2G_YES_BOGOTA-2_C1_SEP_2026.xlsx
+[14:48:29]      OK        2026-10-16_1448_Detallado_de_cursos_B2G_YES_BOGOTA-2_C2_SEP_2026.xlsx
+[14:48:29]  Q10: terminado.
+[14:48:29]  Pestana 1: https://site3.q10.com/Informes  -> captura en resultado_Q10_1.png
+[14:48:30]  ============================================================
+[14:48:30]  Todo salió bien. 2 de 2 reporte(s) descargado(s) · 0 sin datos · 0 con error · código de salida 0

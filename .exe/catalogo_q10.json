@@ -195,6 +195,113 @@
         "XLSX"
       ],
       "activo": true
+    },
+    {
+      "nombre": "Detallado de cursos",
+      "categoria": "Gestion Academica",
+      "direccion": "Detallado de cursos",
+      "filtros": [
+        {
+          "nombre": "Período",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "B2G_YES BOGOTA-2 C1_SEP_2026",
+            "B2G_YES BOGOTA-2 C2_SEP_2026"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Sede - jornada",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "B2G - Única"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Programa",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "YES BOGOTA 2026-2"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "¿Incluir cursos archivados?",
+          "tipo": "interruptor",
+          "obligatorio": false,
+          "ayuda": "",
+          "opciones": [],
+          "depende_de": null,
+          "opciones_por": {}
+        }
+      ],
+      "formatos": [
+        "XLSX"
+      ],
+      "activo": true
+    },
+    {
+      "nombre": "Estudiantes Matriculados",
+      "categoria": "Gestion Academica",
+      "direccion": "Estudiantes Matriculados",
+      "filtros": [
+        {
+          "nombre": "Sede - jornada",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "B2G - Única"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Programa",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "SED RURALIDAD 2026"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "Período",
+          "tipo": "lista",
+          "obligatorio": true,
+          "ayuda": "",
+          "opciones": [
+            "B2G_SED RURALIDAD_MAR_2026"
+          ],
+          "depende_de": null,
+          "opciones_por": {}
+        },
+        {
+          "nombre": "¿Incluir estudiantes graduados?",
+          "tipo": "interruptor",
+          "obligatorio": false,
+          "ayuda": "",
+          "opciones": [],
+          "depende_de": null,
+          "opciones_por": {}
+        }
+      ],
+      "formatos": [
+        "XLSX"
+      ],
+      "activo": true
     }
   ]
 }
