@@ -13,7 +13,9 @@ use PyInstaller `.exe` files. Code, comments, UI text and log messages are in **
 ## Commands
 
 The global `python` is the Microsoft Store stub — always use the project venv (Python 3.13).
-There is no test suite, linter config or `requirements.txt`; verify changes by running the app/bot.
+There is no linter config or `requirements.txt`; verify changes by running the app/bot. `tests/` holds the pytest +
+Playwright E2E tests (real accounts, run with `py -3.14 -m pytest tests/oxford -v -s`); Oxford Wide Angle answers
+live in `tests/oxford/datos/respuestas_wide_angle_l3.json`.
 
 ```
 .venv\Scripts\python.exe aplicacion\main.py                  # unified desktop app (or "Abrir herramientas Colombo.bat")
