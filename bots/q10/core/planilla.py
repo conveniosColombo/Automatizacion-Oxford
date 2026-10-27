@@ -110,6 +110,9 @@ HOJAS = {
             Campo("submenu", "Submenú",
                   "Solo si Menú NO es Informes. Los niveles se separan con '>'. "
                   "Ej: Educación virtual v2 > Cursos virtuales"),
+            Campo("destino", "Ubicación destino",
+                  "Carpeta donde se guardan los archivos de Menú ≠ Informes (cursos virtuales...). "
+                  "Vacío = Descargas/Q10 junto al programa."),
             Campo("buscar", "Buscar",
                   "Solo para pantallas con buscador (Cursos virtuales). Vacío = la lista completa."),
             Campo("accion", "Acción",

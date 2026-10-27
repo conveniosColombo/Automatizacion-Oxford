@@ -1203,6 +1203,22 @@ class DialogoAjustesGenerales(ctk.CTkToplevel):
                                  "usuarios de cada curso.", ("", "Usuarios"),
                                  campos_actuales.get("accion", ""))
 
+        ctk.CTkLabel(scroll, text="Ubicación destino (opcional)", font=Tema.ETIQUETA,
+                    text_color=Tema.TEXTO, anchor="w").pack(fill="x", pady=(6, 0))
+        ctk.CTkLabel(scroll, text="Carpeta donde se guardan los archivos de estas pantallas. "
+                                  "Vacío = Descargas/Q10.", font=Tema.AYUDA,
+                    text_color=Tema.TEXTO_SUAVE, anchor="w").pack(fill="x")
+        fila_destino = ctk.CTkFrame(scroll, fg_color="transparent")
+        fila_destino.pack(fill="x", pady=(2, 8))
+        fila_destino.grid_columnconfigure(0, weight=1)
+        self.destino = ctk.CTkEntry(fila_destino, placeholder_text="Carpeta predeterminada",
+                                    fg_color=Tema.SUPERFICIE, border_color=Tema.BORDE, height=32)
+        self.destino.insert(0, campos_actuales.get("destino", ""))
+        self.destino.grid(row=0, column=0, sticky="ew", padx=(0, 6))
+        ctk.CTkButton(fila_destino, text="Examinar", width=80, height=32, fg_color=Tema.PRIMARIO,
+                      text_color="white", hover_color=Tema.PRIMARIO_HOVER,
+                      command=self._elegir_destino).grid(row=0, column=1)
+
         pie = ctk.CTkFrame(self, fg_color="transparent")
         pie.pack(fill="x", padx=20, pady=16)
         pie.grid_columnconfigure((0, 1), weight=1)
@@ -1238,6 +1254,13 @@ class DialogoAjustesGenerales(ctk.CTkToplevel):
                           ).pack(fill="x", pady=(2, 0))
         return variable
 
+    def _elegir_destino(self):
+        from tkinter import filedialog
+        carpeta = filedialog.askdirectory(title="Seleccionar carpeta de destino", parent=self)
+        if carpeta:
+            self.destino.delete(0, "end")
+            self.destino.insert(0, carpeta)
+
     def _guardar(self):
         self.al_guardar({
             "rol": self.rol.get().strip() or "Administrativo",
@@ -1246,6 +1269,7 @@ class DialogoAjustesGenerales(ctk.CTkToplevel):
             "submenu": self.submenu.get().strip(),
             "buscar": self.buscar.get().strip(),
             "accion": "" if self.accion.get() == "(vacío)" else self.accion.get(),
+            "destino": self.destino.get().strip(),
         }, {
             "user": self.usuario.get().strip(),
             "password": self.clave.get(),
@@ -1260,10 +1284,14 @@ class BandejaPendientes(ctk.CTkFrame):
 
     def __init__(self, master, al_guardar: Callable[[list[dict]], None],
                 al_ejecutar: Callable[[list[dict]], None],
-                al_intentar_agregar_actual: Callable[[], bool] | None = None):
+                al_intentar_agregar_actual: Callable[[], bool] | None = None,
+                modo_listado: Callable[[], str] | None = None):
         super().__init__(master, fg_color=Tema.SUPERFICIE, corner_radius=Tema.RADIO,
                          border_width=1, border_color=Tema.BORDE, height=170)
         self.al_guardar = al_guardar
+        # Devuelve el texto de lo que bajara el bot cuando los Ajustes apuntan a una pantalla que
+        # NO es "Informes" (p. ej. usuarios de Cursos virtuales); "" si se usan informes.
+        self.modo_listado = modo_listado or (lambda: "")
         self.al_ejecutar = al_ejecutar
         # Si el usuario llena el Paso 2 y le da directo a Guardar/Ejecutar sin pasar por
         # "Agregar a la lista", se intenta agregar lo que tenga puesto antes de quejarse.
@@ -1375,6 +1403,12 @@ class BandejaPendientes(ctk.CTkFrame):
         return bool(self.al_intentar_agregar_actual and self.al_intentar_agregar_actual())
 
     def _guardar(self, avisar: bool = True) -> bool:
+        if not self.pendientes and self.modo_listado():
+            if avisar:
+                self._mensaje_emergente(
+                    "Configuración guardada",
+                    "Los Ajustes generales ya quedaron guardados; no hay informes que agregar.")
+            return True
         if not self._agregar_si_falta():
             if avisar:
                 self._mensaje_emergente(
@@ -1394,6 +1428,9 @@ class BandejaPendientes(ctk.CTkFrame):
         return True
 
     def _ejecutar(self):
+        if not self.pendientes and self.modo_listado():
+            self._confirmar_ejecutar()      # los Ajustes ya dicen que bajar: no hace falta un informe
+            return
         if not self._agregar_si_falta():
             self._mensaje_emergente(
                 "Nada para ejecutar",
@@ -1414,6 +1451,8 @@ class BandejaPendientes(ctk.CTkFrame):
 
     def _confirmar_ejecutar(self):
         detalle = "\n".join(f"• {i['informe']}: {self._reportes_de(i)} reporte(s)" for i in self.pendientes)
+        if not self.pendientes:
+            detalle = f"• {self.modo_listado()}"
         ventana = ctk.CTkToplevel(self)
         ventana.title("Confirmar ejecución")
         ventana.geometry("420x260")
@@ -1435,7 +1474,7 @@ class BandejaPendientes(ctk.CTkFrame):
 
         def confirmar():
             ventana.destroy()
-            if not self._guardar(avisar=False):
+            if self.pendientes and not self._guardar(avisar=False):
                 return
             try:
                 self.al_ejecutar(self.pendientes)
@@ -1832,7 +1871,8 @@ class VistaQ10(ctk.CTkFrame):
 
         self.bandeja = BandejaPendientes(self, al_guardar=self._guardar_planilla,
                                          al_ejecutar=self._ejecutar_bot,
-                                         al_intentar_agregar_actual=self._agregar_a_bandeja)
+                                         al_intentar_agregar_actual=self._agregar_a_bandeja,
+                                         modo_listado=self._descripcion_listado)
         self.bandeja.grid(row=1, column=1, sticky="ew", padx=16, pady=(0, 16))
 
         # Selecciona el primer informe activo para que la ventana no abra vacia
@@ -1846,6 +1886,20 @@ class VistaQ10(ctk.CTkFrame):
 
     def cerrar(self) -> None:
         pass
+
+    @staticmethod
+    def _descripcion_listado() -> str:
+        """Que bajara el bot segun los Ajustes, si estos apuntan a una pantalla que no es Informes."""
+        try:
+            campos = planilla_excel.campos_actuales(archivos.PLANILLA, "Q10")
+        except Exception:
+            return ""
+        if (campos.get("menu") or "Informes") == "Informes" or not campos.get("submenu"):
+            return ""
+        pantalla = campos["submenu"].split(">")[-1].strip()
+        accion = "usuarios de cada curso" if "usuario" in campos.get("accion", "").lower() else "tabla en CSV"
+        filtro = f" (búsqueda: {campos['buscar']})" if campos.get("buscar") else ""
+        return f"{pantalla}: {accion}{filtro}"
 
     def _agregar_a_bandeja(self) -> bool:
         item = self.formulario._agregar()
@@ -1879,6 +1933,7 @@ class VistaQ10(ctk.CTkFrame):
                 "submenu": campos_previos.get("submenu", ""),
                 "buscar": campos_previos.get("buscar", ""),
                 "accion": campos_previos.get("accion", ""),
+                "destino": campos_previos.get("destino", ""),
             },
             "listas": {"informes": [(nombre, "Sí", "") for nombre in informes_unicos]},
             "pares": pares,
@@ -1956,6 +2011,10 @@ class VistaQ10(ctk.CTkFrame):
             carpeta = Path(destino) if destino else archivos.CARPETA / "Descargas" / "Q10"
             if carpeta not in carpetas:
                 carpetas.append(carpeta)
+        if not pendientes:                      # modo listado: sin informes, va a la carpeta de los Ajustes
+            destino = planilla_excel.campos_actuales(archivos.PLANILLA, "Q10").get("destino", "").strip()
+            carpetas.append(Path(destino) if destino else archivos.CARPETA / "Descargas" / "Q10")
+            resumen = self._descripcion_listado()
         self._ventana_progreso = VentanaProgresoQ10(
             self.winfo_toplevel(), self._ejecucion, resumen, carpetas, al_terminar=lambda: None)
 

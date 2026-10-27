@@ -26,6 +26,19 @@ class Q10(Sistema):
     def leer_config(self, datos):
         return ConfigQ10.desde_hoja(datos)
 
+    def guardar(self, descarga, prefijo):
+        """Con 'Ubicación destino' en los Ajustes se guarda ahi; si no, en Descargas/Q10."""
+        destino = getattr(self.config, "destino", "")
+        if not destino:
+            return super().guardar(descarga, prefijo)
+        from datetime import datetime
+        from pathlib import Path
+        extension = Path(descarga.suggested_filename).suffix
+        ruta = Path(destino) / f"{datetime.now():%Y-%m-%d_%H%M}_{archivos.nombre_archivo(prefijo)}{extension}"
+        ruta.parent.mkdir(parents=True, exist_ok=True)
+        descarga.save_as(ruta)
+        return ruta
+
     def ejecutar(self):
         c = self.credenciales
         self.barra = LoginQ10(self.page).iniciar_sesion(c.link, c.usuario, c.clave, self.config.rol)
@@ -74,7 +87,8 @@ class Q10(Sistema):
 
         nombre = " ".join(x for x in (getattr(self.config, "submenu", "").split(">")[-1].strip()
                                       or menu, buscado) if x)
-        archivo = archivos.guardar_tabla(encabezados, filas, self.NOMBRE, nombre)
+        archivo = archivos.guardar_tabla(encabezados, filas, self.NOMBRE, nombre,
+                                         getattr(self.config, "destino", ""))
         print(f"Paso 3: {len(filas)} fila(s) guardadas en {archivo}")
 
     def exportar_usuarios(self, pantalla, max_paginas=500):

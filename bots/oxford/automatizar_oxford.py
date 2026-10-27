@@ -323,7 +323,11 @@ def main():
                 clases = clases_config
 
             fallos = []
+            # Linea interna que lee la ventana de progreso: "[[PROGRESO]] terminadas total"
+            print(f"[[PROGRESO]] 0 {len(clases)}", flush=True)
             for i, clase in enumerate(clases, 1):
+                if i > 1:
+                    print(f"[[PROGRESO]] {i - 1} {len(clases)}", flush=True)
                 print(f"\n--- Clase {i}/{len(clases)}: {clase} ---")
                 try:
                     abrir_clase(page, clase)
@@ -354,6 +358,7 @@ def main():
                     except Exception:
                         pass
 
+            print(f"[[PROGRESO]] {len(clases)} {len(clases)}", flush=True)
             print("\n========== RESUMEN ==========")
             print(f"Procesadas: {len(clases)}  |  Exitosas: {len(clases) - len(fallos)}  |  Fallos: {len(fallos)}")
             for f in fallos:

@@ -63,14 +63,14 @@ def guardar_descarga(descarga, sistema, prefijo):
     return destino
 
 
-def guardar_tabla(encabezados, filas, sistema, prefijo):
+def guardar_tabla(encabezados, filas, sistema, prefijo, carpeta=""):
     """Guarda en Descargas/<sistema>/ una tabla leida de la pantalla, en CSV.
 
     Es para las pantallas que no tienen boton de exportar: el archivo lo arma el bot.
     utf-8-sig para que Excel abra bien las tildes al hacer doble clic.
     """
-    destino = (CARPETA / "Descargas" / sistema
-               / f"{datetime.now():%Y-%m-%d_%H%M}_{nombre_archivo(prefijo)}.csv")
+    base = Path(carpeta) if carpeta else CARPETA / "Descargas" / sistema
+    destino = base / f"{datetime.now():%Y-%m-%d_%H%M}_{nombre_archivo(prefijo)}.csv"
     destino.parent.mkdir(parents=True, exist_ok=True)
     with open(destino, "w", encoding="utf-8-sig", newline="") as archivo:
         escritor = csv.writer(archivo)

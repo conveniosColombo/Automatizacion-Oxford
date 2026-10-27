@@ -5,7 +5,7 @@ from core import archivos
 
 # Lo demas de la hoja son filtros de los informes ("_pares" lo agrega Planilla.leer_hoja,
 # no es un ajuste: son los filtros crudos, con su columna Informe, para agrupar por informe)
-CLAVES_GENERALES = {"rol", "menu", "tipo", "submenu", "buscar", "accion", "informes", "formato", "_pares"}
+CLAVES_GENERALES = {"rol", "menu", "tipo", "submenu", "buscar", "accion", "destino", "informes", "formato", "_pares"}
 
 # Formatos que ofrece el visor de Q10 (los informes que descargan Excel directo lo ignoran)
 FORMATOS = ("XLSX", "XLS", "PDF", "CSV", "DOC", "HTML", "IMAGEN")
@@ -21,6 +21,7 @@ class ConfigQ10:
     submenu: str = ""                     # ruta dentro de ese menu: "Nivel 1 > Nivel 2"
     buscar: str = ""                      # que escribir en el buscador de esa pantalla
     accion: str = ""                      # que hacer en esa pantalla (vacio = guardar la tabla)
+    destino: str = ""                     # carpeta donde guardar lo de esas pantallas (vacio = Descargas/Q10)
     # {informe en minuscula: [(nombre del filtro, [valores])]}: filtros que SOLO aplican a ese
     # informe (columna "Informe" de la tabla de Filtros). Los escribe sobre todo "Configurar Q10".
     filtros_por_informe: dict = field(default_factory=dict)
@@ -49,6 +50,7 @@ class ConfigQ10:
                    formato=formato, menu=menu, submenu=(datos.get("submenu") or "").strip(),
                    buscar=(datos.get("buscar") or "").strip(),
                    accion=(datos.get("accion") or "").strip(),
+                   destino=(datos.get("destino") or "").strip(),
                    filtros_por_informe=filtros_por_informe)
 
     def filtros_para(self, informe: str) -> list[tuple[str, list[str]]]:

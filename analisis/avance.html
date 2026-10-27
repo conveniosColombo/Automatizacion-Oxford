@@ -80,7 +80,7 @@
                 </div>
                 <h2 class="text-xl font-bold text-slate-900">Q10</h2>
                 <p class="text-slate-500 text-xs mb-8">Informes Académicos</p>
-                <p class="text-orange-500 font-bold text-xs flex items-center"><span class="mr-1">◐</span> En desarrollo
+                <p class="text-blue-600 font-bold text-xs flex items-center"><span class="mr-1">◐</span> En pruebas
                 </p>
             </div>
             <div class="border border-slate-200 rounded-xl p-6 bg-white shadow-sm">
@@ -125,9 +125,9 @@
                     class="border border-slate-200 p-4 rounded-lg text-slate-600 text-sm h-full flex items-center bg-white">
                     Descarga manual repetitiva clase a clase con riesgo de error.</div>
                 <div
-                    class="border border-blue-200 bg-blue-50/30 p-4 rounded-lg text-slate-700 text-sm h-full flex items-center">
-                    <span class="text-blue-600 font-bold mr-2">✔</span> Interfaces gráficas con descarga guiada en
-                    desarrollo (Q10, Oxford y Macmillan).
+                    class="border border-blue-200 bg-blue-50/30 p-4 rounded-lg text-slate-700 text-sm h-full flex flex-col justify-center">
+                    <div><span class="text-blue-600 font-bold mr-2">✔</span> Interfaces guiadas listas (Oxford y Macmillan).</div>
+                    <div class="text-xs text-blue-600 font-medium mt-1 ml-5"><span class="mr-1">◐</span> Bot Q10 ya se encuentra en pruebas.</div>
                 </div>
             </div>
             <div class="grid grid-cols-[120px_1fr_1fr] gap-4 items-center px-4">
@@ -150,9 +150,8 @@
                     Archivos dispersos consolidados y verificados a mano.</div>
                 <div
                     class="border border-blue-200 bg-blue-50/30 p-4 rounded-lg text-slate-700 text-sm h-full flex flex-col justify-center">
-                    <div><span class="text-blue-600 font-bold mr-2">✔</span> Carga directa en base de datos local.</div>
-                    <div class="text-xs text-slate-500 mt-1 ml-5">En espera de solución de ticket TI para máquina
-                        virtual.</div>
+                    <div><span class="text-green-600 font-bold mr-2">✔</span> Conectado a BD en la nube (Azure SQL) y acceso a VM.</div>
+                    <div class="text-xs text-amber-600 font-medium mt-1 ml-5">⚠ Pendiente: instalar Playwright y Pytest en VM para paso a automático.</div>
                 </div>
             </div>
         </div>
@@ -221,17 +220,16 @@
         </div>
         <div class="flex justify-between gap-4 mb-6">
             <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 flex-1 flex items-center justify-between">
-                <div><span class="text-xl font-bold text-blue-700 block leading-none mb-1">6/9</span><span
+                <div><span class="text-xl font-bold text-blue-700 block leading-none mb-1">7/9</span><span
                         class="text-slate-500 text-[10px]">Fases listas o en validación</span></div>
             </div>
             <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 flex-1 flex items-center justify-between">
-                <div><span class="text-xl font-bold text-blue-700 block leading-none mb-1">0</span><span
-                        class="text-slate-500 text-[10px]">Fases retrasadas a hoy</span></div>
+                <div><span class="text-xl font-bold text-blue-700 block leading-none mb-1 text-sm">BD Nube + VM</span><span
+                        class="text-slate-500 text-[10px]">Azure SQL conectado · VM con acceso</span></div>
             </div>
             <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 flex-1 flex items-center justify-between">
-                <div><span class="text-xl font-bold text-blue-700 block leading-none mb-1 text-sm">Oxford
-                        Listos</span><span class="text-slate-500 text-[10px]">Pruebas exitosas. Iniciando
-                        Macmillan.</span></div>
+                <div><span class="text-xl font-bold text-blue-700 block leading-none mb-1 text-sm">Q10 en Pruebas</span><span
+                        class="text-slate-500 text-[10px]">Falta Playwright/Pytest para automático</span></div>
             </div>
         </div>
         <div class="border border-slate-200 rounded-lg bg-white overflow-hidden text-[10px]">
@@ -258,7 +256,7 @@
                     <div class="relative h-6 flex gap-1 items-center">
                         <div
                             class="absolute left-0 w-[45%] h-full bg-blue-500 rounded text-white font-bold flex items-center justify-center shadow-sm">
-                            Extracción (En curso)</div>
+                            Extracción (En pruebas)</div>
                         <div
                             class="absolute left-[46%] w-[20%] h-full bg-green-700 rounded text-white font-bold flex items-center justify-center shadow-sm">
                             Transf. ★</div>
@@ -328,33 +326,29 @@
             <div class="flex gap-4">
                 <div class="text-4xl font-bold text-slate-200">1</div>
                 <div>
-                    <h3 class="text-lg font-bold text-slate-800 mb-1">Validación Transformación</h3>
-                    <p class="text-slate-600 text-sm">Iniciar pruebas de los scripts de transformación con el convenio
-                        de Tocancipá en Macmillan.</p>
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">Bot Q10 en pruebas</h3>
+                    <p class="text-slate-600 text-sm">El bot de extracción para Q10 ya se encuentra desarrollado y en etapa de pruebas operativas con datos reales.</p>
                 </div>
             </div>
             <div class="flex gap-4">
-                <div class="text-4xl font-bold text-slate-200">2</div>
+                <div class="text-4xl font-bold text-green-600">2</div>
                 <div>
-                    <h3 class="text-lg font-bold text-slate-800 mb-1">Completar interfaces</h3>
-                    <p class="text-slate-600 text-sm">Terminar la interfaz de Q10 y desarrollar la interfaz madre
-                        unificada para Q10, Macmillan y Oxford.</p>
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">Base de Datos en la Nube <span class="text-green-600 text-xs font-bold">✔ Logrado</span></h3>
+                    <p class="text-slate-600 text-sm">Conexión establecida a Azure SQL Database (rendimiento_academico) con carga directa y validación exitosa.</p>
                 </div>
             </div>
             <div class="flex gap-4 mt-6">
-                <div class="text-4xl font-bold text-slate-200">3</div>
+                <div class="text-4xl font-bold text-blue-600">3</div>
                 <div>
-                    <h3 class="text-lg font-bold text-slate-800 mb-1">Bots en máquina virtual</h3>
-                    <p class="text-slate-600 text-sm">Programar bots para extracción automática periódica de avance de
-                        clases dentro de la VM.</p>
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">Conexión a Máquina Virtual <span class="text-blue-600 text-xs font-bold">✔ Logrado</span></h3>
+                    <p class="text-slate-600 text-sm">Acceso y conexión a la VM logrados exitosamente para hospedar el entorno de automatización.</p>
                 </div>
             </div>
             <div class="flex gap-4 mt-6">
-                <div class="text-4xl font-bold text-slate-200">4</div>
+                <div class="text-4xl font-bold text-amber-500">4</div>
                 <div>
-                    <h3 class="text-lg font-bold text-slate-800 mb-1">Carga en la nube</h3>
-                    <p class="text-slate-600 text-sm">Ejecutar la subida directa de los datos consolidados a la base de
-                        datos en la nube.</p>
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">Instalación Playwright / Pytest <span class="text-amber-500 text-xs font-bold">⚠ Bloqueante</span></h3>
+                    <p class="text-slate-600 text-sm">Falta instalar las herramientas de Playwright y Pytest en la VM para programar y dejar los bots 100% en automático.</p>
                 </div>
             </div>
         </div>

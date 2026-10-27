@@ -1340,7 +1340,9 @@ class BotRunner(threading.Thread):
     def detener(self) -> None:
         self.cancelar.set()
         if self._proc and self._proc.poll() is None:
-            self._proc.terminate()
+            # terminate() solo mata al proceso lanzado; el bot hijo y el navegador seguirian vivos.
+            subprocess.run(["taskkill", "/PID", str(self._proc.pid), "/T", "/F"],
+                           capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
     def run(self) -> None:
         try:
@@ -1370,10 +1372,21 @@ class BotRunner(threading.Thread):
             encoding="utf-8", errors="replace",
             creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
         assert self._proc.stdout is not None
+        ok = fallos = 0
         for linea in self._proc.stdout:
             linea = linea.rstrip()
             if linea:
+                m = re.match(r"\[\[PROGRESO\]\]\s+(\d+)\s+(\d+)", linea)
+                if m:           # linea interna del bot: alimenta el avance, no se muestra
+                    self.emit("avance", int(m.group(1)), int(m.group(2)), ok, fallos)
+                    continue
                 low = linea.lower()
+                if "guardado:" in low:
+                    ok += 1
+                elif "fallo al exportar" in low:
+                    fallos += 1
+                if "guardado:" in low or "fallo al exportar" in low:
+                    self.emit("avance", None, None, ok, fallos)
                 nivel = ("err" if any(k in low for k in ("error", "fallo",
                                                           "exception"))
                          else "ok" if any(k in low for k in ("guardado",
@@ -1453,8 +1466,10 @@ class VentanaProgreso(ctk.CTkToplevel):
     COLORES = {"ok": T.OK, "err": T.ERR, "warn": T.WARN, "info": T.TEXTO2}
 
     def __init__(self, master, perfil: dict, al_detener: Callable,
-                 al_cerrar: Callable):
+                 al_cerrar: Callable, carpeta: Path):
         super().__init__(master)
+        self.carpeta = carpeta
+        self.hechos = self.total = self.exitosas = self.fallos = 0
         self.title("Progreso del bot - Macmillan Education Everywhere")
         self.configure(fg_color=T.FONDO)
         self.minsize(640, 420)
@@ -1471,10 +1486,16 @@ class VentanaProgreso(ctk.CTkToplevel):
                      font=T.AYD, text_color=T.SB_TXT
                      ).pack(side="right", padx=20)
 
-        self.bar = ctk.CTkProgressBar(self, height=8, progress_color=T.VERDE,
+        fila = ctk.CTkFrame(self, fg_color="transparent")
+        fila.pack(fill="x", padx=16, pady=(14, 0))
+        fila.grid_columnconfigure(0, weight=1)
+        self.bar = ctk.CTkProgressBar(fila, height=8, progress_color=T.VERDE,
                                       fg_color=T.BORDE, mode="determinate")
         self.bar.set(0)
-        self.bar.pack(fill="x", padx=16, pady=(14, 0))
+        self.bar.grid(row=0, column=0, sticky="ew", padx=(0, 16))
+        self.lbl_cont = ctk.CTkLabel(fila, text=self._texto_contadores(),
+                                     font=T.NRM, text_color=T.TEXTO)
+        self.lbl_cont.grid(row=0, column=1)
 
         self.txt = ctk.CTkTextbox(self, fg_color=T.SUP, border_width=1,
                                   border_color=T.BORDE, corner_radius=8,
@@ -1493,8 +1514,10 @@ class VentanaProgreso(ctk.CTkToplevel):
         self.btn_det = boton_primario(pie, "■  Detener bot", self._detener,
                                       color=T.ERR, hover=T.ERR_H, width=140)
         self.btn_det.grid(row=0, column=1, padx=(8, 0))
-        boton_secundario(pie, "Cerrar", self._cerrar, width=100
+        boton_secundario(pie, "📂 Abrir descargas", self._abrir_carpeta, width=150
                          ).grid(row=0, column=2, padx=(8, 0))
+        boton_secundario(pie, "Cerrar", self._cerrar, width=100
+                         ).grid(row=0, column=3, padx=(8, 0))
         self.protocol("WM_DELETE_WINDOW", self._cerrar)
         self.after(150, self.lift)
 
@@ -1512,6 +1535,24 @@ class VentanaProgreso(ctk.CTkToplevel):
             self.bar.stop()
             self.bar.configure(mode="determinate")
         self.bar.set(max(0.0, min(1.0, v)))
+
+    def _texto_contadores(self) -> str:
+        avance = f"{self.hechos} de {self.total} clases    " if self.total else ""
+        return f"{avance}✔ {self.exitosas} descargada(s)    ✖ {self.fallos} con error"
+
+    def avance(self, hechos, total, ok: int, fallos: int) -> None:
+        if hechos is not None:
+            self.hechos, self.total = hechos, total
+            if total > 0:
+                self.progreso(hechos / total)
+        self.exitosas, self.fallos = ok, fallos
+        self.lbl_cont.configure(text=self._texto_contadores())
+
+    def _abrir_carpeta(self) -> None:
+        carpeta = self.carpeta
+        while not carpeta.exists() and carpeta != carpeta.parent:
+            carpeta = carpeta.parent
+        os.startfile(carpeta)
 
     def indeterminado(self) -> None:
         self.bar.configure(mode="indeterminate")
@@ -1568,6 +1609,7 @@ class VistaMacmillan(ctk.CTkFrame):
         self._log_buffer: list[tuple[str, str]] = []
         self._ultimo_progreso = 0.0
         self._modo_indet = False
+        self._ultimo_avance = (0, 0, 0, 0)
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -1782,6 +1824,7 @@ class VistaMacmillan(ctk.CTkFrame):
 
         self._log_buffer.clear()
         self._ultimo_progreso, self._modo_indet = 0.0, False
+        self._ultimo_avance = (0, 0, 0, 0)
         self._ejecutando_id = pid
         self._runner = BotRunner(dict(p), dict(cred),
                                  dict(self.datos["ajustes"]), self._cola)
@@ -1797,10 +1840,13 @@ class VistaMacmillan(ctk.CTkFrame):
         p = self.perfil(self._ejecutando_id) or self.activo
         if not p:
             return
+        ruta = (self.datos["ajustes"].get("ruta_descargas") or "").strip()
         self._ventana = VentanaProgreso(self, p, al_detener=self._detener,
-                                        al_cerrar=self._ventana_cerrada)
+                                        al_cerrar=self._ventana_cerrada,
+                                        carpeta=Path(ruta) if ruta else BASE / "Descargas" / "Macmillan")
         for texto, nivel in self._log_buffer:
             self._ventana.log(texto, nivel)
+        self._ventana.avance(*self._ultimo_avance)
         if self._modo_indet:
             self._ventana.indeterminado()
         else:
@@ -1834,6 +1880,16 @@ class VistaMacmillan(ctk.CTkFrame):
                     self._ultimo_progreso = ev[1]
                     if self._ventana:
                         self._ventana.progreso(ev[1])
+                elif tipo == "avance":
+                    _, h, t, ok, fallos = ev
+                    if h is None:           # solo cambiaron los contadores
+                        h, t = self._ultimo_avance[:2]
+                    self._ultimo_avance = (h, t, ok, fallos)
+                    self._modo_indet = False
+                    if t:
+                        self._ultimo_progreso = h / t
+                    if self._ventana:
+                        self._ventana.avance(h, t, ok, fallos)
                 elif tipo == "indeterminado":
                     self._modo_indet = True
                     if self._ventana:

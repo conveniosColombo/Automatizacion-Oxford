@@ -17,7 +17,7 @@ class CoursesPage:
         # Clic directo en la barra de navegacion; no se espera a que la vista general redirija sola
         self.page.locator(self.BOTON_MY_COURSES).click()
         expect(self.page).to_have_url(re.compile(r"/myCourses"))
-        self.page.wait_for_load_state("networkidle")
+        # Sin 'networkidle': la tarjeta del libro (abrir_libro) o el boton 'Enter a code' ya esperan lo que necesitan
         log.info("En My Courses: %s", self.page.url)
 
     def tarjeta_libro(self, serie: str = "Wide Angle", nivel: str = "Level 3"):
@@ -34,5 +34,5 @@ class CoursesPage:
         tarjeta.wait_for(state="visible")
         tarjeta.scroll_into_view_if_needed()
         tarjeta.click()
-        self.page.wait_for_load_state("networkidle")
+        self.page.wait_for_url(re.compile(r"/singleCourse/"), timeout=30_000)
         log.info("Libro abierto: %s %s -> %s", serie, nivel, self.page.url)

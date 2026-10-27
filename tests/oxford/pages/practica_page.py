@@ -2,20 +2,31 @@
 
 Es el sitio al que lleva la version 'Closing soon' desde el Hub. Las actividades viven en un iframe
 (`activityframe`) del mismo origen; cada tipo de ejercicio tiene su resolvedor y las respuestas salen
-del banco `datos/respuestas_wide_angle_l3.json` (clave 'UU/LL/AA' = ruta de la URL de la actividad).
+del banco `datos/respuestas_wide_angle_l<NIVEL>.json` (clave 'UU/LL/AA' = ruta de la URL de la actividad).
+
+El nivel se elige con la variable de entorno OXFORD_NIVEL (por defecto 3, para no cambiar el
+comportamiento historico). Cada nivel tiene su propio 'book id' en la plataforma y su propio banco:
+    Level 3 -> book 74 -> respuestas_wide_angle_l3.json
+    Level 4 -> book 75 -> respuestas_wide_angle_l4.json
+    Level 5 -> book 76 (resuelto por test_wide_angle_auto.py leyendo el XML; sin banco a mano)
 """
 import json
 import logging
+import os
 import re
 from pathlib import Path
 
 from playwright.sync_api import Page, expect
+from playwright.sync_api import TimeoutError as PWTimeout
 
 log = logging.getLogger("oxford.practica")
 
-BANCO = Path(__file__).resolve().parents[1] / "datos" / "respuestas_wide_angle_l3.json"
+NIVEL = int(os.environ.get("OXFORD_NIVEL", "3"))
+BOOKS = {3: 74, 4: 75, 5: 76}  # nivel de Wide Angle -> book id en wideangle.oxfordonlinepractice.com
+BOOK_ID = BOOKS.get(NIVEL, 74)
+BANCO = Path(__file__).resolve().parents[1] / "datos" / f"respuestas_wide_angle_l{NIVEL}.json"
 IFRAME = 'iframe[name="activityframe"]'
-BASE_LIBRO = "https://wideangle.oxfordonlinepractice.com/app/dashboard/book/74"
+BASE_LIBRO = f"https://wideangle.oxfordonlinepractice.com/app/dashboard/book/{BOOK_ID}"
 PATRON_PUNTAJE = re.compile(r"(\d+|-)\s*/\s*(\d+)\s*Last score")  # toma el 'Last score' aunque haya 'First score'
 
 # Selectores del sitio (basados en las clases del motor de actividades)
@@ -57,6 +68,10 @@ def cargar_banco() -> dict:
     return {k: v for k, v in banco.items() if not k.startswith("_")}
 
 
+class MaterialBloqueado(Exception):
+    """El libro del usuario esta sin licencia (candado): hay que activarlo con un codigo."""
+
+
 class PracticaPage:
     def __init__(self, page: Page):
         self.page = page
@@ -64,32 +79,115 @@ class PracticaPage:
 
     # ---- entrada ----
     @staticmethod
+    def hay_candado(pagina_hub: Page) -> bool:
+        """True si en la ficha del curso (Course Material) hay un candado: icono/imagen con 'lock' como PALABRA
+        en alt, aria-label, title, data-testid, clase o src. 'block', 'clock' o 'unlock' NO cuentan."""
+        try:
+            return bool(pagina_hub.evaluate(r"""() => {
+                const rx = /(^|[^a-z])lock(ed)?([^a-z]|$)/i;
+                const texto = e => [e.getAttribute('alt'), e.getAttribute('aria-label'), e.getAttribute('title'),
+                    e.getAttribute('data-testid'), e.getAttribute('src'),
+                    typeof e.className === 'string' ? e.className : (e.className && e.className.baseVal) || ''
+                ].filter(Boolean).join(' ');
+                return [...document.querySelectorAll('img, svg, [class], [aria-label], [title], [data-testid]')]
+                    .some(e => rx.test(texto(e)));
+            }"""))
+        except Exception:
+            return False
+
+    @staticmethod
     def abrir_desde_hub(pagina_hub: Page) -> "PracticaPage":
         """En la ficha del curso del Hub, abre la version 'Closing soon' (se abre en pestana nueva)."""
         enlace = pagina_hub.get_by_role("link", name=re.compile("closing soon", re.I)).first
-        enlace.wait_for(state="visible")
-        with pagina_hub.context.expect_page():
-            enlace.click()
+        try:
+            enlace.wait_for(state="visible", timeout=10_000)
+            with pagina_hub.context.expect_page(timeout=15_000):
+                enlace.click()
+        except PWTimeout:
+            # Material con candado (licencia sin activar): no hay enlace que abra la practica, o al
+            # pulsarlo el Hub muestra el panel 'Activate code'. Se avisa para pasar al siguiente usuario.
+            activar = pagina_hub.get_by_text(re.compile(r"activate code|enter your code", re.I)).first
+            if PracticaPage.hay_candado(pagina_hub) or (activar.count() and activar.is_visible()):
+                raise MaterialBloqueado("material Wide Angle con candado (pide 'Activate code')") from None
+            raise
         # La pestana inicial es un intermedio LTI (/dashboard/lti) que redirige o se reemplaza: se espera
         # a la pestana del dashboard ya definitiva (ruta /app/dashboard/... sin 'lti').
         practica = None
-        for _ in range(120):
+        con_terminos = []                         # paginas ya atendidas: se aceptan UNA sola vez
+        for _ in range(300):                      # 300 x 0.2 s = 60 s como maximo; se sale apenas aparece
             for candidata in pagina_hub.context.pages:
+                if (not candidata.is_closed() and "oxfordonlinepractice.com/app/termsCondition" in candidata.url
+                        and candidata not in con_terminos):
+                    con_terminos.append(candidata)
+                    PracticaPage._aceptar_terminos(candidata)     # primera vez de la cuenta: pide la edad
                 if not candidata.is_closed() and re.search(r"oxfordonlinepractice\.com/app/dashboard(?!/lti)", candidata.url):
                     practica = candidata
                     break
             if practica:
                 break
-            pagina_hub.wait_for_timeout(500)
+            pagina_hub.wait_for_timeout(200)
         assert practica, f"No se abrio el dashboard de practica: {[p.url for p in pagina_hub.context.pages]}"
         practica.wait_for_load_state("domcontentloaded")
-        # Banner de cookies del sitio de practica
+        # Banner de cookies del sitio de practica (si no esta, no se espera: 2 s)
         try:
-            practica.get_by_role("button", name=re.compile("^accept all$", re.I)).click(timeout=8_000)
+            practica.get_by_role("button", name=re.compile("^accept all$", re.I)).click(timeout=2_500)
         except Exception:
             pass
         log.info("Practica abierta: %s", practica.url)
         return PracticaPage(practica)
+
+    @staticmethod
+    def _aceptar_terminos(pagina: Page) -> None:
+        """Pantalla 'Terms and Conditions' (se ve al abrir la practica con una cuenta nueva): elige
+        'I am over 16 years of age', marca 'I agree to the Terms and Conditions' y pulsa Continue.
+
+        La casilla de marketing ('tick this box if you do NOT want to receive email...') se deja como esta.
+        """
+        try:
+            opcion = pagina.get_by_role("radio", name=re.compile(r"over\s+16", re.I))
+            texto_edad = pagina.get_by_text(re.compile(r"I am\s+over\s+16", re.I))
+            # Clic apenas pinta la pantalla (sin esperas fijas): lo primero que aparezca de las dos formas
+            opcion.or_(texto_edad).first.wait_for(state="attached", timeout=10_000)
+            if opcion.count():
+                opcion.first.check(force=True)
+            else:
+                texto_edad.first.click()
+            # La casilla 'I agree...' aparece al elegir la edad. Se marca la CASILLA (la primera; la segunda
+            # es la de marketing), no el texto: pulsar el texto abre el documento de terminos.
+            # El <input> esta oculto (la casilla que se ve es un cuadro dibujado aparte), por eso se marca
+            # con un clic del propio elemento y no con el raton. Se espera a que aparezca tras elegir la edad.
+            casilla = pagina.locator("input[type=checkbox]").first
+            casilla.wait_for(state="attached", timeout=8_000)
+            agree = pagina.get_by_role("button", name=re.compile(r"^\s*agree\s*$", re.I))
+
+            def _aceptar_ventana():
+                # Si el sitio abre la ventana con el texto de los terminos, se pulsa 'Agree' sin leerla
+                try:
+                    agree.first.wait_for(state="visible", timeout=1_500)
+                    agree.first.click()
+                    pagina.wait_for_timeout(500)
+                except PWTimeout:
+                    pass
+
+            if not casilla.is_checked():
+                casilla.evaluate("e => e.click()")
+                _aceptar_ventana()
+            if not casilla.is_checked():
+                # Respaldo: clic con el raton sobre el cuadro, que queda a la izquierda del texto 'I agree...'
+                caja = pagina.get_by_text(re.compile(r"^\s*I agree to the", re.I)).first.bounding_box()
+                if caja:
+                    for dx in (-19, 13):
+                        pagina.mouse.click(caja["x"] + dx, caja["y"] + caja["height"] / 2)
+                        _aceptar_ventana()
+                        if casilla.is_checked():
+                            break
+            boton = pagina.get_by_role("button", name=re.compile(r"^\s*continue\s*$", re.I))
+            expect(boton).to_be_enabled(timeout=5_000)
+            boton.click()
+            pagina.wait_for_timeout(1_500)
+            log.info("Terms and Conditions: 'I am over 16 years of age' aceptado")
+        except Exception as exc:
+            log.warning("No pude aceptar Terms and Conditions: %s", str(exc).splitlines()[0])
 
     def ir_a_actividad(self, clave: str) -> None:
         unidad, leccion, actividad = clave.split("/")
@@ -164,12 +262,27 @@ class PracticaPage:
 
     @staticmethod
     def _exacto(texto):
-        return re.compile(rf"^\s*{re.escape(texto)}\s*$")
+        cuerpo = r"\s+".join(re.escape(t) for t in texto.split()) or re.escape(texto)
+        return re.compile(rf"^\s*{cuerpo}\s*$")  # \s+ entre tokens tolera espacios duros (&#160;)
+
+    @staticmethod
+    def _subcadena(texto):
+        """Subcadena tolerante a espacios duros, para ubicar frases largas al ordenar."""
+        return re.compile(r"\s+".join(re.escape(t) for t in texto.split()) or re.escape(texto))
 
     def _arrastrar(self, spec):
-        for i, palabra in enumerate(spec["respuestas"]):
-            origen = self.marco.locator(".term").filter(has_text=self._exacto(palabra)).first
-            self._arrastrar_a(origen, self.marco.locator(".target-box").nth(i))
+        """El tipo 'arrastrar' abarca dos layouts del motor de actividades:
+        - emparejar mitades: fichas .term -> casillas .target-box (0..n)
+        - ordenar (sequencing): fichas .itemsUl .item -> ranuras .userItem[data-item-id=1..n]
+        """
+        if self.marco.locator(".target-box").count():
+            for i, palabra in enumerate(spec["respuestas"]):
+                origen = self.marco.locator(".term").filter(has_text=self._exacto(palabra)).first
+                self._arrastrar_a(origen, self.marco.locator(".target-box").nth(i))
+        else:
+            for i, palabra in enumerate(spec["respuestas"], start=1):
+                origen = self.marco.locator(".itemsUl .item").filter(has_text=self._subcadena(palabra)).first
+                self._arrastrar_a(origen, self.marco.locator(f'.userItem[data-item-id="{i}"]'))
 
     def _bins(self, spec):
         for contenedor, palabras in spec["respuestas"].items():

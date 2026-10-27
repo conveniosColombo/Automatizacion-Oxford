@@ -1,6 +1,6 @@
 """Genera los ejecutables en la carpeta '.exe' de la raiz del proyecto.
 
-    .venv\\Scripts\\python.exe empaquetado\\construir_exe.py            (los cuatro)
+    .venv\\Scripts\\python.exe empaquetado\\construir_exe.py            (todos)
     .venv\\Scripts\\python.exe empaquetado\\construir_exe.py app bot_q10  (solo algunos)
 
 Salen cuatro archivos que deben quedar JUNTOS en la misma carpeta:
@@ -49,6 +49,13 @@ OBJETIVOS = {
     ]),
     "bot_oxford": ("Bot Oxford", rutas("empaquetado", "entrada_bot_oxford.py"), [
         "--paths", rutas("bots", "oxford"), "--collect-all", "playwright",
+    ]),
+    # Pruebas de Wide Angle (pantalla "Usuarios" de Oxford): pytest + los archivos de tests/ dentro del .exe
+    "bot_pruebas_oxford": ("Bot Pruebas Oxford", rutas("empaquetado", "entrada_pruebas_oxford.py"), [
+        "--collect-all", "playwright", "--collect-submodules", "pytest",
+        "--add-data", f"{rutas('tests', 'oxford')};tests/oxford",
+        "--add-data", f"{rutas('tests', 'pytest.ini')};tests",
+        "--add-data", f"{rutas('tests', 'conftest.py')};tests",
     ]),
 }
 

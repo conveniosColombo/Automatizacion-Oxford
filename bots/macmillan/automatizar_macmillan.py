@@ -212,7 +212,11 @@ def ejecutar():
                 if not clases_a_procesar:
                     print(f"Aviso: No se encontraron las clases {clases} en la plataforma. Hay: {todas_las_clases}")
             
+            # Linea interna que lee la ventana de progreso: "[[PROGRESO]] terminadas total"
+            print(f"[[PROGRESO]] 0 {len(clases_a_procesar)}", flush=True)
             for i, clase in enumerate(clases_a_procesar, 1):
+                if i > 1:
+                    print(f"[[PROGRESO]] {i - 1} {len(clases_a_procesar)}", flush=True)
                 print(f"Clase {i}/{len(clases_a_procesar)}: {clase}")
                 print(f"   Scores: {perfil.get('scores_mode', 'Show all attempts')}")
                 try:
@@ -229,6 +233,7 @@ def ejecutar():
                 
                 progreso.volver_a_clases()
 
+            print(f"[[PROGRESO]] {len(clases_a_procesar)} {len(clases_a_procesar)}", flush=True)
             browser.close()
             print("\n✔️ Reporte generado exitosamente.")
             

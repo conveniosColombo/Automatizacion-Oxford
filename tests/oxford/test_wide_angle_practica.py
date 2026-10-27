@@ -18,7 +18,7 @@ import pytest
 
 from pages.courses_page import CoursesPage
 from pages.login_page import LoginPage
-from pages.practica_page import PracticaPage, cargar_banco
+from pages.practica_page import NIVEL, PracticaPage, cargar_banco
 
 log = logging.getLogger("oxford.test.practica")
 
@@ -44,7 +44,7 @@ def practica(pagina, cuenta):
     LoginPage(pagina).iniciar_sesion(cuenta["user"], cuenta["password"], cuenta["link"], cuenta.get("codigo", ""))
     cursos = CoursesPage(pagina)
     cursos.abrir_my_courses()
-    cursos.abrir_libro("Wide Angle", "Level 3")
+    cursos.abrir_libro("Wide Angle", f"Level {NIVEL}")  # NIVEL sale de OXFORD_NIVEL (ver practica_page)
     return PracticaPage.abrir_desde_hub(pagina)
 
 

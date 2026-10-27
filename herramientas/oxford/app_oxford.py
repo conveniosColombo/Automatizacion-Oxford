@@ -12,8 +12,10 @@ Solo usa: Python 3.13, customtkinter, tkinter estandar, json, subprocess.
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 from tkinter import filedialog, messagebox
 from typing import Callable
@@ -171,6 +173,175 @@ def leer_excel_col1(ruta: str) -> list:
         )
 
     return vals
+
+
+# ─────────────────────────────────────────── Excel de usuarios (pruebas Wide Angle)
+USUARIOS_XLSX    = ROOT / "Usuarios Oxford.xlsx"
+PRUEBAS_EXE      = ROOT / "Bot Pruebas Oxford.exe"
+PRUEBAS_SCRIPT   = ROOT / "empaquetado" / "entrada_pruebas_oxford.py"
+NIVELES_WIDE_ANGLE = (3, 4, 5)
+UNIDADES_POR_DEFECTO = "1,2,3"
+COLUMNAS_USUARIOS = ("Usuario", "Contraseña", "Nivel", "Unidades", "Usar", "Código organización", "Estado",
+                     "Online Practice", "Ebook")
+COL_ESTADO = COLUMNAS_USUARIOS.index("Estado") + 1
+
+
+def crear_plantilla_usuarios(ruta: Path = USUARIOS_XLSX) -> None:
+    """Crea 'Usuarios Oxford.xlsx' con los encabezados y dos filas de ejemplo (Usar = No)."""
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Font, PatternFill
+    from openpyxl.worksheet.datavalidation import DataValidation
+
+    libro = Workbook()
+    hoja = libro.active
+    hoja.title = "Usuarios"
+    hoja.append(COLUMNAS_USUARIOS)
+    for c in hoja[1]:
+        c.font = Font(bold=True, color="FFFFFF")
+        c.fill = PatternFill("solid", fgColor="004C97")
+        c.alignment = Alignment(horizontal="center")
+    hoja.append(("usuario.ejemplo1", "", 3, UNIDADES_POR_DEFECTO, "No", "", "", "", ""))
+    hoja.append(("usuario.ejemplo2", "", 4, UNIDADES_POR_DEFECTO, "No", "", "", "", ""))
+    hoja.append(("usuario.ejemplo3", "", 5, UNIDADES_POR_DEFECTO, "No", "", "", "", ""))
+    for col, ancho in zip("ABCDEFGHI", (34, 22, 9, 14, 8, 22, 70, 24, 24)):
+        hoja.column_dimensions[col].width = ancho
+    niveles = DataValidation(type="list", formula1='"3,4,5"', allow_blank=False)
+    usar = DataValidation(type="list", formula1='"Sí,No"', allow_blank=True)
+    hoja.add_data_validation(niveles)
+    hoja.add_data_validation(usar)
+    niveles.add("C2:C500")
+    usar.add("E2:E500")
+
+    ayuda = libro.create_sheet("Cómo se usa")
+    for linea in (
+        "Una fila por usuario de Oxford English Hub.",
+        "Usuario: el correo o nombre de usuario con el que entra a Oxford.",
+        "Contraseña: opcional. Vacía = se usa la de 'Credenciales Oxford.txt' (misma clave para todos).",
+        "Nivel: el libro Wide Angle del usuario, 3, 4 o 5.",
+        f"Unidades: las unidades a resolver (cada una incluye su Unit Test). Vacío = {UNIDADES_POR_DEFECTO}.",
+        "Usar: 'No' salta la fila sin borrarla (las dos filas de ejemplo están en No).",
+        "Código organización: el Organization ID que pide Oxford al iniciar sesión (ej: 18xaf). "
+        "Vacío = el de 'Credenciales Oxford.txt'.",
+        "Estado: lo escribe la aplicación (no lo llenes). Antes de ejecutar anota los errores de la fila "
+        "(nivel, contraseña...); al terminar cada usuario anota OK o ERROR con las actividades que fallaron.",
+        "Online Practice y Ebook: códigos de acceso (ej: 1111-2222-3333). Opcionales: solo se usan si el libro "
+        "del usuario sale con candado (sin licencia); entonces se activan (primero Online Practice, luego Ebook) "
+        "y se reintenta. Vacío = el usuario con candado queda como BLOQUEADO.",
+        "Guarda y cierra el Excel antes de ejecutar las pruebas.",
+        "Las pruebas ESCRIBEN intentos reales en la cuenta: usa cuentas de prueba, no de alumnos.",
+    ):
+        hoja_ayuda = libro["Cómo se usa"]
+        hoja_ayuda.append((linea,))
+    libro["Cómo se usa"].column_dimensions["A"].width = 110
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    libro.save(ruta)
+
+
+def completar_columnas_usuarios(ruta: Path = USUARIOS_XLSX) -> None:
+    """Agrega los encabezados que falten (Excel creado por una version anterior, sin 'Código organización').
+
+    Si el archivo esta abierto en Excel no se puede guardar: se deja como esta (PermissionError).
+    """
+    from copy import copy
+    from openpyxl import load_workbook
+
+    libro = load_workbook(ruta)
+    hoja = libro["Usuarios"] if "Usuarios" in libro.sheetnames else libro.worksheets[0]
+    cambio = False
+    for n, nombre in enumerate(COLUMNAS_USUARIOS, start=1):
+        celda = hoja.cell(row=1, column=n)
+        if celda.value in (None, ""):
+            celda.value = nombre
+            modelo = hoja.cell(row=1, column=min(n, 5))
+            celda.font, celda.fill, celda.alignment = copy(modelo.font), copy(modelo.fill), copy(modelo.alignment)
+            hoja.column_dimensions[celda.column_letter].width = 70 if nombre == "Estado" else 22
+            cambio = True
+    if cambio:
+        libro.save(ruta)
+    libro.close()
+
+
+def texto_estado(resultado: str, motivo: str) -> str:
+    """Texto de la columna 'Estado' para el resultado de un usuario (OK / BLOQUEADO / FALLO)."""
+    marca = datetime.now().strftime("%d/%m %H:%M")
+    if resultado == "OK":
+        return f"OK {marca}" + (f" ({motivo})" if motivo else "")
+    if resultado == "BLOQUEADO":
+        return f"BLOQUEADO {marca}: {motivo}"
+    return f"ERROR {marca}: {motivo or 'revisa el log y las capturas'}"
+
+
+def color_estado(texto: str) -> str:
+    """Color de la UI segun como empieza el 'Estado' del Excel."""
+    if texto.startswith("OK"):
+        return T.OK
+    if texto.startswith(("BLOQUEADO", "EJECUTANDO")):
+        return T.WARN
+    return T.ERR if texto.startswith("ERROR") else T.TEXTO
+
+
+def escribir_estados_usuarios(estados: dict[int, str], ruta: Path = USUARIOS_XLSX) -> None:
+    """Escribe en la columna 'Estado' el resultado de cada fila ({numero de fila del Excel: texto}).
+
+    Verde si empieza con 'OK', rojo si empieza con 'ERROR'. Lanza PermissionError si el Excel esta abierto.
+    """
+    from openpyxl import load_workbook
+    from openpyxl.styles import Font
+
+    libro = load_workbook(ruta)
+    hoja = libro["Usuarios"] if "Usuarios" in libro.sheetnames else libro.worksheets[0]
+    if hoja.cell(row=1, column=COL_ESTADO).value in (None, ""):
+        hoja.cell(row=1, column=COL_ESTADO).value = "Estado"
+    for fila, texto in estados.items():
+        celda = hoja.cell(row=fila, column=COL_ESTADO)
+        celda.value = texto
+        color = "007A33" if texto.startswith("OK") else "B36B00" if texto.startswith("EJECUTANDO") else "C00000"
+        celda.font = Font(color=color, bold=True)
+    libro.save(ruta)
+    libro.close()
+
+
+def leer_usuarios(ruta: Path = USUARIOS_XLSX) -> list[dict]:
+    """Filas de la hoja 'Usuarios': {usuario, clave, nivel, unidades, usar, error}.
+
+    'error' es "" si la fila se puede ejecutar. La contraseña vacía se completa con la de
+    'Credenciales Oxford.txt'. Las filas sin usuario se ignoran.
+    """
+    from openpyxl import load_workbook
+
+    cred = leer_txt(CREDENCIALES_TXT)
+    clave_comun = cred.get("password", "")
+    codigo_comun = next((v for k, v in cred.items() if k.startswith("codigo")), "")
+    libro = load_workbook(ruta, data_only=True)
+    hoja = libro["Usuarios"] if "Usuarios" in libro.sheetnames else libro.worksheets[0]
+    filas = []
+    for n_fila, fila in enumerate(hoja.iter_rows(min_row=2, values_only=True), start=2):
+        celdas = [("" if v is None else str(v).strip()) for v in (list(fila) + [None] * 9)[:9]]
+        usuario, clave, nivel, unidades, usar, codigo, estado = celdas[:7]
+        cod_practica, cod_ebook = celdas[7], celdas[8]
+        if not usuario:
+            continue
+        error = ""
+        try:
+            nivel_n = int(float(nivel))
+            if nivel_n not in NIVELES_WIDE_ANGLE:
+                error = f"Nivel {nivel_n} no existe (usa {' o '.join(map(str, NIVELES_WIDE_ANGLE))})"
+        except ValueError:
+            nivel_n, error = 0, "Falta el Nivel (3, 4 o 5)"
+        unidades = unidades.replace(".0", "") or UNIDADES_POR_DEFECTO
+        if not re.fullmatch(r"\d+(\s*,\s*\d+)*", unidades):
+            error = error or f"Unidades '{unidades}' no válidas (ej: 1,2,3)"
+        clave = clave or clave_comun
+        if not clave and not error:
+            error = "Sin contraseña (ponla en el Excel o en 'Credenciales Oxford.txt')"
+        filas.append({"fila": n_fila, "usuario": usuario, "clave": clave, "nivel": nivel_n,
+                      "codigo": codigo or codigo_comun,
+                      "cod_practica": cod_practica, "cod_ebook": cod_ebook,
+                      "unidades": re.sub(r"\s+", "", unidades),
+                      "usar": usar.lower() not in ("no", "n", "false", "0"), "error": error,
+                      "estado": estado})
+    libro.close()
+    return filas
 
 
 # ─────────────────────────────────────────── Perfiles JSON
@@ -751,10 +922,113 @@ class PanelSettings(PBase):
         self.var_ruta.set(d.get("ruta_descarga", ""))
 
 
+# ───────────────────────────────────────────── Usuarios (pruebas Wide Angle)
+class PanelUsuarios(PBase):
+    """Lee 'Usuarios Oxford.xlsx' (usuario + nivel) y corre las pruebas de Wide Angle con cada uno."""
+
+    def __init__(self, master, al_ejecutar: Callable):
+        super().__init__(master, "Usuarios — pruebas de Wide Angle",
+                         "Un Excel con el usuario y el nivel (3, 4 o 5). El bot resuelve las unidades "
+                         "del libro de cada usuario.")
+        self._al_ejecutar = al_ejecutar
+        self.cont.grid_rowconfigure(2, weight=1)
+
+        barra = ctk.CTkFrame(self.cont, fg_color="transparent")
+        barra.grid(row=0, column=0, sticky="ew", pady=(0, 10))
+        for txt, fn in (("📄 Abrir Excel", self._abrir_excel), ("🔄 Recargar", self.recargar)):
+            ctk.CTkButton(barra, text=txt, font=T.BTN, height=34, width=130,
+                          fg_color=T.SUP, hover_color=T.FONDO, text_color=T.PRIM,
+                          border_width=1, border_color=T.PRIM, corner_radius=T.R,
+                          command=fn).pack(side="left", padx=(0, 8))
+        self.lbl_resumen = ctk.CTkLabel(barra, text="", font=T.AYD, text_color=T.SUAVE, anchor="e")
+        self.lbl_resumen.pack(side="right")
+
+        self.lbl_ruta = ctk.CTkLabel(self.cont, text=f"Archivo: {USUARIOS_XLSX}", font=T.AYD,
+                                     text_color=T.SUAVE, anchor="w", wraplength=700, justify="left")
+        self.lbl_ruta.grid(row=1, column=0, sticky="ew", pady=(0, 6))
+
+        self.lista = ctk.CTkScrollableFrame(self.cont, fg_color=T.SUP, border_width=1,
+                                            border_color=T.BORDE, corner_radius=T.R)
+        self.lista.grid(row=2, column=0, sticky="nsew")
+        for i, peso in enumerate((4, 1, 1, 1, 2, 3)):
+            self.lista.grid_columnconfigure(i, weight=peso)
+
+        self.btn_ejecutar = ctk.CTkButton(
+            self.cont, text="EJECUTAR PRUEBAS WIDE ANGLE", font=T.BTNG, height=40,
+            fg_color=T.PRIM, hover_color=T.PRIM_H, text_color="white", corner_radius=T.R,
+            command=self._al_ejecutar)
+        self.btn_ejecutar.grid(row=3, column=0, sticky="ew", pady=(10, 0))
+        # recargar() corre al abrir esta pantalla (VistaOxford._mostrar), no al arrancar la app
+
+    def _abrir_excel(self):
+        import os
+        if not USUARIOS_XLSX.exists():
+            self._crear()
+        try:
+            completar_columnas_usuarios()   # antes de abrirlo: ya no esta bloqueado por Excel
+        except Exception:
+            pass
+        os.startfile(USUARIOS_XLSX)
+
+    def _crear(self):
+        try:
+            crear_plantilla_usuarios()
+        except Exception as e:
+            messagebox.showerror("No se pudo crear el Excel", str(e))
+
+    antes_de_recargar: Callable | None = None   # lo pone VistaOxford: guarda Estados que quedaron pendientes
+
+    def recargar(self):
+        if self.antes_de_recargar:
+            self.antes_de_recargar()
+        for w in self.lista.winfo_children():
+            w.destroy()
+        if not USUARIOS_XLSX.exists():
+            self._crear()
+        try:
+            try:
+                completar_columnas_usuarios()
+            except PermissionError:
+                pass                    # abierto en Excel: se lee igual, sin tocarlo
+            self.usuarios = leer_usuarios()
+        except PermissionError:
+            self.usuarios = []
+            self.lbl_resumen.configure(text="Cierra el Excel y pulsa Recargar", text_color=T.ERR)
+            return
+        except Exception as e:
+            self.usuarios = []
+            self.lbl_resumen.configure(text=f"No se pudo leer el Excel: {e}", text_color=T.ERR)
+            return
+        for col, txt in enumerate(("Usuario", "Nivel", "Unidades", "Código org.", "Códigos", "Estado")):
+            ctk.CTkLabel(self.lista, text=txt, font=T.ETQ, text_color=T.PRIM, anchor="w"
+                         ).grid(row=0, column=col, sticky="ew", padx=8, pady=(6, 4))
+        for r, u in enumerate(self.usuarios, start=1):
+            if u["error"]:
+                estado, color = f"⚠ {u['error']}", T.ERR
+            elif u["estado"]:           # lo que dice la columna 'Estado' del Excel (ultimo resultado)
+                estado, color = u["estado"], color_estado(u["estado"])
+            elif not u["usar"]:
+                estado, color = "Omitido (Usar = No)", T.SUAVE
+            else:
+                estado, color = "Listo", T.OK
+            valores = (u["usuario"], f"Wide Angle {u['nivel']}" if u["nivel"] else "—",
+                       u["unidades"], u["codigo"] or "—",
+                       ", ".join(n for n, c in (("Online Practice", u["cod_practica"]), ("Ebook", u["cod_ebook"])) if c)
+                       or "—", estado)
+            for col, txt in enumerate(valores):
+                ctk.CTkLabel(self.lista, text=txt, font=T.NRM, anchor="w", wraplength=260,
+                             justify="left", text_color=color if col == 5 else T.TEXTO
+                             ).grid(row=r, column=col, sticky="ew", padx=8, pady=2)
+        listos = sum(1 for u in self.usuarios if u["usar"] and not u["error"])
+        self.lbl_resumen.configure(
+            text=f"{listos} usuario(s) listo(s) de {len(self.usuarios)}",
+            text_color=T.OK if listos else T.WARN)
+
+
 # ───────────────────────────────────────────── Sidebar
 class Sidebar(ctk.CTkFrame):
     SECS = [("H", "Perfiles"), ("C", "Credenciales"),
-            ("O", "Organizacion"), ("S", "Settings")]
+            ("O", "Organizacion"), ("S", "Settings"), ("U", "Usuarios")]
 
     def __init__(self, master, al_cambiar: Callable):
         super().__init__(master, fg_color=T.PRIM_OSC, width=72, corner_radius=0)
@@ -773,7 +1047,7 @@ class Sidebar(ctk.CTkFrame):
 
         nav = ctk.CTkFrame(self, fg_color="transparent")
         nav.grid(row=1, column=0)
-        ICONOS = ["🏠", "🔐", "🏛", "⚙"]
+        ICONOS = ["🏠", "🔐", "🏛", "⚙", "👥"]
         for i, (ico, lbl) in enumerate(zip(ICONOS, [s[1] for s in self.SECS])):
             btn = ctk.CTkButton(
                 nav, text=ico, width=48, height=48,
@@ -852,8 +1126,16 @@ class BarraInf(ctk.CTkFrame):
 class VentanaProgreso(ctk.CTkToplevel):
     """Ventana que muestra el log del bot en tiempo real."""
 
-    def __init__(self, master, perfil: str, n_clases: str):
+    def __init__(self, master, perfil: str, n_clases: str, carpeta: Path,
+                 titulo: str = "Ejecutando bot Oxford", unidad: str = "clases",
+                 info: str | None = None, total: int = 0,
+                 texto_carpeta: str = "📂 Abrir descargas",
+                 al_resultado: Callable | None = None, al_inicio: Callable | None = None):
         super().__init__(master)
+        self.al_inicio = al_inicio              # (usuario) cuando el bot empieza con una cuenta
+        self.al_resultado = al_resultado        # (usuario, texto_estado, es_el_ultimo) por cada cuenta que termina
+        self.carpeta = carpeta
+        self.unidad = unidad
         self.title("Progreso del bot - Oxford English Hub")
         self.geometry("700x480")
         self.minsize(600, 360)
@@ -865,19 +1147,38 @@ class VentanaProgreso(ctk.CTkToplevel):
         # Cabecera
         cab = ctk.CTkFrame(self, fg_color=T.PRIM, corner_radius=0)
         cab.pack(fill="x")
-        ctk.CTkLabel(cab, text="▶  Ejecutando bot Oxford",
+        ctk.CTkLabel(cab, text=f"▶  {titulo}",
                      font=T.TIT, text_color="white", anchor="w"
                      ).pack(side="left", padx=16, pady=10)
         self.lbl_info = ctk.CTkLabel(cab,
-                     text=f"Perfil: {perfil}  |  Clases: {n_clases}",
+                     text=info or f"Perfil: {perfil}  |  Clases: {n_clases}",
                      font=T.AYD, text_color=T.SB_TXT, anchor="e")
         self.lbl_info.pack(side="right", padx=16)
+
+        # Avance: barra + contadores (clases terminadas de las que hay en total)
+        self.hechos, self.total = 0, total
+        self.exitosas = self.fallos = 0
+        self._detenido = False
+        fila = ctk.CTkFrame(self, fg_color="transparent")
+        fila.pack(fill="x", padx=12, pady=(10, 0))
+        fila.grid_columnconfigure(0, weight=1)
+        self.barra = ctk.CTkProgressBar(fila, mode="indeterminate", height=8,
+                                        progress_color=T.PRIM, fg_color=T.BORDE)
+        self.barra.grid(row=0, column=0, sticky="ew", padx=(0, 16))
+        if total:
+            self.barra.configure(mode="determinate")
+            self.barra.set(0)
+        else:
+            self.barra.start()
+        self.lbl_cont = ctk.CTkLabel(fila, text=self._texto_contadores(),
+                                     font=T.NRM, text_color=T.TEXTO)
+        self.lbl_cont.grid(row=0, column=1)
 
         # Texto de log
         self.txt = ctk.CTkTextbox(
             self, fg_color=T.SUP, border_color=T.BORDE, border_width=1,
             font=("Consolas", 11), wrap="word", corner_radius=T.R)
-        self.txt.pack(fill="both", expand=True, padx=12, pady=(10, 0))
+        self.txt.pack(fill="both", expand=True, padx=12, pady=(8, 0))
         self.txt.configure(state="disabled")
 
         # Barra inferior
@@ -887,55 +1188,134 @@ class VentanaProgreso(ctk.CTkToplevel):
         self.lbl_estado = ctk.CTkLabel(bar, text="⏳ Iniciando...",
                                         font=T.NRM, text_color=T.SUAVE, anchor="w")
         self.lbl_estado.grid(row=0, column=0, sticky="w")
+        self.btn_carpeta = ctk.CTkButton(bar, text=texto_carpeta,
+                                          font=T.BTN, height=34,
+                                          fg_color=T.SUP, hover_color=T.FONDO,
+                                          text_color=T.PRIM, border_width=1,
+                                          border_color=T.PRIM, corner_radius=T.R,
+                                          command=self._abrir_carpeta)
+        self.btn_carpeta.grid(row=0, column=1, padx=(8, 0))
         self.btn_cerrar = ctk.CTkButton(bar, text="Cerrar",
                                          font=T.BTN, height=34, width=100,
                                          fg_color=T.SUP, hover_color=T.FONDO,
                                          text_color=T.TEXTO, border_width=1,
                                          border_color=T.BORDE, corner_radius=T.R,
                                          command=self._cerrar, state="disabled")
-        self.btn_cerrar.grid(row=0, column=1, padx=(8, 0))
+        self.btn_cerrar.grid(row=0, column=2, padx=(8, 0))
         self.btn_detener = ctk.CTkButton(bar, text="Detener bot",
                                           font=T.BTN, height=34, width=120,
                                           fg_color=T.ERR, hover_color=T.ERR_H,
                                           text_color="white", corner_radius=T.R,
                                           command=self._detener)
-        self.btn_detener.grid(row=0, column=2, padx=(8, 0))
+        self.btn_detener.grid(row=0, column=3, padx=(8, 0))
 
         self.protocol("WM_DELETE_WINDOW", self._cerrar)
         self.grab_set()
 
-    def iniciar(self, cmd: list, cwd: str):
+    def iniciar(self, cmd: list, cwd: str, env: dict | None = None):
         """Lanza el proceso y empieza a leer stdout."""
-        import subprocess, threading
-        self._corriendo = True
-        self._proceso = subprocess.Popen(
-            cmd, cwd=cwd, stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-            text=True, encoding="utf-8", errors="replace",
-            creationflags=subprocess.CREATE_NO_WINDOW)
-        threading.Thread(target=self._leer, daemon=True).start()
+        self.iniciar_trabajos([(cmd, env)], cwd)
 
-    def _leer(self):
-        for linea in self._proceso.stdout:
-            linea = linea.rstrip()
-            self._log(linea)
-        self._proceso.wait()
-        rc = self._proceso.returncode
-        if rc == 0:
+    def iniciar_trabajos(self, trabajos: list, cwd: str):
+        """Lanza varios procesos UNO TRAS OTRO, [(cmd, env)]; se detiene al primero si el usuario para."""
+        import threading
+        self._corriendo = True
+        threading.Thread(target=self._leer, args=(trabajos, cwd), daemon=True).start()
+
+    def _leer(self, trabajos: list, cwd: str):
+        import subprocess
+        codigos = []
+        for cmd, env in trabajos:
+            if self._detenido:
+                break
+            self._proceso = subprocess.Popen(
+                cmd, cwd=cwd, stdin=subprocess.DEVNULL, env=env,
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                text=True, encoding="utf-8", errors="replace",
+                creationflags=subprocess.CREATE_NO_WINDOW)
+            for linea in self._proceso.stdout:
+                self._log(linea.rstrip())
+            self._proceso.wait()
+            codigos.append(self._proceso.returncode)
+        rc = next((c for c in codigos if c), 0)
+        if self._detenido:
+            self._set_estado("⏹ Bot detenido por el usuario.", T.WARN)
+        elif rc == 0:
             self._set_estado("✅ Bot finalizado correctamente.", T.OK)
         else:
             self._set_estado(f"⚠️ Bot terminó con código {rc}. Revisa el log.", T.WARN)
         self._corriendo = False
-        self.after(0, lambda: self.btn_cerrar.configure(state="normal"))
-        self.after(0, lambda: self.btn_detener.configure(state="disabled"))
+
+        def _fin():
+            self.barra.stop()
+            self.barra.configure(mode="determinate")
+            self.barra.set(min(self.hechos / self.total, 1) if self.total else 0)
+            self.btn_cerrar.configure(state="normal")
+            self.btn_detener.configure(state="disabled")
+        self.after(0, _fin)
+
+    def _texto_contadores(self) -> str:
+        avance = f"{self.hechos} de {self.total} {self.unidad}    " if self.total else ""
+        return f"{avance}✔ {self.exitosas} descargada(s)    ✖ {self.fallos} con error"
+
+    def _mostrar_avance(self, hechos: int, total: int):
+        self.hechos, self.total = hechos, total
+        if total <= 0:
+            return
+        if self.barra.cget("mode") != "determinate":
+            self.barra.stop()
+            self.barra.configure(mode="determinate")
+        self.barra.set(min(hechos / total, 1))
+        self.lbl_cont.configure(text=self._texto_contadores())
 
     def _log(self, texto: str):
+        m = re.match(r"\[\[PROGRESO\]\]\s+(\d+)\s+(\d+)", texto)
+        if m:                       # linea interna del bot: alimenta el avance, no se muestra
+            self.after(0, lambda: self._mostrar_avance(int(m.group(1)), int(m.group(2))))
+            return
+        actual = re.search(r"\[\[USUARIO\]\]\s+(\S+)\s+nivel\s+(\d+)", texto)
+        if actual:                  # empieza un usuario: se deja a la vista cual es (cabecera + separador en el log)
+            usuario, nivel = actual.group(1), actual.group(2)
+            if self.al_inicio:
+                self.after(0, lambda: self.al_inicio(usuario))
+            numero = self.exitosas + self.fallos + 1
+            cabecera = f"Probando {usuario}  ·  {numero} de {self.total}  ·  Wide Angle {nivel}"
+            self.after(0, lambda: self.lbl_info.configure(text=cabecera))
+            self.after(0, lambda: self.title(f"{numero}/{self.total} {usuario} - Pruebas Wide Angle"))
+            texto = f"\n===== Usuario {numero} de {self.total}: {usuario}  (Wide Angle {nivel}) ====="
+        prueba = re.search(r"\[\[PRUEBA\]\]\s+(\S+)\s+(OK|FALLO|BLOQUEADO)\s*(.*)", texto)
+        tag_forzado = None
+        if prueba:                  # una cuenta de la prueba de Wide Angle termino
+            resultado = prueba.group(2)
+            ok = resultado == "OK"
+            usuario, motivo = prueba.group(1), prueba.group(3).strip()
+            estado = texto_estado(resultado, motivo)    # el MISMO texto que se anota en el Excel
+            self.exitosas += ok
+            self.fallos += not ok
+            self.after(0, lambda: self._mostrar_avance(self.exitosas + self.fallos, self.total))
+            if self.al_resultado:
+                self.after(0, lambda: self.al_resultado(usuario, estado,
+                                                        self.exitosas + self.fallos >= self.total))
+            texto = f"{'✔' if ok else '✖'} Usuario {usuario} → Estado: {estado}"
+            tag_forzado = "ok" if ok else "err"   # se colorea por el resultado, no por palabras del motivo
+        low = texto.lower()
+        if low.startswith("paso 12:"):
+            self.exitosas += 1
+        elif low.startswith("fallo en la clase"):
+            self.fallos += 1
+        if low.startswith(("paso 12:", "fallo en la clase")):
+            self.after(0, lambda: self.lbl_cont.configure(text=self._texto_contadores()))
+
         def _do():
             self.txt.configure(state="normal")
             # Colorear errores y exitos
             tag = None
             t_lower = texto.lower()
-            if "fallo" in t_lower or "error" in t_lower or "exception" in t_lower:
+            if tag_forzado:
+                tag = tag_forzado
+                self.txt.tag_config(tag, foreground=T.OK if tag == "ok" else T.ERR)
+                self.lbl_estado.configure(text=texto[:90], text_color=T.OK if tag == "ok" else T.ERR)
+            elif "fallo" in t_lower or "error" in t_lower or "exception" in t_lower:
                 tag = "err"
                 self.txt.tag_config("err", foreground=T.ERR)
                 self.lbl_estado.configure(
@@ -956,8 +1336,22 @@ class VentanaProgreso(ctk.CTkToplevel):
 
     def _detener(self):
         if self._proceso and self._corriendo:
-            self._proceso.terminate()
+            self._detenido = True
+            # terminate() solo mata al proceso lanzado; el bot (python hijo / .exe onefile) y el
+            # navegador seguirian vivos. taskkill /T /F cierra todo el arbol.
+            import subprocess
+            subprocess.run(["taskkill", "/PID", str(self._proceso.pid), "/T", "/F"],
+                           capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
             self._log(">>> Bot detenido por el usuario.")
+            self.btn_detener.configure(state="disabled")
+
+    def _abrir_carpeta(self):
+        """Abre la carpeta donde el bot guarda los CSV (o la de arriba si aun no existe)."""
+        import os
+        carpeta = self.carpeta
+        while not carpeta.exists() and carpeta != carpeta.parent:
+            carpeta = carpeta.parent
+        os.startfile(carpeta)
 
     def _cerrar(self):
         if self._corriendo:
@@ -1018,7 +1412,10 @@ class VistaOxford(ctk.CTkFrame):
         self.po = PanelOrg(self.area, al_cambiar=self._on_edit)
         self.ps = PanelSettings(self.area, al_cambiar=self._on_edit)
 
-        self._panels = [self.pp, self.pc, self.po, self.ps]
+        self._estados_pendientes: dict[int, str] = {}
+        self.pu = PanelUsuarios(self.area, al_ejecutar=self._ejecutar_pruebas)
+        self.pu.antes_de_recargar = lambda: self._estados_pendientes and self._anotar_estados({})
+        self._panels = [self.pp, self.pc, self.po, self.ps, self.pu]
         for p in self._panels:
             p.grid(row=0, column=0, sticky="nsew")
 
@@ -1041,6 +1438,111 @@ class VistaOxford(ctk.CTkFrame):
         self._panels[idx].tkraise()
         if idx == 0:
             self.pp.actualizar(self._perfiles, self._activo)
+        elif self._panels[idx] is self.pu:
+            self.pu.recargar()          # el Excel pudo cambiar mientras estaba en otra pantalla
+
+    # ── Pruebas de Wide Angle (menu Usuarios)
+    def _anotar_estados(self, estados: dict[int, str]) -> bool:
+        """Anota en la columna 'Estado' del Excel. Si esta abierto en Excel lo deja pendiente y avisa."""
+        self._estados_pendientes.update(estados)
+        try:
+            escribir_estados_usuarios(self._estados_pendientes)
+        except PermissionError:
+            return False
+        except Exception as e:
+            messagebox.showerror("No se pudo anotar el Estado", str(e))
+            return False
+        self._estados_pendientes = {}
+        return True
+
+    def _ejecutar_pruebas(self):
+        self.pu.recargar()
+        self._estados_pendientes: dict[int, str] = {}
+        ahora = datetime.now().strftime("%d/%m %H:%M")
+        con_error = {u["fila"]: f"ERROR {ahora}: {u['error']}" for u in self.pu.usuarios
+                     if u["usar"] and u["error"]}
+        if con_error and not self._anotar_estados(con_error):
+            messagebox.showwarning(
+                "Excel abierto",
+                "Hay usuarios con error en el Excel pero está abierto y no pude anotar su 'Estado'.\n"
+                "Ciérralo y pulsa Ejecutar de nuevo para dejar el registro.")
+            return
+        if con_error:
+            self.pu.recargar()
+        listos = [u for u in self.pu.usuarios if u["usar"] and not u["error"]]
+        if not listos:
+            messagebox.showinfo("Sin usuarios",
+                                "No hay usuarios listos: revisa el Excel (Usar, Nivel y contraseña).")
+            return
+        es_exe = getattr(sys, "frozen", False)
+        if es_exe and not PRUEBAS_EXE.exists():
+            messagebox.showerror("Bot no encontrado",
+                                 f"No se encontro '{PRUEBAS_EXE.name}' junto a la aplicacion:\n{ROOT}")
+            return
+        if not es_exe and not PRUEBAS_SCRIPT.exists():
+            messagebox.showerror("Bot no encontrado", f"No se encontro:\n{PRUEBAS_SCRIPT}")
+            return
+        cred = leer_txt(CREDENCIALES_TXT)
+        link = cred.get("link") or "https://englishhub.oup.com"
+
+        # Se respeta el ORDEN DEL EXCEL (empieza por la primera fila). El nivel se lee al importar y no cambia
+        # dentro de un proceso, asi que se corta en un proceso nuevo cada vez que cambia el nivel o las unidades.
+        grupos: list = []                           # [(nivel, unidades, [usuarios])], en orden de fila
+        for u in listos:
+            if grupos and grupos[-1][0] == u["nivel"] and grupos[-1][1] == u["unidades"]:
+                grupos[-1][2].append(u)
+            else:
+                grupos.append((u["nivel"], u["unidades"], [u]))
+        resumen = "\n".join(f"{i}. Wide Angle {n}, unidades {un}: " + ", ".join(x["usuario"] for x in us)
+                            for i, (n, un, us) in enumerate(grupos, start=1))
+        if not messagebox.askyesno(
+                "Ejecutar pruebas?",
+                f"{resumen}\n\nSe abrira el navegador y se escribiran intentos REALES en cada cuenta.\n"
+                "¿Continuar?"):
+            return
+
+        import os, tempfile
+        carpeta_tmp = Path(tempfile.mkdtemp(prefix="oxford_cuentas_"))
+        py = str(VENV_PYTHON) if VENV_PYTHON.exists() else sys.executable
+        trabajos = []
+        for i, (nivel, unidades, usuarios) in enumerate(grupos):
+            archivo = carpeta_tmp / f"cuentas_{i}.json"
+            archivo.write_text(json.dumps(
+                [{"user": u["usuario"], "password": u["clave"], "link": link, "codigo": u["codigo"],
+                  "codigo_practica": u["cod_practica"], "codigo_ebook": u["cod_ebook"]}
+                 for u in usuarios], ensure_ascii=False), encoding="utf-8")
+            env = {**os.environ, "OXFORD_NIVEL": str(nivel), "OXFORD_UNIDADES": unidades,
+                   "OXFORD_CUENTAS": str(archivo), "OXFORD_RAIZ": str(ROOT),
+                   "PYTHONUNBUFFERED": "1", "PYTHONIOENCODING": "utf-8"}
+            cmd = [str(PRUEBAS_EXE)] if es_exe else [py, str(PRUEBAS_SCRIPT)]
+            trabajos.append((cmd, env))
+        filas = {u["usuario"]: u["fila"] for u in reversed(listos)}      # usuario -> fila del Excel
+
+        def al_inicio(usuario: str):
+            fila = filas.get(usuario)
+            if fila:
+                self._anotar_estados({fila: f"EJECUTANDO {datetime.now().strftime('%d/%m %H:%M')}..."})
+                self.pu.recargar()
+
+        def al_resultado(usuario: str, estado: str, ultimo: bool):
+            fila = filas.get(usuario)
+            if fila:
+                self._anotar_estados({fila: estado})
+                self.pu.recargar()          # la tabla de Usuarios muestra el Estado al instante
+            if ultimo and self._estados_pendientes:
+                messagebox.showwarning(
+                    "Excel abierto",
+                    "No pude anotar el 'Estado' de algunos usuarios porque el Excel está abierto.\n"
+                    "Ciérralo y pulsa Recargar en Usuarios para guardarlos.", parent=ven)
+        try:
+            ven = VentanaProgreso(self, "", "", ROOT / "Capturas",
+                                  titulo="Pruebas Wide Angle", unidad="usuarios",
+                                  info=f"{len(listos)} usuario(s)  |  {len(grupos)} grupo(s)",
+                                  total=len(listos), texto_carpeta="📂 Abrir capturas",
+                                  al_resultado=al_resultado, al_inicio=al_inicio)
+            ven.iniciar_trabajos(trabajos, str(ROOT))
+        except Exception as e:
+            messagebox.showerror("Error al ejecutar", str(e))
 
     # ── Perfiles
     def _cargar(self, idx: int):
@@ -1197,7 +1699,9 @@ class VistaOxford(ctk.CTkFrame):
             cmd = [str(BOT_EXE)] if es_exe else [py, str(BOT_SCRIPT)]
             if todas:
                 cmd.append("--todas")
-            ven = VentanaProgreso(self, p["nombre"], n_clases)
+            ruta = (p.get("ruta_descarga") or "").strip()
+            ven = VentanaProgreso(self, p["nombre"], n_clases,
+                                  Path(ruta) if ruta else ROOT / "Descargas")
             ven.iniciar(cmd, str(ROOT))
         except Exception as e:
             messagebox.showerror("Error al ejecutar", str(e))

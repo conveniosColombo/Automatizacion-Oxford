@@ -8,6 +8,8 @@ log = logging.getLogger("oxford.login")
 
 
 class LoginPage:
+    MENU_MY_COURSES = '[data-testid="MY_COURSES_BUTTON_PRIMARY_NAVIGATION_BAR"]'
+
     def __init__(self, page: Page):
         self.page = page
 
@@ -48,7 +50,9 @@ class LoginPage:
 
         # El host debe ser englishhub (la URL de id.oup.com tambien lo contiene en redirect_uri)
         page.wait_for_url(re.compile(r"^https://englishhub\.oup\.com"), timeout=60_000)
-        page.wait_for_load_state("networkidle")
+        # Sin 'networkidle' (el sitio nunca se calla del todo y llega a esperar ~30 s): basta el menu del Hub
+        page.locator(self.MENU_MY_COURSES).or_(page.get_by_role("textbox", name=re.compile("organi[sz]ation id", re.I))
+                                               ).first.wait_for(state="visible", timeout=30_000)
         self._ingresar_codigo_organizacion(codigo_organizacion)
         log.info("Sesion iniciada: %s", page.url)
 
@@ -59,6 +63,7 @@ class LoginPage:
         """
         page = self.page
         campo = None
+        estables = 0
         for _ in range(40):  # hasta ~20 s: la pantalla aparece unos segundos despues del login
             for marco in page.frames:
                 candidato = marco.get_by_role("textbox", name=re.compile("organi[sz]ation id", re.I))
@@ -67,6 +72,12 @@ class LoginPage:
                     break
             if campo:
                 break
+            # Cuenta ya asociada: el panel principal (menu de My Courses) esta a la vista y no hay formulario.
+            # Con ~1.5 s seguidos asi se da por hecho y no se espera el resto de los 20 s.
+            en_panel = "/myDashboard" in page.url and page.locator(self.MENU_MY_COURSES).is_visible()
+            estables = estables + 1 if en_panel else 0
+            if estables >= 3:
+                return
             page.wait_for_timeout(500)
         if not campo:
             return  # la cuenta ya esta asociada a su organizacion
@@ -75,4 +86,4 @@ class LoginPage:
         campo.fill(codigo)
         campo.press("Enter")
         campo.wait_for(state="hidden", timeout=30_000)
-        page.wait_for_load_state("networkidle")
+        page.locator(self.MENU_MY_COURSES).wait_for(state="visible", timeout=30_000)
