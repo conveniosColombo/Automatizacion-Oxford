@@ -465,7 +465,7 @@ def color_estado(texto: str) -> str:
     """Color de la UI segun como empieza el 'Estado' del Excel."""
     if texto.startswith("OK"):
         return T.OK
-    if texto.startswith(("BLOQUEADO", "EJECUTANDO")):
+    if texto.startswith(("BLOQUEADO", "EJECUTANDO", "DETENIDO")):
         return T.WARN
     return T.ERR if texto.startswith("ERROR") else T.TEXTO
 
@@ -485,7 +485,8 @@ def escribir_estados_usuarios(estados: dict[int, str], ruta: Path = USUARIOS_XLS
     for fila, texto in estados.items():
         celda = hoja.cell(row=fila, column=COL_ESTADO)
         celda.value = texto
-        color = "007A33" if texto.startswith("OK") else "B36B00" if texto.startswith("EJECUTANDO") else "C00000"
+        color = ("007A33" if texto.startswith("OK") else
+                 "B36B00" if texto.startswith(("EJECUTANDO", "DETENIDO")) else "C00000")
         celda.font = Font(color=color, bold=True)
     libro.save(ruta)
     libro.close()
@@ -1605,10 +1606,12 @@ class VentanaProgreso(ctk.CTkToplevel):
                  titulo: str = "Ejecutando bot Oxford", unidad: str = "clases",
                  info: str | None = None, total: int = 0,
                  texto_carpeta: str = "📂 Abrir descargas",
-                 al_resultado: Callable | None = None, al_inicio: Callable | None = None):
+                 al_resultado: Callable | None = None, al_inicio: Callable | None = None,
+                 al_terminar: Callable | None = None):
         super().__init__(master)
         self.al_inicio = al_inicio              # (usuario) cuando el bot empieza con una cuenta
         self.al_resultado = al_resultado        # (usuario, texto_estado, es_el_ultimo) por cada cuenta que termina
+        self.al_terminar = al_terminar          # (detenido) cuando ya no queda ningun proceso (fin o Detener)
         self.carpeta = carpeta
         self.unidad = unidad
         self.title("Progreso del bot - Oxford English Hub")
@@ -1784,7 +1787,13 @@ class VentanaProgreso(ctk.CTkToplevel):
             self.barra.set(min(self.hechos / self.total, 1) if self.total else 0)
             self.btn_cerrar.configure(state="normal")
             self.btn_detener.configure(state="disabled")
-        self.after(0, _fin)
+        try:
+            self.after(0, _fin)
+        except Exception:                       # la ventana ya se cerro (Cerrar con el bot corriendo)
+            pass
+        if self.al_terminar:                    # por la ventana principal: llega aunque esta ya no exista
+            detenido = self._detenido
+            self.master.after(0, lambda: self.al_terminar(detenido))
 
     def _texto_contadores(self) -> str:
         avance = f"{self.hechos} de {self.total} {self.unidad}    " if self.total else ""
@@ -1972,6 +1981,7 @@ class VistaOxford(ctk.CTkFrame):
     def cerrar(self) -> None:
         if self.hay_proceso_activo():
             self._ventana_bot._detener()       # la app ya pregunto si detenerlo antes de salir
+            self._cerrar_en_curso(detenido=True)   # la app se cierra: no esperar al aviso de la ventana
         if self._estados_pendientes:           # no perder los Estados que aun no se escribieron al Excel
             self._volcar_pendientes()
 
@@ -1994,7 +2004,19 @@ class VistaOxford(ctk.CTkFrame):
         if idx == 0:
             self.pp.actualizar(self._perfiles, self._activo)
         elif self._panels[idx] is self.pu:
-            self.pu.recargar()          # el Excel pudo cambiar mientras estaba en otra pantalla
+            self.pu.recargar(al_terminar=self._limpiar_colgados)   # el Excel pudo cambiar en otra pantalla
+
+    def _limpiar_colgados(self, ok: bool):
+        """'EJECUTANDO' sin ningun bot corriendo = quedo de una corrida que se corto (app cerrada, version
+        anterior...). Se marca DETENIDO para que no parezca que sigue en curso."""
+        if not ok or self.hay_proceso_activo():
+            return
+        ahora = datetime.now().strftime("%d/%m %H:%M")
+        for u in self.pu.usuarios:
+            if u["estado"].startswith("EJECUTANDO"):
+                texto = f"DETENIDO {ahora}: la corrida anterior se cortó antes de terminar este usuario"
+                self._encolar_estado(u["fila"], texto)
+                self.pu.actualizar_estado(u["fila"], texto)
 
     # ── Pruebas de Wide Angle (menu Usuarios)
     def _volcar_pendientes(self) -> str:
@@ -2017,6 +2039,16 @@ class VistaOxford(ctk.CTkFrame):
                 if self._estados_pendientes.get(fila) == texto:
                     del self._estados_pendientes[fila]
             return ""
+
+    def _cerrar_en_curso(self, detenido: bool = True):
+        """Cambia 'EJECUTANDO' por DETENIDO (se paro el bot) o ERROR (el bot termino sin dar resultado)."""
+        ahora = datetime.now().strftime("%d/%m %H:%M")
+        texto = (f"DETENIDO {ahora}: se detuvo el bot antes de terminar este usuario" if detenido
+                 else texto_estado("FALLO", "el bot terminó sin dar resultado para este usuario"))
+        for fila in sorted(getattr(self, "_en_curso", ())):
+            self._encolar_estado(fila, texto)
+            self.pu.actualizar_estado(fila, texto)
+        self._en_curso = set()
 
     def _anotar_estados(self, estados: dict[int, str]) -> bool:
         """Anota YA en la columna 'Estado' del Excel (una sola escritura). Si esta abierto lo deja pendiente."""
@@ -2131,10 +2163,13 @@ class VistaOxford(ctk.CTkFrame):
                 trabajos.append((cmd, env))
         filas = {u["usuario"]: u["fila"] for u in reversed(listos)}      # usuario -> fila del Excel
 
+        self._en_curso = set()                  # filas en 'EJECUTANDO' que aun no tienen resultado
+
         def al_inicio(usuario: str):
             fila = filas.get(usuario)
             if fila:
                 texto = f"EJECUTANDO {datetime.now().strftime('%d/%m %H:%M')}..."
+                self._en_curso.add(fila)
                 self._encolar_estado(fila, texto)
                 self.pu.actualizar_estado(fila, texto)
 
@@ -2143,10 +2178,15 @@ class VistaOxford(ctk.CTkFrame):
             # escribe por lotes cada INTERVALO_VOLCADO_MS en un hilo, y una ultima vez al terminar.
             fila = filas.get(usuario)
             if fila:
+                self._en_curso.discard(fila)
                 self._encolar_estado(fila, estado)
                 self.pu.actualizar_estado(fila, estado)
-            if ultimo:
-                self._volcar_en_hilo(al_terminar=avisar_si_falta)
+
+        def al_terminar(detenido: bool):
+            # Ya no queda ningun proceso (termino o se pulso Detener): quien seguia en 'EJECUTANDO' no va a
+            # recibir resultado, asi que se le cambia el Estado para que no quede colgado.
+            self._cerrar_en_curso(detenido)
+            self._volcar_en_hilo(al_terminar=avisar_si_falta)
 
         def avisar_si_falta(error: str):
             if not self._estados_pendientes:
@@ -2164,7 +2204,7 @@ class VistaOxford(ctk.CTkFrame):
                                   titulo="Pruebas Wide Angle", unidad="usuarios",
                                   info=f"{len(listos)} usuario(s)  |  {len(grupos)} grupo(s)",
                                   total=len(listos), texto_carpeta="📂 Abrir capturas",
-                                  al_resultado=al_resultado, al_inicio=al_inicio)
+                                  al_resultado=al_resultado, al_inicio=al_inicio, al_terminar=al_terminar)
             ven.iniciar_trabajos(trabajos, str(ROOT), paralelas=paralelas)
             self._ventana_bot = ven
         except Exception as e:
