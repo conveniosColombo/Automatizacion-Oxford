@@ -724,8 +724,6 @@ class DlgConfirmarPruebas(ctk.CTkToplevel):
 
     Uso:  dlg = DlgConfirmarPruebas(master, grupos); master.wait_window(dlg); dlg.aceptado
     """
-    COLUMNAS = 3        # usuarios por fila dentro de cada grupo
-
     def __init__(self, master, grupos: list):
         super().__init__(master)
         self.aceptado = False
@@ -734,10 +732,8 @@ class DlgConfirmarPruebas(ctk.CTkToplevel):
         total = sum(len(us) for _, _, us in grupos)
         niveles = sorted({str(n) for n, _, _ in grupos}, key=lambda s: (len(s), s))
         self.title("Ejecutar pruebas")
-        # Alto segun lo que haya que mostrar (encabezado de grupo ~52 + ~30 por fila de usuarios),
-        # con tope: si son muchos, la lista hace scroll en vez de crecer la ventana
-        contenido = sum(52 + 30 * -(-len(us) // self.COLUMNAS) for _, _, us in grupos)
-        alto = max(420, min(620, 340 + contenido))
+        # Alto segun lo que haya que mostrar (~26 px por grupo), con tope: si son muchos, la lista hace scroll
+        alto = max(460, min(640, 400 + 26 * len(grupos)))
         self.geometry(f"640x{alto}")
         self.minsize(520, 400)
         self.configure(fg_color=T.FONDO)
@@ -766,14 +762,31 @@ class DlgConfirmarPruebas(ctk.CTkToplevel):
                          ).pack(pady=(8, 0))
             ctk.CTkLabel(caja, text=texto, font=T.AYD, text_color=T.SUAVE).pack(pady=(0, 8))
 
-        # Lista agrupada (con scroll si son muchos)
-        lista = ctk.CTkScrollableFrame(self, fg_color=T.SUP, corner_radius=T.R,
-                                       border_width=1, border_color=T.BORDE)
-        lista.pack(fill="both", expand=True, padx=20, pady=12)
-        lista.grid_columnconfigure(0, weight=1)
+        # Lista agrupada: un solo ttk.Treeview (un grupo por fila; sus usuarios se ven al desplegarlo).
+        # Antes era una etiqueta por usuario y con cientos de usuarios la ventana se congelaba.
+        marco = ctk.CTkFrame(self, fg_color=T.SUP, corner_radius=T.R, border_width=1, border_color=T.BORDE)
+        marco.pack(fill="both", expand=True, padx=20, pady=12)
+        marco.grid_rowconfigure(0, weight=1)
+        marco.grid_columnconfigure(0, weight=1)
+        estilo = ttk.Style(self)
+        estilo.configure("Grupos.Treeview", font=T.NRM, rowheight=24, background=T.SUP,
+                         fieldbackground=T.SUP, foreground=T.TEXTO, borderwidth=0)
+        estilo.configure("Grupos.Treeview.Heading", font=T.ETQ, foreground=T.PRIM)
+        arbol = ttk.Treeview(marco, columns=("usuarios",), style="Grupos.Treeview", selectmode="none")
+        arbol.heading("#0", text="Proceso  ·  libro  ·  unidades (despliega para ver los usuarios)", anchor="w")
+        arbol.heading("usuarios", text="Usuarios", anchor="e")
+        arbol.column("#0", width=440, stretch=True, anchor="w")
+        arbol.column("usuarios", width=90, stretch=False, anchor="e")
+        arbol.tag_configure("grupo", foreground=T.PRIM)
         for i, (nivel, unidades, usuarios) in enumerate(grupos, start=1):
-            self._grupo(lista, i, nivel, unidades, usuarios).grid(
-                row=i, column=0, sticky="ew", padx=6, pady=(6 if i == 1 else 2, 6))
+            padre = arbol.insert("", "end", text=f"{i}.  Wide Angle {nivel}  ·  Unidades {unidades}",
+                                 values=(len(usuarios),), tags=("grupo",), open=len(grupos) == 1 and len(usuarios) <= 30)
+            for u in usuarios:
+                arbol.insert(padre, "end", text=f"    {u['usuario']}", values=("",))
+        barra_y = ctk.CTkScrollbar(marco, command=arbol.yview)
+        arbol.configure(yscrollcommand=barra_y.set)
+        arbol.grid(row=0, column=0, sticky="nsew", padx=(6, 0), pady=6)
+        barra_y.grid(row=0, column=1, sticky="ns", padx=(0, 4), pady=6)
 
         # Cuantas cuentas trabajan a la vez (pool). Mas = mas rapido, pero mas memoria/CPU y mas
         # sesiones simultaneas contra Oxford: por eso el tope razonable es 3-4.
@@ -809,30 +822,6 @@ class DlgConfirmarPruebas(ctk.CTkToplevel):
                       fg_color=T.OK, hover_color=T.PRIM_H, text_color="white",
                       command=self._ok
                       ).grid(row=0, column=1, sticky="ew", padx=(6, 0))
-
-    def _grupo(self, master, numero: int, nivel, unidades: str, usuarios: list) -> ctk.CTkFrame:
-        """Un proceso: encabezado (nivel, unidades, cuantos) y sus usuarios en columnas."""
-        marco = ctk.CTkFrame(master, fg_color=T.FONDO, corner_radius=T.R)
-        marco.grid_columnconfigure(tuple(range(self.COLUMNAS)), weight=1, uniform="u")
-
-        cab = ctk.CTkFrame(marco, fg_color="transparent")
-        cab.grid(row=0, column=0, columnspan=self.COLUMNAS, sticky="ew", padx=10, pady=(8, 4))
-        cab.grid_columnconfigure(1, weight=1)
-        ctk.CTkLabel(cab, text=str(numero), font=T.BTN, text_color="white", fg_color=T.PRIM,
-                     corner_radius=10, width=24, height=24).grid(row=0, column=0, padx=(0, 8))
-        ctk.CTkLabel(cab, text=f"Wide Angle {nivel}  ·  Unidades {unidades}", font=T.SEC,
-                     text_color=T.TEXTO, anchor="w").grid(row=0, column=1, sticky="w")
-        ctk.CTkLabel(cab, text=f"{len(usuarios)} usuario{'s' if len(usuarios) != 1 else ''}",
-                     font=T.AYD, text_color=T.PRIM, fg_color=T.SUP, corner_radius=8,
-                     height=22).grid(row=0, column=2, ipadx=6)
-
-        for n, u in enumerate(usuarios):
-            ctk.CTkLabel(marco, text=f"•  {u['usuario']}", font=T.NRM, text_color=T.TEXTO,
-                         anchor="w").grid(row=1 + n // self.COLUMNAS, column=n % self.COLUMNAS,
-                                          sticky="w", padx=(16, 4), pady=1)
-        ctk.CTkFrame(marco, fg_color="transparent", height=6).grid(
-            row=2 + (len(usuarios) - 1) // self.COLUMNAS, column=0, columnspan=self.COLUMNAS)
-        return marco
 
     def _ok(self):
         try:
@@ -1588,6 +1577,8 @@ class BarraInf(ctk.CTkFrame):
 class VentanaProgreso(ctk.CTkToplevel):
     """Ventana que muestra el log del bot en tiempo real."""
 
+    MAX_LINEAS_LOG = 5000   # el log visible guarda solo las ultimas N lineas
+
     def __init__(self, master, perfil: str, n_clases: str, carpeta: Path,
                  titulo: str = "Ejecutando bot Oxford", unidad: str = "clases",
                  info: str | None = None, total: int = 0,
@@ -1849,6 +1840,11 @@ class VentanaProgreso(ctk.CTkToplevel):
                 self.lbl_estado.configure(
                     text=f"✔ {texto[:80]}", text_color=T.OK)
             self.txt.insert("end", texto + "\n", tag or "")
+            # Tope del log: en corridas largas (cientos de usuarios) el texto crece sin fin y Tk se vuelve
+            # lento. Se dejan las ultimas lineas (el resultado de cada usuario queda en el 'Estado' del Excel).
+            lineas = int(self.txt.index("end-1c").split(".")[0])
+            if lineas > self.MAX_LINEAS_LOG:
+                self.txt.delete("1.0", f"{lineas - self.MAX_LINEAS_LOG + 1}.0")
             self.txt.see("end")
             self.txt.configure(state="disabled")
         self.after(0, _do)
@@ -2071,14 +2067,15 @@ class VistaOxford(ctk.CTkFrame):
         cred = leer_txt(CREDENCIALES_TXT)
         link = cred.get("link") or "https://englishhub.oup.com"
 
-        # Se respeta el ORDEN DEL EXCEL (empieza por la primera fila). El nivel se lee al importar y no cambia
-        # dentro de un proceso, asi que se corta en un proceso nuevo cada vez que cambia el nivel o las unidades.
-        grupos: list = []                           # [(nivel, unidades, [usuarios])], en orden de fila
+        # Un grupo por combinacion (nivel, unidades): el nivel se lee al importar y no cambia dentro de un
+        # proceso. Se junta a TODOS los de la misma combinacion aunque esten mezclados en el Excel (si no, un
+        # Excel con niveles intercalados daba cientos de grupos = cientos de arranques del bot/navegador).
+        # Los grupos van en el orden en que aparece su primera fila, y dentro de cada grupo se respeta el
+        # orden del Excel.
+        por_combinacion: dict = {}                  # (nivel, unidades) -> [usuarios], en orden de fila
         for u in listos:
-            if grupos and grupos[-1][0] == u["nivel"] and grupos[-1][1] == u["unidades"]:
-                grupos[-1][2].append(u)
-            else:
-                grupos.append((u["nivel"], u["unidades"], [u]))
+            por_combinacion.setdefault((u["nivel"], u["unidades"]), []).append(u)
+        grupos: list = [(nivel, unidades, us) for (nivel, unidades), us in por_combinacion.items()]
         confirmar = DlgConfirmarPruebas(self, grupos)
         self.wait_window(confirmar)
         if not confirmar.aceptado:
