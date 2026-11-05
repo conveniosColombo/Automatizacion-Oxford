@@ -15,9 +15,10 @@ import json
 import re
 import subprocess
 import sys
+import threading
 from datetime import datetime
 from pathlib import Path
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 from typing import Callable
 
 import customtkinter as ctk
@@ -106,13 +107,16 @@ def escribir_credenciales(user: str, pw: str, link: str) -> None:
 
 
 def escribir_config(id_org: str, clases: list, scores: str,
-                    figuras: str, mostrar: str, ruta_descarga: str) -> None:
+                    figuras: str, mostrar: str, ruta_descarga: str,
+                    version: str = "Closing soon") -> None:
     texto_ruta = f"Ruta Descargas : {ruta_descarga}\n" if ruta_descarga else ""
     CONFIG_TXT.write_text(
         f"# ID del convenio en My Organizations\n"
         f"ID : {id_org}\n\n"
         f"# Clases separadas por coma\n"
         f"Clases : {', '.join(clases)}\n\n"
+        f"# Version del libro a descargar: Closing soon o Upgraded version\n"
+        f"Version : {version}\n\n"
         f"# Progress settings\n"
         f"Scores : {scores}\n"
         f"Show figures as : {figuras}\n"
@@ -181,58 +185,244 @@ PRUEBAS_EXE      = ROOT / "Bot Pruebas Oxford.exe"
 PRUEBAS_SCRIPT   = ROOT / "empaquetado" / "entrada_pruebas_oxford.py"
 NIVELES_WIDE_ANGLE = (3, 4, 5)
 UNIDADES_POR_DEFECTO = "1,2,3"
+UNIDADES_TODAS = "1,2,3,4,5,6,7,8,9,10,11,12"   # defecto de las fórmulas (libro completo)
 COLUMNAS_USUARIOS = ("Usuario", "Contraseña", "Nivel", "Unidades", "Usar", "Código organización", "Estado",
                      "Online Practice", "Ebook")
 COL_ESTADO = COLUMNAS_USUARIOS.index("Estado") + 1
 
+# ── Directorio ('Hoja1'): roster que se pega una vez; la hoja 'Usuarios' trae todo desde aquí por username.
+# Columnas de la plantilla nueva (si se crea desde cero). Un roster ya existente se usa tal cual: las
+# columnas se localizan por su encabezado, no por su posición (ver _idx_columnas / _detectar_columnas).
+COLUMNAS_DIRECTORIO = ("Usuario", "Contraseña", "Nivel de inglés", "Código organización",
+                       "Online Practice", "Ebook")
+HOJAS_DIRECTORIO = ("Hoja1", "Base", "Directorio")   # nombres aceptados para la hoja del roster
+FILAS_FORMULA = 1500                                 # cuántas filas de 'Usuarios' llevan fórmulas listas
+INTERVALO_VOLCADO_MS = 30_000                        # cada cuánto se escriben al Excel los Estados acumulados
 
-def crear_plantilla_usuarios(ruta: Path = USUARIOS_XLSX) -> None:
-    """Crea 'Usuarios Oxford.xlsx' con los encabezados y dos filas de ejemplo (Usar = No)."""
-    from openpyxl import Workbook
+# Lecturas/escrituras del Excel de usuarios: corren en hilos (para no congelar la ventana), nunca dos a la vez.
+_LOCK_EXCEL = threading.RLock()
+
+
+def en_hilo(widget, trabajo: Callable, al_terminar: Callable) -> None:
+    """Corre trabajo() en un hilo y luego llama al_terminar(resultado, error) en el hilo de Tk.
+
+    El hilo no toca la interfaz: el hilo de Tk revisa cada 50 ms si ya terminó (after), que es lo seguro en Tkinter.
+    """
+    caja: dict = {}
+
+    def correr():
+        try:
+            caja["res"] = trabajo()
+        except Exception as e:          # se entrega a al_terminar
+            caja["err"] = e
+
+    hilo = threading.Thread(target=correr, daemon=True)
+    hilo.start()
+
+    def revisar():
+        if hilo.is_alive():
+            widget.after(50, revisar)
+        else:
+            al_terminar(caja.get("res"), caja.get("err"))
+    widget.after(50, revisar)
+# Nivel de inglés (curso/clase) → libro Wide Angle. En el roster el curso viene como 'B2.1-6AM57…'.
+NIVEL_POR_CLASE = (("B1.1", 3), ("B1.2", 4), ("B2.1", 5))
+
+
+def nivel_desde_clase(texto: str) -> int:
+    """'B1.1…' → 3, 'B1.2…' → 4, 'B2.1…' → 5 (busca el código dentro del texto; sirve 'B1.1' o 'B1.1-8AM64'). 0 si no aparece."""
+    t = (texto or "").upper()
+    for codigo, libro in NIVEL_POR_CLASE:
+        if codigo in t:
+            return libro
+    return 0
+
+
+def clase_desde_nivel(nivel) -> str:
+    """Inverso: 3 → 'B1.1', 4 → 'B1.2', 5 → 'B2.1' (para migrar datos existentes al directorio). '' si no coincide."""
+    objetivo = str(nivel).strip().replace(".0", "")
+    for codigo, libro in NIVEL_POR_CLASE:
+        if objetivo == str(libro):
+            return codigo
+    return ""
+
+
+def _idx_columnas(encabezados: list) -> dict:
+    """Ubica las columnas del roster por su encabezado (en minúsculas). Devuelve índices 0-based (o None).
+
+    Las claves se prueban EN ORDEN: la primera palabra clave que aparezca gana. Así 'Curso' se prefiere
+    antes que caer en 'Codigo clase Oxford' para el nivel de inglés.
+    """
+    def idx(*claves):
+        for clave in claves:
+            for i, h in enumerate(encabezados):
+                if clave in h:
+                    return i
+        return None
+
+    return {
+        "key":   idx("usuario", "user"),                         # 'Usuario Oxford'
+        "clave": idx("contrase", "password"),                    # 'Contraseña'
+        "curso": idx("curso", "nivel de ingl", "nivel", "ingl"),  # 'Curso' (B2.1-…) / 'Nivel de inglés'
+        "org":   idx("organiz"),                                 # 'Codigo Organización'
+        "op":    idx("online practice", "practice", "práctica", "practica"),
+        "ebook": idx("ebook", "e-book"),
+    }
+
+
+def _detectar_columnas(hoja) -> dict | None:
+    """Columnas del roster en 'hoja' (índices 0-based por encabezado). None si no hay columna de usuario."""
+    primera = next(hoja.iter_rows(min_row=1, max_row=1, values_only=True), ())   # sirve también en read_only
+    encabezados = [(str(v).strip().lower() if v is not None else "") for v in primera]
+    cols = _idx_columnas(encabezados)
+    return cols if cols["key"] is not None else None
+
+
+def _formulas_fila(fila: int, cols: dict, hoja_dir: str = "Hoja1") -> dict:
+    """Fórmulas de una fila de 'Usuarios'. El username va en A; el resto se trae de 'hoja_dir' con INDEX/MATCH
+    (el username puede estar en cualquier columna del roster, no solo la primera). 'cols' = _detectar_columnas."""
+    from openpyxl.utils import get_column_letter
+
+    a = f"$A{fila}"
+    key = get_column_letter(cols["key"] + 1)
+    m = f"MATCH({a},{hoja_dir}!${key}:${key},0)"
+
+    def trae(nombre_col: str) -> str:
+        i = cols.get(nombre_col)
+        if i is None:
+            return f'=IF({a}="","","")'
+        L = get_column_letter(i + 1)
+        return f'=IFERROR(INDEX({hoja_dir}!${L}:${L},{m}),"")'
+
+    curso = cols.get("curso")
+    if curso is None:
+        nivel_formula = f'=IF({a}="","","")'
+    else:
+        clz = f"INDEX({hoja_dir}!${get_column_letter(curso + 1)}:${get_column_letter(curso + 1)},{m})"
+        # IFS (SI.CONJUNTO): más legible que SI anidados. Requiere Excel 2019/365. OJO: las funciones
+        # posteriores a 2007 se guardan en el XML con el prefijo '_xlfn.'; sin él Excel la lee como
+        # desconocida ('_xludf.IFS' / #¿NOMBRE?). Excel la muestra igual como 'SI.CONJUNTO'. Si ninguno
+        # coincide IFS da #N/A → IFERROR lo deja en "" (como el 'else' vacío de la versión con IF anidado).
+        nivel_formula = (f'=IFERROR(_xlfn.IFS(ISNUMBER(SEARCH("B1.1",{clz})),3,'
+                         f'ISNUMBER(SEARCH("B1.2",{clz})),4,'
+                         f'ISNUMBER(SEARCH("B2.1",{clz})),5),"")')
+    return {
+        "B": trae("clave"),                             # Contraseña
+        "C": nivel_formula,                             # Nivel (libro) desde el curso
+        "D": f'=IF({a}="","","{UNIDADES_TODAS}")',      # Unidades (libro completo)
+        "E": f'=IF({a}="","","Sí")',                    # Usar
+        "F": trae("org"),                               # Código organización
+        "H": trae("op"),                                # Online Practice
+        "I": trae("ebook"),                             # Ebook
+    }
+
+
+def _leer_directorio(libro) -> dict:
+    """Lee el roster ('Hoja1'/'Base'/'Directorio') como {usuario_minúsculas: {clave, clase, codigo, op, ebook}}.
+
+    Localiza las columnas por su encabezado (tolerante al orden). {} si no hay hoja o no tiene columna de usuario.
+    """
+    nombre = next((h for h in HOJAS_DIRECTORIO if h in libro.sheetnames), None)
+    if not nombre:
+        return {}
+    hoja = libro[nombre]
+    if hasattr(hoja, "reset_dimensions"):   # read_only: no confiar en la dimensión guardada en el archivo
+        hoja.reset_dimensions()
+    cols = _detectar_columnas(hoja)
+    if not cols:
+        return {}
+    directorio = {}
+    for fila in hoja.iter_rows(min_row=2, values_only=True):
+        def g(nombre_col):
+            i = cols.get(nombre_col)
+            return "" if i is None or i >= len(fila) or fila[i] is None else str(fila[i]).strip()
+        usuario = g("key")
+        if not usuario:
+            continue
+        directorio[usuario.lower()] = {"clave": g("clave"), "clase": g("curso"), "codigo": g("org"),
+                                       "op": g("op"), "ebook": g("ebook")}
+    return directorio
+
+
+def _preparar_hoja_usuarios(hoja, cols: dict) -> None:
+    """Deja la hoja 'Usuarios' con encabezados y las fórmulas de FILAS_FORMULA filas (A = username; B..I desde el roster)."""
     from openpyxl.styles import Alignment, Font, PatternFill
-    from openpyxl.worksheet.datavalidation import DataValidation
 
-    libro = Workbook()
-    hoja = libro.active
-    hoja.title = "Usuarios"
     hoja.append(COLUMNAS_USUARIOS)
     for c in hoja[1]:
         c.font = Font(bold=True, color="FFFFFF")
         c.fill = PatternFill("solid", fgColor="004C97")
         c.alignment = Alignment(horizontal="center")
-    hoja.append(("usuario.ejemplo1", "", 3, UNIDADES_POR_DEFECTO, "No", "", "", "", ""))
-    hoja.append(("usuario.ejemplo2", "", 4, UNIDADES_POR_DEFECTO, "No", "", "", "", ""))
-    hoja.append(("usuario.ejemplo3", "", 5, UNIDADES_POR_DEFECTO, "No", "", "", "", ""))
-    for col, ancho in zip("ABCDEFGHI", (34, 22, 9, 14, 8, 22, 70, 24, 24)):
+    for col, ancho in zip("ABCDEFGHI", (34, 22, 9, 24, 8, 20, 70, 22, 22)):
         hoja.column_dimensions[col].width = ancho
-    niveles = DataValidation(type="list", formula1='"3,4,5"', allow_blank=False)
-    usar = DataValidation(type="list", formula1='"Sí,No"', allow_blank=True)
-    hoja.add_data_validation(niveles)
-    hoja.add_data_validation(usar)
-    niveles.add("C2:C500")
-    usar.add("E2:E500")
+    gris = Font(color="808080")
+    for fila in range(2, FILAS_FORMULA + 2):
+        for col, formula in _formulas_fila(fila, cols).items():
+            celda = hoja[f"{col}{fila}"]
+            celda.value = formula
+            celda.font = gris          # en gris: recuerda que es automático (no lo escribas a mano)
+
+
+def _preparar_hoja_directorio(libro):
+    """Crea/devuelve la hoja 'Hoja1' (directorio) con encabezados y validación de 'Nivel de inglés'."""
+    from openpyxl.styles import Alignment, Font, PatternFill
+    from openpyxl.worksheet.datavalidation import DataValidation
+
+    base = libro["Hoja1"] if "Hoja1" in libro.sheetnames else libro.create_sheet("Hoja1")
+    primera = next(base.iter_rows(min_row=1, max_row=1, values_only=True), None)
+    if not primera or all(v in (None, "") for v in primera):   # sin encabezados: escribirlos en la fila 1
+        for col, titulo in enumerate(COLUMNAS_DIRECTORIO, start=1):
+            base.cell(row=1, column=col, value=titulo)
+    for c in base[1]:
+        c.font = Font(bold=True, color="FFFFFF")
+        c.fill = PatternFill("solid", fgColor="007A33")
+        c.alignment = Alignment(horizontal="center")
+    for col, ancho in zip("ABCDEF", (34, 22, 16, 22, 24, 24)):
+        base.column_dimensions[col].width = ancho
+    clases = DataValidation(type="list", formula1='"B1.1,B1.2,B2.1"', allow_blank=True)
+    base.add_data_validation(clases)
+    clases.add("C2:C1000")
+    return base
+
+
+def crear_plantilla_usuarios(ruta: Path = USUARIOS_XLSX) -> None:
+    """Crea 'Usuarios Oxford.xlsx': hoja 'Usuarios' (solo se escribe el username; B..I por fórmula) +
+    'Hoja1' (directorio que se pega una vez) + 'Cómo se usa'."""
+    from openpyxl import Workbook
+
+    libro = Workbook()
+    hoja = libro.active
+    hoja.title = "Usuarios"
+
+    base = _preparar_hoja_directorio(libro)
+    base.append(("usuario.ejemplo", "ClaveDelUsuario", "B1.1", "6l12z", "S-000-000-0000", "XXXX-XXXX-XXXX"))
+    _preparar_hoja_usuarios(hoja, _detectar_columnas(base))   # las fórmulas apuntan a las columnas del roster
 
     ayuda = libro.create_sheet("Cómo se usa")
     for linea in (
-        "Una fila por usuario de Oxford English Hub.",
-        "Usuario: el correo o nombre de usuario con el que entra a Oxford.",
-        "Contraseña: opcional. Vacía = se usa la de 'Credenciales Oxford.txt' (misma clave para todos).",
-        "Nivel: el libro Wide Angle del usuario, 3, 4 o 5.",
-        f"Unidades: las unidades a resolver (cada una incluye su Unit Test). Vacío = {UNIDADES_POR_DEFECTO}.",
-        "Usar: 'No' salta la fila sin borrarla (las dos filas de ejemplo están en No).",
-        "Código organización: el Organization ID que pide Oxford al iniciar sesión (ej: 18xaf). "
-        "Vacío = el de 'Credenciales Oxford.txt'.",
-        "Estado: lo escribe la aplicación (no lo llenes). Antes de ejecutar anota los errores de la fila "
-        "(nivel, contraseña...); al terminar cada usuario anota OK o ERROR con las actividades que fallaron.",
-        "Online Practice y Ebook: códigos de acceso (ej: 1111-2222-3333). Opcionales: solo se usan si el libro "
-        "del usuario sale con candado (sin licencia); entonces se activan (primero Online Practice, luego Ebook) "
-        "y se reintenta. Vacío = el usuario con candado queda como BLOQUEADO.",
+        "FLUJO: pega el roster en la hoja 'Hoja1' UNA sola vez. Luego, en la hoja 'Usuarios', escribe solo el "
+        "USERNAME en la columna A; las columnas B a I se llenan solas con fórmulas (en gris).",
+        "",
+        "Hoja 'Hoja1' (directorio): una fila por usuario con Usuario, Contraseña, Nivel de inglés, "
+        "Código organización, Online Practice y Ebook.",
+        "  • Nivel de inglés: escribe la clase o el nivel. B1.1 = libro Level 3, B1.2 = Level 4, B2.1 = Level 5. "
+        "Sirve 'B1.1' o la clase completa 'B1.1-8AM64' (se detecta el código).",
+        "",
+        "Hoja 'Usuarios' (lo que corre el bot):",
+        "  • Usuario (A): el username. Es lo ÚNICO que escribes.",
+        "  • Contraseña, Nivel, Unidades, Usar, Código organización, Online Practice, Ebook (B..I): fórmulas. "
+        "No las escribas; si un username no está en 'Hoja1' salen vacías.",
+        f"  • Unidades por defecto = {UNIDADES_TODAS} (libro completo). Puedes sobrescribir una celda escribiéndola.",
+        "  • Usar: sale 'Sí' automático cuando hay username. Escribe 'No' en la celda para saltar esa fila.",
+        "  • Estado: lo escribe la aplicación (no lo llenes).",
+        "",
+        "Contraseña/Código organización vacíos = se usan los de 'Credenciales Oxford.txt'.",
+        "Online Practice y Ebook: solo se usan si el libro sale con candado (sin licencia); vacío = queda BLOQUEADO.",
         "Guarda y cierra el Excel antes de ejecutar las pruebas.",
         "Las pruebas ESCRIBEN intentos reales en la cuenta: usa cuentas de prueba, no de alumnos.",
     ):
-        hoja_ayuda = libro["Cómo se usa"]
-        hoja_ayuda.append((linea,))
-    libro["Cómo se usa"].column_dimensions["A"].width = 110
+        ayuda.append((linea,))
+    ayuda.column_dimensions["A"].width = 115
     ruta.parent.mkdir(parents=True, exist_ok=True)
     libro.save(ruta)
 
@@ -312,8 +502,12 @@ def leer_usuarios(ruta: Path = USUARIOS_XLSX) -> list[dict]:
     cred = leer_txt(CREDENCIALES_TXT)
     clave_comun = cred.get("password", "")
     codigo_comun = next((v for k, v in cred.items() if k.startswith("codigo")), "")
-    libro = load_workbook(ruta, data_only=True)
+    # read_only: lectura en streaming, mucho más rápida con cientos de filas (las filas vacías se rellenan,
+    # así que n_fila sigue siendo el número real de fila del Excel).
+    libro = load_workbook(ruta, data_only=True, read_only=True)
     hoja = libro["Usuarios"] if "Usuarios" in libro.sheetnames else libro.worksheets[0]
+    hoja.reset_dimensions()
+    directorio = _leer_directorio(libro)   # roster de 'Hoja1' (respaldo cuando la celda-fórmula viene vacía)
     filas = []
     for n_fila, fila in enumerate(hoja.iter_rows(min_row=2, values_only=True), start=2):
         celdas = [("" if v is None else str(v).strip()) for v in (list(fila) + [None] * 9)[:9]]
@@ -321,6 +515,19 @@ def leer_usuarios(ruta: Path = USUARIOS_XLSX) -> list[dict]:
         cod_practica, cod_ebook = celdas[7], celdas[8]
         if not usuario:
             continue
+        # Respaldo: si las columnas de fórmula vienen vacías (p.ej. el caché se perdió al escribir 'Estado'),
+        # se resuelven desde el directorio 'Hoja1' por username. No pisa lo que esté escrito a mano.
+        ref = directorio.get(usuario.lower())
+        if ref:
+            clave = clave or ref["clave"]
+            codigo = codigo or ref["codigo"]
+            cod_practica = cod_practica or ref["op"]
+            cod_ebook = cod_ebook or ref["ebook"]
+            if not nivel:
+                nivel_ref = nivel_desde_clase(ref["clase"])
+                nivel = str(nivel_ref) if nivel_ref else ""
+            if not unidades:
+                unidades = UNIDADES_TODAS
         error = ""
         try:
             nivel_n = int(float(nivel))
@@ -352,6 +559,7 @@ PERFIL_VACIO = {
     "scores": "Show best attempt",
     "show_figures_as": "Percentages",
     "show_scores_for": "All activities",
+    "version": "Closing soon",
     "ruta_descarga": "",
     "user": "",
     "password": "",
@@ -505,6 +713,133 @@ class DlgNuevoPerfil(ctk.CTkToplevel):
             messagebox.showwarning("Falta ID", "Escribe el ID de la organizacion.", parent=self)
             return
         self.al_ok(n, i)
+        self.destroy()
+
+
+# ───────────────────────────── Dialogo confirmar pruebas Wide Angle
+class DlgConfirmarPruebas(ctk.CTkToplevel):
+    """Confirma las pruebas antes de lanzarlas: resumen arriba y, abajo, la lista de usuarios
+    agrupada por proceso (nivel + unidades) con su propio scroll, para que con muchos usuarios
+    no quede un parrafo enorme como en un messagebox.
+
+    Uso:  dlg = DlgConfirmarPruebas(master, grupos); master.wait_window(dlg); dlg.aceptado
+    """
+    COLUMNAS = 3        # usuarios por fila dentro de cada grupo
+
+    def __init__(self, master, grupos: list):
+        super().__init__(master)
+        self.aceptado = False
+        self.paralelas = 3                       # cuentas corriendo a la vez (lo fija el usuario abajo)
+        self._var_paralelas = ctk.StringVar(value="3")
+        total = sum(len(us) for _, _, us in grupos)
+        niveles = sorted({str(n) for n, _, _ in grupos}, key=lambda s: (len(s), s))
+        self.title("Ejecutar pruebas")
+        # Alto segun lo que haya que mostrar (encabezado de grupo ~52 + ~30 por fila de usuarios),
+        # con tope: si son muchos, la lista hace scroll en vez de crecer la ventana
+        contenido = sum(52 + 30 * -(-len(us) // self.COLUMNAS) for _, _, us in grupos)
+        alto = max(420, min(620, 340 + contenido))
+        self.geometry(f"640x{alto}")
+        self.minsize(520, 400)
+        self.configure(fg_color=T.FONDO)
+        self.transient(master.winfo_toplevel())
+        self.grab_set()
+        self.protocol("WM_DELETE_WINDOW", self.destroy)
+        self.bind("<Escape>", lambda _: self.destroy())
+
+        ctk.CTkLabel(self, text="¿Ejecutar las pruebas?", font=T.TIT, text_color=T.PRIM
+                     ).pack(anchor="w", padx=20, pady=(18, 0))
+        ctk.CTkLabel(self, text="Revisa a quién se le harán las pruebas antes de empezar.",
+                     font=T.AYD, text_color=T.SUAVE).pack(anchor="w", padx=20, pady=(0, 12))
+
+        # Resumen: tres cifras que se leen de un vistazo
+        resumen = ctk.CTkFrame(self, fg_color="transparent")
+        resumen.pack(fill="x", padx=20)
+        resumen.grid_columnconfigure((0, 1, 2), weight=1, uniform="r")
+        for col, (cifra, texto) in enumerate((
+                (str(total), "usuario" if total == 1 else "usuarios"),
+                (str(len(grupos)), "proceso" if len(grupos) == 1 else "procesos"),
+                (", ".join(niveles), "nivel" if len(niveles) == 1 else "niveles"))):
+            caja = ctk.CTkFrame(resumen, fg_color=T.SUP, corner_radius=T.R,
+                                border_width=1, border_color=T.BORDE)
+            caja.grid(row=0, column=col, sticky="ew", padx=(0 if col == 0 else 6, 0))
+            ctk.CTkLabel(caja, text=cifra, font=(T.F, 20, "bold"), text_color=T.PRIM
+                         ).pack(pady=(8, 0))
+            ctk.CTkLabel(caja, text=texto, font=T.AYD, text_color=T.SUAVE).pack(pady=(0, 8))
+
+        # Lista agrupada (con scroll si son muchos)
+        lista = ctk.CTkScrollableFrame(self, fg_color=T.SUP, corner_radius=T.R,
+                                       border_width=1, border_color=T.BORDE)
+        lista.pack(fill="both", expand=True, padx=20, pady=12)
+        lista.grid_columnconfigure(0, weight=1)
+        for i, (nivel, unidades, usuarios) in enumerate(grupos, start=1):
+            self._grupo(lista, i, nivel, unidades, usuarios).grid(
+                row=i, column=0, sticky="ew", padx=6, pady=(6 if i == 1 else 2, 6))
+
+        # Cuantas cuentas trabajan a la vez (pool). Mas = mas rapido, pero mas memoria/CPU y mas
+        # sesiones simultaneas contra Oxford: por eso el tope razonable es 3-4.
+        velo = ctk.CTkFrame(self, fg_color="transparent")
+        velo.pack(fill="x", padx=20, pady=(0, 4))
+        ctk.CTkLabel(velo, text="Cuentas en paralelo:", font=T.SEC, text_color=T.TEXTO
+                     ).pack(side="left")
+        ctk.CTkOptionMenu(velo, width=72, variable=self._var_paralelas,
+                          values=["1", "2", "3", "4", "5"], font=T.NRM,
+                          fg_color=T.SUP, button_color=T.PRIM, button_hover_color=T.PRIM_H,
+                          text_color=T.TEXTO).pack(side="left", padx=(8, 0))
+        ctk.CTkLabel(velo, text="(más rápido, pero usa más memoria)", font=T.AYD,
+                     text_color=T.SUAVE).pack(side="left", padx=(8, 0))
+
+        aviso = ctk.CTkFrame(self, fg_color=T.WRN_BG, corner_radius=T.R)
+        aviso.pack(fill="x", padx=20)
+        ctk.CTkLabel(aviso, text="⚠  Se escribirán intentos REALES en cada cuenta. Trabaja en segundo "
+                                 "plano: el avance se ve en la ventana de progreso. Varias cuentas "
+                                 "corren a la vez, así que las líneas del log se intercalan y el "
+                                 "Estado se anota a medida que cada una termina.",
+                     font=T.AYD, text_color=T.WARN, justify="left", wraplength=560, anchor="w"
+                     ).pack(fill="x", padx=12, pady=8)
+
+        pie = ctk.CTkFrame(self, fg_color="transparent")
+        pie.pack(fill="x", padx=20, pady=(12, 18))
+        pie.grid_columnconfigure((0, 1), weight=1)
+        ctk.CTkButton(pie, text="Cancelar", font=T.BTN, height=38,
+                      fg_color=T.SUP, hover_color=T.FONDO,
+                      text_color=T.TEXTO, border_width=1, border_color=T.BORDE,
+                      command=self.destroy
+                      ).grid(row=0, column=0, sticky="ew", padx=(0, 6))
+        ctk.CTkButton(pie, text=f"▶  Ejecutar pruebas ({total})", font=T.BTN, height=38,
+                      fg_color=T.OK, hover_color=T.PRIM_H, text_color="white",
+                      command=self._ok
+                      ).grid(row=0, column=1, sticky="ew", padx=(6, 0))
+
+    def _grupo(self, master, numero: int, nivel, unidades: str, usuarios: list) -> ctk.CTkFrame:
+        """Un proceso: encabezado (nivel, unidades, cuantos) y sus usuarios en columnas."""
+        marco = ctk.CTkFrame(master, fg_color=T.FONDO, corner_radius=T.R)
+        marco.grid_columnconfigure(tuple(range(self.COLUMNAS)), weight=1, uniform="u")
+
+        cab = ctk.CTkFrame(marco, fg_color="transparent")
+        cab.grid(row=0, column=0, columnspan=self.COLUMNAS, sticky="ew", padx=10, pady=(8, 4))
+        cab.grid_columnconfigure(1, weight=1)
+        ctk.CTkLabel(cab, text=str(numero), font=T.BTN, text_color="white", fg_color=T.PRIM,
+                     corner_radius=10, width=24, height=24).grid(row=0, column=0, padx=(0, 8))
+        ctk.CTkLabel(cab, text=f"Wide Angle {nivel}  ·  Unidades {unidades}", font=T.SEC,
+                     text_color=T.TEXTO, anchor="w").grid(row=0, column=1, sticky="w")
+        ctk.CTkLabel(cab, text=f"{len(usuarios)} usuario{'s' if len(usuarios) != 1 else ''}",
+                     font=T.AYD, text_color=T.PRIM, fg_color=T.SUP, corner_radius=8,
+                     height=22).grid(row=0, column=2, ipadx=6)
+
+        for n, u in enumerate(usuarios):
+            ctk.CTkLabel(marco, text=f"•  {u['usuario']}", font=T.NRM, text_color=T.TEXTO,
+                         anchor="w").grid(row=1 + n // self.COLUMNAS, column=n % self.COLUMNAS,
+                                          sticky="w", padx=(16, 4), pady=1)
+        ctk.CTkFrame(marco, fg_color="transparent", height=6).grid(
+            row=2 + (len(usuarios) - 1) // self.COLUMNAS, column=0, columnspan=self.COLUMNAS)
+        return marco
+
+    def _ok(self):
+        try:
+            self.paralelas = max(1, int(self._var_paralelas.get()))
+        except (TypeError, ValueError):
+            self.paralelas = 3
+        self.aceptado = True
         self.destroy()
 
 
@@ -813,7 +1148,8 @@ class PanelPerfiles(PBase):
 
             btns = ctk.CTkFrame(card, fg_color="transparent")
             btns.grid(row=1, column=1, sticky="ew", padx=12, pady=(4, 10))
-            btns.grid_columnconfigure((0, 1, 2), weight=1, uniform="b")
+            # Sin uniform: con columnas iguales "Renombrar" no cabia y se cortaba
+            btns.grid_columnconfigure((0, 1, 2), weight=1)
 
             ctk.CTkButton(btns, text="Cargar", font=T.BTN, height=30, width=60, fg_color=T.ACC if es_activo else T.PRIM, hover_color=T.ACC_H if es_activo else T.PRIM_H, text_color="white" if es_activo else "white", corner_radius=T.R, command=lambda i=idx: self.al_cargar(i)).grid(row=0, column=0, sticky="ew", padx=(0, 4))
             ctk.CTkButton(btns, text="Renombrar", font=T.BTN, height=30, width=60, fg_color=T.SUP, hover_color=T.FONDO, text_color=T.TEXTO, border_width=1, border_color=T.BORDE, corner_radius=T.R, command=lambda i=idx: self.al_renombrar(i)).grid(row=0, column=1, sticky="ew", padx=4)
@@ -826,14 +1162,20 @@ class PanelSettings(PBase):
     SCORES  = ["Show best attempt", "Show latest attempt"]
     FIGS    = ["Percentages", "Fractions"]
     SHOW    = ["All activities", "Completed activities"]
+    VERSIONES = ["Closing soon", "Upgraded version"]
 
     def __init__(self, master, al_cambiar: Callable):
         super().__init__(master, "Progress Settings",
                          "Parametros de la ventana Progress settings en cada clase.")
-        card = ctk.CTkFrame(self.cont, fg_color=T.SUP,
+        # Con scroll: en pantallas pequeñas la "Ruta de Descargas" quedaba cortada abajo, sin forma de llegar
+        desplazable = ctk.CTkScrollableFrame(self.cont, fg_color="transparent")
+        desplazable.grid(row=0, column=0, sticky="nsew")
+        desplazable.grid_columnconfigure(0, weight=1)
+        self.cont.grid_rowconfigure(0, weight=1)
+        card = ctk.CTkFrame(desplazable, fg_color=T.SUP,
                              corner_radius=T.R,
                              border_width=1, border_color=T.BORDE)
-        card.grid(row=0, column=0, sticky="ew")
+        card.grid(row=0, column=0, sticky="ew", padx=(0, 6))
         inner = ctk.CTkFrame(card, fg_color="transparent")
         inner.pack(fill="x", padx=20, pady=20)
         inner.grid_columnconfigure(0, weight=1)
@@ -883,12 +1225,27 @@ class PanelSettings(PBase):
         self.seg_show.set(self.SHOW[0])
         self.seg_show.grid(row=8, column=0, sticky="w", pady=(4, 18))
 
+        # Version del libro (Oxford puede mostrar dos ediciones del mismo libro)
+        ctk.CTkLabel(inner, text="Version del libro", font=T.ETQ,
+                     text_color=T.TEXTO, anchor="w").grid(row=9, column=0, sticky="ew")
+        ctk.CTkLabel(inner, text="Cual edicion descargar: la que esta por cerrar o la actualizada.",
+                     font=T.AYD, text_color=T.SUAVE, anchor="w"
+                     ).grid(row=10, column=0, sticky="ew")
+        self.seg_ver = ctk.CTkSegmentedButton(
+            inner, values=self.VERSIONES,
+            fg_color=T.FONDO, selected_color=T.PRIM,
+            selected_hover_color=T.PRIM_H,
+            unselected_color=T.SUP, text_color=T.TEXTO,
+            font=T.NRM, command=lambda _: al_cambiar())
+        self.seg_ver.set(self.VERSIONES[0])
+        self.seg_ver.grid(row=11, column=0, sticky="w", pady=(4, 18))
+
         # Ruta Descarga
-        ctk.CTkLabel(inner, text="Ruta de Descargas", font=T.ETQ, text_color=T.TEXTO, anchor="w").grid(row=9, column=0, sticky="ew")
-        ctk.CTkLabel(inner, text="Carpeta donde se guardaran los Excels descargados.", font=T.AYD, text_color=T.SUAVE, anchor="w").grid(row=10, column=0, sticky="ew")
-        
+        ctk.CTkLabel(inner, text="Ruta de Descargas", font=T.ETQ, text_color=T.TEXTO, anchor="w").grid(row=12, column=0, sticky="ew")
+        ctk.CTkLabel(inner, text="Carpeta donde se guardaran los Excels descargados.", font=T.AYD, text_color=T.SUAVE, anchor="w").grid(row=13, column=0, sticky="ew")
+
         box_ruta = ctk.CTkFrame(inner, fg_color="transparent")
-        box_ruta.grid(row=11, column=0, sticky="ew", pady=(4, 0))
+        box_ruta.grid(row=14, column=0, sticky="ew", pady=(4, 0))
         box_ruta.grid_columnconfigure(0, weight=1)
         
         self.var_ruta = ctk.StringVar()
@@ -909,6 +1266,7 @@ class PanelSettings(PBase):
             "scores":          self.var_sc.get(),
             "show_figures_as": self.seg_fig.get(),
             "show_scores_for": self.seg_show.get(),
+            "version":         self.seg_ver.get(),
             "ruta_descarga":   self.var_ruta.get(),
         }
 
@@ -919,12 +1277,16 @@ class PanelSettings(PBase):
         self.seg_fig.set(fi if fi in self.FIGS else self.FIGS[0])
         sh = d.get("show_scores_for", self.SHOW[0])
         self.seg_show.set(sh if sh in self.SHOW else self.SHOW[0])
+        ve = d.get("version", self.VERSIONES[0])
+        self.seg_ver.set(ve if ve in self.VERSIONES else self.VERSIONES[0])
         self.var_ruta.set(d.get("ruta_descarga", ""))
 
 
 # ───────────────────────────────────────────── Usuarios (pruebas Wide Angle)
 class PanelUsuarios(PBase):
     """Lee 'Usuarios Oxford.xlsx' (usuario + nivel) y corre las pruebas de Wide Angle con cada uno."""
+
+    COLUMNAS = ("Usuario", "Nivel", "Unidades", "Código org.", "Códigos", "Estado")
 
     def __init__(self, master, al_ejecutar: Callable):
         super().__init__(master, "Usuarios — pruebas de Wide Angle",
@@ -947,11 +1309,36 @@ class PanelUsuarios(PBase):
                                      text_color=T.SUAVE, anchor="w", wraplength=700, justify="left")
         self.lbl_ruta.grid(row=1, column=0, sticky="ew", pady=(0, 6))
 
-        self.lista = ctk.CTkScrollableFrame(self.cont, fg_color=T.SUP, border_width=1,
-                                            border_color=T.BORDE, corner_radius=T.R)
-        self.lista.grid(row=2, column=0, sticky="nsew")
-        for i, peso in enumerate((4, 1, 1, 1, 2, 3)):
-            self.lista.grid_columnconfigure(i, weight=peso)
+        # Tabla: un solo ttk.Treeview (aguanta miles de filas). Antes eran 6 CTkLabel por usuario y con
+        # cientos de usuarios la ventana se congelaba al crearlos/destruirlos.
+        marco = ctk.CTkFrame(self.cont, fg_color=T.SUP, border_width=1, border_color=T.BORDE, corner_radius=T.R)
+        marco.grid(row=2, column=0, sticky="nsew")
+        marco.grid_rowconfigure(0, weight=1)
+        marco.grid_columnconfigure(0, weight=1)
+        estilo = ttk.Style(self)
+        estilo.configure("Usuarios.Treeview", font=T.NRM, rowheight=26, background=T.SUP,
+                         fieldbackground=T.SUP, foreground=T.TEXTO, borderwidth=0)
+        estilo.configure("Usuarios.Treeview.Heading", font=T.ETQ, foreground=T.PRIM)
+        estilo.map("Usuarios.Treeview", background=[("selected", T.PRIM)], foreground=[("selected", "white")])
+        self.tabla = ttk.Treeview(marco, columns=self.COLUMNAS, show="headings",
+                                  style="Usuarios.Treeview", selectmode="browse")
+        for col, ancho, estirar in zip(self.COLUMNAS, (240, 110, 150, 110, 170, 380),
+                                       (True, False, False, False, False, True)):
+            self.tabla.heading(col, text=col, anchor="w")
+            self.tabla.column(col, width=ancho, minwidth=60, stretch=estirar, anchor="w")
+        for tag, color in (("ok", T.OK), ("warn", T.WARN), ("err", T.ERR), ("suave", T.SUAVE)):
+            self.tabla.tag_configure(tag, foreground=color)
+        barra_y = ctk.CTkScrollbar(marco, command=self.tabla.yview)
+        self.tabla.configure(yscrollcommand=barra_y.set)
+        self.tabla.grid(row=0, column=0, sticky="nsew", padx=(6, 0), pady=6)
+        barra_y.grid(row=0, column=1, sticky="ns", padx=(0, 4), pady=6)
+        self.tabla.bind("<Double-1>", self._ver_detalle)   # el Estado largo no cabe: doble clic lo muestra
+
+        self.usuarios: list[dict] = []
+        self._por_fila: dict[int, dict] = {}       # fila del Excel -> usuario (para actualizar una sola fila)
+        self._cargando = False
+        self._callbacks: list[Callable] = []        # quienes esperan que termine la carga en curso
+        self._repetir = False
 
         self.btn_ejecutar = ctk.CTkButton(
             self.cont, text="EJECUTAR PRUEBAS WIDE ANGLE", font=T.BTNG, height=40,
@@ -976,53 +1363,110 @@ class PanelUsuarios(PBase):
         except Exception as e:
             messagebox.showerror("No se pudo crear el Excel", str(e))
 
-    antes_de_recargar: Callable | None = None   # lo pone VistaOxford: guarda Estados que quedaron pendientes
+    # Lo pone VistaOxford: escribe los Estados que quedaron pendientes. Corre DENTRO del hilo de carga,
+    # así que no debe tocar la interfaz.
+    antes_de_recargar: Callable | None = None
 
-    def recargar(self):
-        if self.antes_de_recargar:
-            self.antes_de_recargar()
-        for w in self.lista.winfo_children():
-            w.destroy()
-        if not USUARIOS_XLSX.exists():
-            self._crear()
-        try:
-            try:
-                completar_columnas_usuarios()
-            except PermissionError:
-                pass                    # abierto en Excel: se lee igual, sin tocarlo
-            self.usuarios = leer_usuarios()
-        except PermissionError:
-            self.usuarios = []
+    def recargar(self, al_terminar: Callable[[bool], None] | None = None):
+        """Relee el Excel en un hilo (la ventana sigue respondiendo) y repinta la tabla.
+
+        al_terminar(ok) se llama en el hilo de Tk cuando self.usuarios ya está al día (ok=False si no se pudo leer).
+        Si ya hay una carga en curso, se encadena otra al final en vez de correr dos a la vez.
+        """
+        if al_terminar:
+            self._callbacks.append(al_terminar)
+        if self._cargando:
+            self._repetir = True
+            return
+        self._cargando = True
+        self._repetir = False
+        self.lbl_resumen.configure(text="Cargando usuarios…", text_color=T.SUAVE)
+        antes = self.antes_de_recargar
+
+        def trabajo():
+            with _LOCK_EXCEL:
+                if antes:
+                    antes()
+                if not USUARIOS_XLSX.exists():
+                    crear_plantilla_usuarios()
+                return leer_usuarios()
+
+        en_hilo(self, trabajo, self._fin_carga)
+
+    def _fin_carga(self, usuarios, error):
+        self._cargando = False
+        if self._repetir:                       # alguien pidió recargar mientras leíamos: leer de nuevo
+            self.recargar()
+            return
+        callbacks, self._callbacks = self._callbacks, []
+        ok = error is None
+        if isinstance(error, PermissionError):
             self.lbl_resumen.configure(text="Cierra el Excel y pulsa Recargar", text_color=T.ERR)
-            return
-        except Exception as e:
-            self.usuarios = []
-            self.lbl_resumen.configure(text=f"No se pudo leer el Excel: {e}", text_color=T.ERR)
-            return
-        for col, txt in enumerate(("Usuario", "Nivel", "Unidades", "Código org.", "Códigos", "Estado")):
-            ctk.CTkLabel(self.lista, text=txt, font=T.ETQ, text_color=T.PRIM, anchor="w"
-                         ).grid(row=0, column=col, sticky="ew", padx=8, pady=(6, 4))
-        for r, u in enumerate(self.usuarios, start=1):
-            if u["error"]:
-                estado, color = f"⚠ {u['error']}", T.ERR
-            elif u["estado"]:           # lo que dice la columna 'Estado' del Excel (ultimo resultado)
-                estado, color = u["estado"], color_estado(u["estado"])
-            elif not u["usar"]:
-                estado, color = "Omitido (Usar = No)", T.SUAVE
-            else:
-                estado, color = "Listo", T.OK
-            valores = (u["usuario"], f"Wide Angle {u['nivel']}" if u["nivel"] else "—",
-                       u["unidades"], u["codigo"] or "—",
-                       ", ".join(n for n, c in (("Online Practice", u["cod_practica"]), ("Ebook", u["cod_ebook"])) if c)
-                       or "—", estado)
-            for col, txt in enumerate(valores):
-                ctk.CTkLabel(self.lista, text=txt, font=T.NRM, anchor="w", wraplength=260,
-                             justify="left", text_color=color if col == 5 else T.TEXTO
-                             ).grid(row=r, column=col, sticky="ew", padx=8, pady=2)
+        elif error is not None:
+            self.lbl_resumen.configure(text=f"No se pudo leer el Excel: {error}", text_color=T.ERR)
+        if ok:
+            self._pintar(usuarios)
+        else:
+            self.usuarios, self._por_fila = [], {}
+            self.tabla.delete(*self.tabla.get_children())
+        for cb in callbacks:
+            cb(ok)
+
+    @staticmethod
+    def _estado_y_tag(u: dict) -> tuple[str, str]:
+        if u["error"]:
+            return f"⚠ {u['error']}", "err"
+        if u["estado"]:                         # lo que dice la columna 'Estado' del Excel (ultimo resultado)
+            color = color_estado(u["estado"])
+            return u["estado"], {T.OK: "ok", T.WARN: "warn", T.ERR: "err"}.get(color, "")
+        if not u["usar"]:
+            return "Omitido (Usar = No)", "suave"
+        return "Listo", ""
+
+    def _valores(self, u: dict) -> tuple:
+        estado, _ = self._estado_y_tag(u)
+        codigos = ", ".join(n for n, c in (("Online Practice", u["cod_practica"]), ("Ebook", u["cod_ebook"])) if c)
+        return (u["usuario"], f"Wide Angle {u['nivel']}" if u["nivel"] else "—",
+                u["unidades"], u["codigo"] or "—", codigos or "—", estado)
+
+    pendientes: Callable[[], dict] | None = None   # lo pone VistaOxford: Estados aun no escritos al Excel
+
+    def _pintar(self, usuarios: list[dict]):
+        extra = self.pendientes() if self.pendientes else {}
+        for u in usuarios:                             # si el Excel estaba abierto, mostrar el Estado mas nuevo
+            if u["fila"] in extra:
+                u["estado"] = extra[u["fila"]]
+        self.usuarios = usuarios
+        self._por_fila = {u["fila"]: u for u in usuarios}
+        self.tabla.delete(*self.tabla.get_children())
+        for u in usuarios:
+            _, tag = self._estado_y_tag(u)
+            self.tabla.insert("", "end", iid=str(u["fila"]), values=self._valores(u), tags=(tag,) if tag else ())
+        self._actualizar_resumen()
+
+    def _actualizar_resumen(self):
         listos = sum(1 for u in self.usuarios if u["usar"] and not u["error"])
         self.lbl_resumen.configure(
             text=f"{listos} usuario(s) listo(s) de {len(self.usuarios)}",
             text_color=T.OK if listos else T.WARN)
+
+    def actualizar_estado(self, fila: int, texto: str):
+        """Cambia el Estado de UNA fila en la tabla (sin releer el Excel). Se usa mientras corren las pruebas."""
+        u = self._por_fila.get(fila)
+        if not u:
+            return
+        u["estado"] = texto
+        iid = str(fila)
+        if self.tabla.exists(iid):
+            _, tag = self._estado_y_tag(u)
+            self.tabla.item(iid, values=self._valores(u), tags=(tag,) if tag else ())
+
+    def _ver_detalle(self, _evento=None):
+        sel = self.tabla.selection()
+        u = self._por_fila.get(int(sel[0])) if sel else None
+        if u:
+            estado, _ = self._estado_y_tag(u)
+            messagebox.showinfo(u["usuario"], f"Fila {u['fila']} del Excel\n\nEstado:\n{estado}", parent=self)
 
 
 # ───────────────────────────────────────────── Sidebar
@@ -1038,15 +1482,16 @@ class Sidebar(ctk.CTkFrame):
         self._btns: list[ctk.CTkButton] = []
 
         # Marca de la herramienta (la estrella del logo + nombre)
-        logo = ctk.CTkFrame(self, fg_color="transparent")
+        self.logo = logo = ctk.CTkFrame(self, fg_color="transparent")
         logo.grid(row=0, column=0, pady=(14, 8))
         ctk.CTkLabel(logo, text="★", font=(T.F, 24, "bold"),
                      text_color="white").pack()
         ctk.CTkLabel(logo, text="Oxford", font=(T.F, 9, "bold"),
                      text_color=T.SB_TXT).pack()
 
-        nav = ctk.CTkFrame(self, fg_color="transparent")
+        self.nav = nav = ctk.CTkFrame(self, fg_color="transparent")
         nav.grid(row=1, column=0)
+        self._etiquetas: list[ctk.CTkLabel] = []
         ICONOS = ["🏠", "🔐", "🏛", "⚙", "👥"]
         for i, (ico, lbl) in enumerate(zip(ICONOS, [s[1] for s in self.SECS])):
             btn = ctk.CTkButton(
@@ -1057,9 +1502,29 @@ class Sidebar(ctk.CTkFrame):
                 command=lambda idx=i: self._sel(idx))
             btn.pack(pady=3)
             self._btns.append(btn)
-            ctk.CTkLabel(nav, text=lbl, font=(T.F, 9),
-                         text_color=T.SB_TXT).pack(pady=(0, 5))
+            etiqueta = ctk.CTkLabel(nav, text=lbl, font=(T.F, 9), text_color=T.SB_TXT)
+            etiqueta.pack(pady=(0, 5))
+            self._etiquetas.append(etiqueta)
         self._mark(0)
+        # En pantallas bajas los botones de abajo (Usuarios) quedaban cortados: se compacta
+        self._compacta = False
+        self._alto_normal = 0
+        self.bind("<Configure>", self._acomodar, add="+")
+
+    def _acomodar(self, _evento=None):
+        if not self._compacta:              # lo que pide en tamaño normal (se mide una sola vez)
+            self._alto_normal = max(self._alto_normal,
+                                    self.logo.winfo_reqheight() + self.nav.winfo_reqheight() + 30)
+        compacta = self.winfo_height() < self._alto_normal
+        if compacta == self._compacta or not self._alto_normal:
+            return
+        self._compacta = compacta
+        lado = 38 if compacta else 48
+        for btn, etiqueta in zip(self._btns, self._etiquetas):
+            btn.configure(width=lado, height=lado, font=(T.F, 16 if compacta else 20))
+            btn.pack_configure(pady=1 if compacta else 3)
+            etiqueta.pack_configure(pady=(0, 2 if compacta else 5))
+        self.logo.grid_configure(pady=(6, 2) if compacta else (14, 8))
 
     def _sel(self, idx: int):
         self._mark(idx)
@@ -1078,15 +1543,17 @@ class Sidebar(ctk.CTkFrame):
 class BarraInf(ctk.CTkFrame):
     def __init__(self, master,
                  al_guardar:   Callable,
-                 al_ejecutar:  Callable,
                  al_renombrar: Callable):
         super().__init__(master, fg_color=T.SUP, height=62,
                          corner_radius=0,
                          border_width=1, border_color=T.BORDE)
         self.grid_propagate(False)
         self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
-        ctk.CTkFrame(self, fg_color=T.PRIM, width=6, corner_radius=0
+        # height=1: sin el, la franja toma el alto por defecto de CTk (200) y estira la fila mas que
+        # la barra (62): el perfil y los botones quedaban centrados abajo, fuera de la vista
+        ctk.CTkFrame(self, fg_color=T.PRIM, width=6, height=1, corner_radius=0
                      ).grid(row=0, column=0, sticky="ns")
 
         info = ctk.CTkFrame(self, fg_color="transparent")
@@ -1109,12 +1576,7 @@ class BarraInf(ctk.CTkFrame):
                           border_width=1, border_color=T.BORDE if tc == T.TEXTO else T.PRIM,
                           corner_radius=T.R, command=fn
                           ).pack(side="left", padx=(0, 6))
-        ctk.CTkButton(btns, text="EJECUTAR BOT (Oxford)",
-                      font=T.BTNG, height=36,
-                      fg_color=T.PRIM, hover_color=T.PRIM_H,
-                      text_color="white", corner_radius=T.R,
-                      command=al_ejecutar
-                      ).pack(side="left")
+        # Sin "Ejecutar" aqui: el bot se lanza desde el boton verde de la tarjeta del perfil activo
 
     def update(self, nombre: str, n: int):
         self.lbl_p.configure(text=f"Perfil activo: {nombre}")
@@ -1141,7 +1603,12 @@ class VentanaProgreso(ctk.CTkToplevel):
         self.minsize(600, 360)
         self.configure(fg_color=T.FONDO)
         self.resizable(True, True)
-        self._proceso = None
+        import threading
+        self._procesos = []                      # procesos en curso (modo paralelo)
+        self._procs_lock = threading.Lock()
+        self._log_lock = threading.Lock()        # exitosas/fallos los tocan varios hilos lectores
+        self._paralelas = 1
+        self._codigos = []
         self._corriendo = False
 
         # Cabecera
@@ -1210,34 +1677,86 @@ class VentanaProgreso(ctk.CTkToplevel):
         self.btn_detener.grid(row=0, column=3, padx=(8, 0))
 
         self.protocol("WM_DELETE_WINDOW", self._cerrar)
-        self.grab_set()
+        # Sin grab_set(): con el modo exclusivo Windows no deja minimizar la ventana, y una prueba
+        # puede tardar mucho. Que no se lancen dos bots a la vez lo controla VistaOxford.
+
+    @property
+    def corriendo(self) -> bool:
+        return self._corriendo
+
+    def mostrar(self):
+        """La trae al frente (tambien si estaba minimizada)."""
+        self.deiconify()
+        self.lift()
+        self.focus_force()
 
     def iniciar(self, cmd: list, cwd: str, env: dict | None = None):
         """Lanza el proceso y empieza a leer stdout."""
         self.iniciar_trabajos([(cmd, env)], cwd)
 
-    def iniciar_trabajos(self, trabajos: list, cwd: str):
-        """Lanza varios procesos UNO TRAS OTRO, [(cmd, env)]; se detiene al primero si el usuario para."""
+    def iniciar_trabajos(self, trabajos: list, cwd: str, paralelas: int = 1):
+        """Lanza los procesos [(cmd, env)] con hasta `paralelas` a la vez (pool). Para al detener."""
         import threading
         self._corriendo = True
-        threading.Thread(target=self._leer, args=(trabajos, cwd), daemon=True).start()
+        self._paralelas = max(1, int(paralelas))
+        self._codigos = []
+        threading.Thread(target=self._despachar, args=(trabajos, cwd), daemon=True).start()
 
-    def _leer(self, trabajos: list, cwd: str):
-        import subprocess
-        codigos = []
+    def _despachar(self, trabajos: list, cwd: str):
+        """Mantiene hasta `_paralelas` procesos vivos a la vez; cada uno se lee en su propio hilo."""
+        import threading
+        libres = threading.Semaphore(self._paralelas)
+        hilos = []
         for cmd, env in trabajos:
             if self._detenido:
                 break
-            self._proceso = subprocess.Popen(
+            libres.acquire()                     # espera a que se libere un cupo del pool
+            if self._detenido:
+                libres.release()
+                break
+            h = threading.Thread(target=self._correr_uno, args=(cmd, env, cwd, libres), daemon=True)
+            h.start()
+            hilos.append(h)
+        for h in hilos:
+            h.join()
+        self._finalizar()
+
+    def _correr_uno(self, cmd: list, env: dict | None, cwd: str, libres):
+        import os, subprocess
+        try:
+            # COLOMBO_INTERFAZ: los bots trabajan en segundo plano (sin ventana del navegador) porque
+            # el avance ya se ve aqui, y no esperan un Enter al terminar
+            env = {**(env or os.environ), "COLOMBO_INTERFAZ": "1"}
+            proceso = subprocess.Popen(
                 cmd, cwd=cwd, stdin=subprocess.DEVNULL, env=env,
                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                 text=True, encoding="utf-8", errors="replace",
                 creationflags=subprocess.CREATE_NO_WINDOW)
-            for linea in self._proceso.stdout:
+            with self._procs_lock:
+                self._procesos.append(proceso)
+            if self._detenido:                   # llego la orden de parar entre el cupo y el arranque
+                self._matar(proceso)
+            for linea in proceso.stdout:
                 self._log(linea.rstrip())
-            self._proceso.wait()
-            codigos.append(self._proceso.returncode)
-        rc = next((c for c in codigos if c), 0)
+            proceso.wait()
+            with self._procs_lock:
+                self._codigos.append(proceso.returncode)
+                if proceso in self._procesos:
+                    self._procesos.remove(proceso)
+        finally:
+            libres.release()
+
+    def _matar(self, proceso):
+        """taskkill /T /F cierra todo el arbol (el .exe onefile / python hijo y su navegador)."""
+        import subprocess
+        try:
+            subprocess.run(["taskkill", "/PID", str(proceso.pid), "/T", "/F"],
+                           capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
+        except Exception:
+            pass
+
+    def _finalizar(self):
+        rc = next((c for c in self._codigos if c), 0)
         if self._detenido:
             self._set_estado("⏹ Bot detenido por el usuario.", T.WARN)
         elif rc == 0:
@@ -1278,7 +1797,8 @@ class VentanaProgreso(ctk.CTkToplevel):
             usuario, nivel = actual.group(1), actual.group(2)
             if self.al_inicio:
                 self.after(0, lambda: self.al_inicio(usuario))
-            numero = self.exitosas + self.fallos + 1
+            with self._log_lock:
+                numero = self.exitosas + self.fallos + 1
             cabecera = f"Probando {usuario}  ·  {numero} de {self.total}  ·  Wide Angle {nivel}"
             self.after(0, lambda: self.lbl_info.configure(text=cabecera))
             self.after(0, lambda: self.title(f"{numero}/{self.total} {usuario} - Pruebas Wide Angle"))
@@ -1290,20 +1810,23 @@ class VentanaProgreso(ctk.CTkToplevel):
             ok = resultado == "OK"
             usuario, motivo = prueba.group(1), prueba.group(3).strip()
             estado = texto_estado(resultado, motivo)    # el MISMO texto que se anota en el Excel
-            self.exitosas += ok
-            self.fallos += not ok
-            self.after(0, lambda: self._mostrar_avance(self.exitosas + self.fallos, self.total))
+            with self._log_lock:                 # varios lectores terminan a la vez en modo paralelo
+                self.exitosas += ok
+                self.fallos += not ok
+                terminadas = self.exitosas + self.fallos
+            self.after(0, lambda t=terminadas: self._mostrar_avance(t, self.total))
             if self.al_resultado:
-                self.after(0, lambda: self.al_resultado(usuario, estado,
-                                                        self.exitosas + self.fallos >= self.total))
+                ultimo = terminadas >= self.total
+                self.after(0, lambda u=ultimo: self.al_resultado(usuario, estado, u))
             texto = f"{'✔' if ok else '✖'} Usuario {usuario} → Estado: {estado}"
             tag_forzado = "ok" if ok else "err"   # se colorea por el resultado, no por palabras del motivo
         low = texto.lower()
-        if low.startswith("paso 12:"):
-            self.exitosas += 1
-        elif low.startswith("fallo en la clase"):
-            self.fallos += 1
         if low.startswith(("paso 12:", "fallo en la clase")):
+            with self._log_lock:
+                if low.startswith("paso 12:"):
+                    self.exitosas += 1
+                else:
+                    self.fallos += 1
             self.after(0, lambda: self.lbl_cont.configure(text=self._texto_contadores()))
 
         def _do():
@@ -1335,13 +1858,12 @@ class VentanaProgreso(ctk.CTkToplevel):
             text=msg, text_color=color))
 
     def _detener(self):
-        if self._proceso and self._corriendo:
-            self._detenido = True
-            # terminate() solo mata al proceso lanzado; el bot (python hijo / .exe onefile) y el
-            # navegador seguirian vivos. taskkill /T /F cierra todo el arbol.
-            import subprocess
-            subprocess.run(["taskkill", "/PID", str(self._proceso.pid), "/T", "/F"],
-                           capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
+        if self._corriendo and not self._detenido:
+            self._detenido = True              # corta el despachador y evita relanzar mas procesos
+            with self._procs_lock:
+                procesos = list(self._procesos)
+            for proceso in procesos:           # mata TODO lo que este corriendo en el pool
+                self._matar(proceso)
             self._log(">>> Bot detenido por el usuario.")
             self.btn_detener.configure(state="disabled")
 
@@ -1361,7 +1883,6 @@ class VentanaProgreso(ctk.CTkToplevel):
                     parent=self):
                 return
             self._detener()
-        self.grab_release()
         self.destroy()
 
 
@@ -1380,11 +1901,11 @@ class VistaOxford(ctk.CTkFrame):
 
         self._perfiles: list = cargar_perfiles()
         self._activo:   int | None = 0 if self._perfiles else None
+        self._ventana_bot: VentanaProgreso | None = None     # la del bot que este corriendo
 
         # 1. Barra inferior (siempre visible en el fondo, ocupa todo el ancho)
         self.barra = BarraInf(self,
                                al_guardar=self._guardar,
-                               al_ejecutar=self._ejecutar,
                                al_renombrar=self._renombrar)
         self.barra.pack(side="bottom", fill="x")
 
@@ -1414,7 +1935,9 @@ class VistaOxford(ctk.CTkFrame):
 
         self._estados_pendientes: dict[int, str] = {}
         self.pu = PanelUsuarios(self.area, al_ejecutar=self._ejecutar_pruebas)
-        self.pu.antes_de_recargar = lambda: self._estados_pendientes and self._anotar_estados({})
+        self._id_volcado = None                  # after() programado para escribir los Estados acumulados
+        self.pu.antes_de_recargar = self._volcar_pendientes   # corre en el hilo de carga (sin interfaz)
+        self.pu.pendientes = lambda: dict(self._estados_pendientes)
         self._panels = [self.pp, self.pc, self.po, self.ps, self.pu]
         for p in self._panels:
             p.grid(row=0, column=0, sticky="nsew")
@@ -1425,10 +1948,24 @@ class VistaOxford(ctk.CTkFrame):
 
     # ── Integracion con la app unificada
     def hay_proceso_activo(self) -> bool:
-        return False        # el bot corre en una ventana modal de progreso; no se puede salir antes
+        v = self._ventana_bot
+        return bool(v is not None and v.winfo_exists() and v.corriendo)
 
     def cerrar(self) -> None:
-        pass
+        if self.hay_proceso_activo():
+            self._ventana_bot._detener()       # la app ya pregunto si detenerlo antes de salir
+        if self._estados_pendientes:           # no perder los Estados que aun no se escribieron al Excel
+            self._volcar_pendientes()
+
+    def _bot_en_curso(self) -> bool:
+        """Si ya hay un bot corriendo, trae su ventana al frente y avisa (no se lanzan dos a la vez)."""
+        if not self.hay_proceso_activo():
+            return False
+        self._ventana_bot.mostrar()
+        messagebox.showinfo("Bot en curso",
+                            "Ya hay un bot de Oxford trabajando. Espera a que termine o detenlo "
+                            "desde su ventana de progreso.", parent=self._ventana_bot)
+        return True
 
     # ── Navegacion
     def _cambiar(self, idx: int):
@@ -1442,22 +1979,71 @@ class VistaOxford(ctk.CTkFrame):
             self.pu.recargar()          # el Excel pudo cambiar mientras estaba en otra pantalla
 
     # ── Pruebas de Wide Angle (menu Usuarios)
+    def _volcar_pendientes(self) -> str:
+        """Escribe en el Excel los Estados acumulados. No toca la interfaz (puede correr en un hilo).
+
+        Devuelve "" si quedo todo escrito (o no habia nada), "abierto" si el Excel esta abierto, u otro texto de error.
+        Los que no se pudieron escribir siguen en _estados_pendientes para el siguiente intento.
+        """
+        with _LOCK_EXCEL:
+            lote = dict(self._estados_pendientes)
+            if not lote:
+                return ""
+            try:
+                escribir_estados_usuarios(lote)
+            except PermissionError:
+                return "abierto"
+            except Exception as e:
+                return str(e) or e.__class__.__name__
+            for fila, texto in lote.items():       # quitar solo lo escrito (pudo llegar uno nuevo mientras tanto)
+                if self._estados_pendientes.get(fila) == texto:
+                    del self._estados_pendientes[fila]
+            return ""
+
     def _anotar_estados(self, estados: dict[int, str]) -> bool:
-        """Anota en la columna 'Estado' del Excel. Si esta abierto en Excel lo deja pendiente y avisa."""
+        """Anota YA en la columna 'Estado' del Excel (una sola escritura). Si esta abierto lo deja pendiente."""
         self._estados_pendientes.update(estados)
-        try:
-            escribir_estados_usuarios(self._estados_pendientes)
-        except PermissionError:
-            return False
-        except Exception as e:
-            messagebox.showerror("No se pudo anotar el Estado", str(e))
-            return False
-        self._estados_pendientes = {}
-        return True
+        error = self._volcar_pendientes()
+        if error and error != "abierto":
+            messagebox.showerror("No se pudo anotar el Estado", error)
+        return not error
+
+    def _encolar_estado(self, fila: int, texto: str):
+        """Durante las pruebas: acumula el Estado y lo escribe al Excel por lotes (cada INTERVALO_VOLCADO_MS)."""
+        self._estados_pendientes[fila] = texto
+        if self._id_volcado is None:
+            self._id_volcado = self.after(INTERVALO_VOLCADO_MS, self._volcar_en_hilo)
+
+    def _volcar_en_hilo(self, al_terminar: Callable[[str], None] | None = None):
+        """Escribe los Estados acumulados en un hilo; al_terminar(error) en el hilo de Tk."""
+        if self._id_volcado is not None:
+            self.after_cancel(self._id_volcado)
+            self._id_volcado = None
+
+        def fin(error, excepcion):
+            error = error or (str(excepcion) if excepcion else "")
+            if error and self._estados_pendientes and self.hay_proceso_activo() and self._id_volcado is None:
+                self._id_volcado = self.after(INTERVALO_VOLCADO_MS, self._volcar_en_hilo)   # reintentar luego
+            if al_terminar:
+                al_terminar(error)
+        en_hilo(self, self._volcar_pendientes, fin)
 
     def _ejecutar_pruebas(self):
-        self.pu.recargar()
-        self._estados_pendientes: dict[int, str] = {}
+        if self._bot_en_curso() or getattr(self, "_preparando", False):
+            return
+        self._preparando = True                 # evita doble clic mientras se lee el Excel
+        self.pu.btn_ejecutar.configure(state="disabled")
+
+        def listo(ok: bool):
+            self._preparando = False
+            self.pu.btn_ejecutar.configure(state="normal")
+            if ok:
+                self._ejecutar_pruebas_cargado()
+        self.pu.recargar(al_terminar=listo)
+
+    def _ejecutar_pruebas_cargado(self):
+        """Segunda parte de Ejecutar: self.pu.usuarios ya esta recien leido del Excel."""
+        self._estados_pendientes = {}
         ahora = datetime.now().strftime("%d/%m %H:%M")
         con_error = {u["fila"]: f"ERROR {ahora}: {u['error']}" for u in self.pu.usuarios
                      if u["usar"] and u["error"]}
@@ -1467,9 +2053,9 @@ class VistaOxford(ctk.CTkFrame):
                 "Hay usuarios con error en el Excel pero está abierto y no pude anotar su 'Estado'.\n"
                 "Ciérralo y pulsa Ejecutar de nuevo para dejar el registro.")
             return
-        if con_error:
-            self.pu.recargar()
-        listos = [u for u in self.pu.usuarios if u["usar"] and not u["error"]]
+        for fila, texto in con_error.items():   # ya quedo escrito en el Excel: solo reflejarlo en la tabla
+            self.pu.actualizar_estado(fila, texto)
+        listos =[u for u in self.pu.usuarios if u["usar"] and not u["error"]]
         if not listos:
             messagebox.showinfo("Sin usuarios",
                                 "No hay usuarios listos: revisa el Excel (Usar, Nivel y contraseña).")
@@ -1493,54 +2079,73 @@ class VistaOxford(ctk.CTkFrame):
                 grupos[-1][2].append(u)
             else:
                 grupos.append((u["nivel"], u["unidades"], [u]))
-        resumen = "\n".join(f"{i}. Wide Angle {n}, unidades {un}: " + ", ".join(x["usuario"] for x in us)
-                            for i, (n, un, us) in enumerate(grupos, start=1))
-        if not messagebox.askyesno(
-                "Ejecutar pruebas?",
-                f"{resumen}\n\nSe abrira el navegador y se escribiran intentos REALES en cada cuenta.\n"
-                "¿Continuar?"):
+        confirmar = DlgConfirmarPruebas(self, grupos)
+        self.wait_window(confirmar)
+        if not confirmar.aceptado:
             return
 
+        paralelas = confirmar.paralelas
         import os, tempfile
         carpeta_tmp = Path(tempfile.mkdtemp(prefix="oxford_cuentas_"))
         py = str(VENV_PYTHON) if VENV_PYTHON.exists() else sys.executable
+        # Cada grupo (nivel+unidades) se parte en hasta `paralelas` subprocesos para que corran a la
+        # vez; cada subproceso reusa su navegador entre las cuentas que le tocan. El tope REAL de
+        # concurrencia lo impone la ventana de progreso (pool), aunque haya mas subprocesos.
         trabajos = []
-        for i, (nivel, unidades, usuarios) in enumerate(grupos):
-            archivo = carpeta_tmp / f"cuentas_{i}.json"
-            archivo.write_text(json.dumps(
-                [{"user": u["usuario"], "password": u["clave"], "link": link, "codigo": u["codigo"],
-                  "codigo_practica": u["cod_practica"], "codigo_ebook": u["cod_ebook"]}
-                 for u in usuarios], ensure_ascii=False), encoding="utf-8")
-            env = {**os.environ, "OXFORD_NIVEL": str(nivel), "OXFORD_UNIDADES": unidades,
-                   "OXFORD_CUENTAS": str(archivo), "OXFORD_RAIZ": str(ROOT),
-                   "PYTHONUNBUFFERED": "1", "PYTHONIOENCODING": "utf-8"}
-            cmd = [str(PRUEBAS_EXE)] if es_exe else [py, str(PRUEBAS_SCRIPT)]
-            trabajos.append((cmd, env))
+        t = 0
+        for nivel, unidades, usuarios in grupos:
+            n_lotes = min(paralelas, len(usuarios))
+            lotes = [usuarios[j::n_lotes] for j in range(n_lotes)]       # reparto redondo (equilibra)
+            for lote in lotes:
+                archivo = carpeta_tmp / f"cuentas_{t}.json"
+                t += 1
+                archivo.write_text(json.dumps(
+                    [{"user": u["usuario"], "password": u["clave"], "link": link, "codigo": u["codigo"],
+                      "codigo_practica": u["cod_practica"], "codigo_ebook": u["cod_ebook"]}
+                     for u in lote], ensure_ascii=False), encoding="utf-8")
+                env = {**os.environ, "OXFORD_NIVEL": str(nivel), "OXFORD_UNIDADES": unidades,
+                       "OXFORD_CUENTAS": str(archivo), "OXFORD_RAIZ": str(ROOT),
+                       "PYTHONUNBUFFERED": "1", "PYTHONIOENCODING": "utf-8"}
+                cmd = [str(PRUEBAS_EXE)] if es_exe else [py, str(PRUEBAS_SCRIPT)]
+                trabajos.append((cmd, env))
         filas = {u["usuario"]: u["fila"] for u in reversed(listos)}      # usuario -> fila del Excel
 
         def al_inicio(usuario: str):
             fila = filas.get(usuario)
             if fila:
-                self._anotar_estados({fila: f"EJECUTANDO {datetime.now().strftime('%d/%m %H:%M')}..."})
-                self.pu.recargar()
+                texto = f"EJECUTANDO {datetime.now().strftime('%d/%m %H:%M')}..."
+                self._encolar_estado(fila, texto)
+                self.pu.actualizar_estado(fila, texto)
 
         def al_resultado(usuario: str, estado: str, ultimo: bool):
+            # Solo se actualiza esa fila de la tabla (instantaneo) y el Estado se acumula: el Excel se
+            # escribe por lotes cada INTERVALO_VOLCADO_MS en un hilo, y una ultima vez al terminar.
             fila = filas.get(usuario)
             if fila:
-                self._anotar_estados({fila: estado})
-                self.pu.recargar()          # la tabla de Usuarios muestra el Estado al instante
-            if ultimo and self._estados_pendientes:
+                self._encolar_estado(fila, estado)
+                self.pu.actualizar_estado(fila, estado)
+            if ultimo:
+                self._volcar_en_hilo(al_terminar=avisar_si_falta)
+
+        def avisar_si_falta(error: str):
+            if not self._estados_pendientes:
+                return
+            padre = ven if ven.winfo_exists() else self
+            if error == "abierto":
                 messagebox.showwarning(
                     "Excel abierto",
                     "No pude anotar el 'Estado' de algunos usuarios porque el Excel está abierto.\n"
-                    "Ciérralo y pulsa Recargar en Usuarios para guardarlos.", parent=ven)
+                    "Ciérralo y pulsa Recargar en Usuarios para guardarlos.", parent=padre)
+            else:
+                messagebox.showerror("No se pudo anotar el Estado", error, parent=padre)
         try:
             ven = VentanaProgreso(self, "", "", ROOT / "Capturas",
                                   titulo="Pruebas Wide Angle", unidad="usuarios",
                                   info=f"{len(listos)} usuario(s)  |  {len(grupos)} grupo(s)",
                                   total=len(listos), texto_carpeta="📂 Abrir capturas",
                                   al_resultado=al_resultado, al_inicio=al_inicio)
-            ven.iniciar_trabajos(trabajos, str(ROOT))
+            ven.iniciar_trabajos(trabajos, str(ROOT), paralelas=paralelas)
+            self._ventana_bot = ven
         except Exception as e:
             messagebox.showerror("Error al ejecutar", str(e))
 
@@ -1647,7 +2252,7 @@ class VistaOxford(ctk.CTkFrame):
         try:
             escribir_credenciales(p["user"], p["password"], p["link"])
             clases_guardar = p["clases"] if not todas else ["__TODAS__"]
-            escribir_config(p["id_org"], clases_guardar, p["scores"], p["show_figures_as"], p["show_scores_for"], p.get("ruta_descarga", ""))
+            escribir_config(p["id_org"], clases_guardar, p["scores"], p["show_figures_as"], p["show_scores_for"], p.get("ruta_descarga", ""), p.get("version", "Closing soon"))
             guardar_perfiles(self._perfiles)
         except Exception as e:
             messagebox.showerror("Error", str(e))
@@ -1660,6 +2265,8 @@ class VistaOxford(ctk.CTkFrame):
             f"Perfil: {p['nombre']}  |  {n_txt}")
 
     def _ejecutar(self):
+        if self._bot_en_curso():
+            return
         if self._activo is None:
             messagebox.showinfo("Sin perfil", "Crea o carga un perfil.")
             return
@@ -1690,6 +2297,7 @@ class VistaOxford(ctk.CTkFrame):
         id_org_p = p["id_org"]
         det = (f"Perfil: {nombre_p}\n"
                f"ID org: {id_org_p}\n"
+               f"Version: {p.get('version', 'Closing soon')}\n"
                f"Clases: {n_clases}")
         if not messagebox.askyesno("Ejecutar bot?",
                                     f"{det}\n\n"
@@ -1703,6 +2311,7 @@ class VistaOxford(ctk.CTkFrame):
             ven = VentanaProgreso(self, p["nombre"], n_clases,
                                   Path(ruta) if ruta else ROOT / "Descargas")
             ven.iniciar(cmd, str(ROOT))
+            self._ventana_bot = ven
         except Exception as e:
             messagebox.showerror("Error al ejecutar", str(e))
 
