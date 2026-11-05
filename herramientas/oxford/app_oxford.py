@@ -733,12 +733,13 @@ class DlgConfirmarPruebas(ctk.CTkToplevel):
         niveles = sorted({str(n) for n, _, _ in grupos}, key=lambda s: (len(s), s))
         self.title("Ejecutar pruebas")
         # Alto segun lo que haya que mostrar (~26 px por grupo), con tope: si son muchos, la lista hace scroll
-        alto = max(460, min(640, 400 + 26 * len(grupos)))
+        alto = 560 if len(grupos) <= 5 else 640
         self.geometry(f"640x{alto}")
-        self.minsize(520, 400)
+        self.minsize(520, 480)
         self.configure(fg_color=T.FONDO)
-        self.transient(master.winfo_toplevel())
-        self.grab_set()
+        # Ventana normal (sin transient ni grab_set) para que Windows muestre minimizar/maximizar/cerrar.
+        # Que no se abran dos a la vez lo controla VistaOxford (_preparando).
+        self.after(50, lambda: self._centrar(master.winfo_toplevel()))
         self.protocol("WM_DELETE_WINDOW", self.destroy)
         self.bind("<Escape>", lambda _: self.destroy())
 
@@ -764,15 +765,15 @@ class DlgConfirmarPruebas(ctk.CTkToplevel):
 
         # Lista agrupada: un solo ttk.Treeview (un grupo por fila; sus usuarios se ven al desplegarlo).
         # Antes era una etiqueta por usuario y con cientos de usuarios la ventana se congelaba.
+        # (se empaca al final: así la lista se encoge y los botones de abajo nunca quedan cortados)
         marco = ctk.CTkFrame(self, fg_color=T.SUP, corner_radius=T.R, border_width=1, border_color=T.BORDE)
-        marco.pack(fill="both", expand=True, padx=20, pady=12)
         marco.grid_rowconfigure(0, weight=1)
         marco.grid_columnconfigure(0, weight=1)
         estilo = ttk.Style(self)
         estilo.configure("Grupos.Treeview", font=T.NRM, rowheight=24, background=T.SUP,
                          fieldbackground=T.SUP, foreground=T.TEXTO, borderwidth=0)
         estilo.configure("Grupos.Treeview.Heading", font=T.ETQ, foreground=T.PRIM)
-        arbol = ttk.Treeview(marco, columns=("usuarios",), style="Grupos.Treeview", selectmode="none")
+        arbol = ttk.Treeview(marco, columns=("usuarios",), style="Grupos.Treeview", selectmode="none", height=5)
         arbol.heading("#0", text="Proceso  ·  libro  ·  unidades (despliega para ver los usuarios)", anchor="w")
         arbol.heading("usuarios", text="Usuarios", anchor="e")
         arbol.column("#0", width=440, stretch=True, anchor="w")
@@ -791,7 +792,6 @@ class DlgConfirmarPruebas(ctk.CTkToplevel):
         # Cuantas cuentas trabajan a la vez (pool). Mas = mas rapido, pero mas memoria/CPU y mas
         # sesiones simultaneas contra Oxford: por eso el tope razonable es 3-4.
         velo = ctk.CTkFrame(self, fg_color="transparent")
-        velo.pack(fill="x", padx=20, pady=(0, 4))
         ctk.CTkLabel(velo, text="Cuentas en paralelo:", font=T.SEC, text_color=T.TEXTO
                      ).pack(side="left")
         ctk.CTkOptionMenu(velo, width=72, variable=self._var_paralelas,
@@ -802,7 +802,6 @@ class DlgConfirmarPruebas(ctk.CTkToplevel):
                      text_color=T.SUAVE).pack(side="left", padx=(8, 0))
 
         aviso = ctk.CTkFrame(self, fg_color=T.WRN_BG, corner_radius=T.R)
-        aviso.pack(fill="x", padx=20)
         ctk.CTkLabel(aviso, text="⚠  Se escribirán intentos REALES en cada cuenta. Trabaja en segundo "
                                  "plano: el avance se ve en la ventana de progreso. Varias cuentas "
                                  "corren a la vez, así que las líneas del log se intercalan y el "
@@ -811,7 +810,6 @@ class DlgConfirmarPruebas(ctk.CTkToplevel):
                      ).pack(fill="x", padx=12, pady=8)
 
         pie = ctk.CTkFrame(self, fg_color="transparent")
-        pie.pack(fill="x", padx=20, pady=(12, 18))
         pie.grid_columnconfigure((0, 1), weight=1)
         ctk.CTkButton(pie, text="Cancelar", font=T.BTN, height=38,
                       fg_color=T.SUP, hover_color=T.FONDO,
@@ -822,6 +820,30 @@ class DlgConfirmarPruebas(ctk.CTkToplevel):
                       fg_color=T.OK, hover_color=T.PRIM_H, text_color="white",
                       command=self._ok
                       ).grid(row=0, column=1, sticky="ew", padx=(6, 0))
+
+        # Abajo primero (de abajo hacia arriba) y la lista al final: si la ventana es baja, se encoge la lista.
+        pie.pack(side="bottom", fill="x", padx=20, pady=(12, 18))
+        aviso.pack(side="bottom", fill="x", padx=20)
+        velo.pack(side="bottom", fill="x", padx=20, pady=(0, 10))
+        marco.pack(fill="both", expand=True, padx=20, pady=12)
+
+    def _centrar(self, ventana):
+        """Centra el dialogo sobre la ventana principal (sin salirse de la pantalla) y lo trae al frente."""
+        import tkinter as tk
+        self.update_idletasks()
+        w, h = self.winfo_width(), self.winfo_height()           # pixeles reales (ya con el escalado)
+        h = min(h, self.winfo_screenheight() - 120)               # que quepa sobre la barra de tareas
+        x = ventana.winfo_rootx() + (ventana.winfo_width() - w) // 2
+        y = ventana.winfo_rooty() + (ventana.winfo_height() - h) // 2
+        x = max(0, min(x, self.winfo_screenwidth() - w))
+        y = max(0, min(y, self.winfo_screenheight() - h - 90))    # 90 ~ barra de tareas + titulo
+        tk.Toplevel.wm_geometry(self, f"{w}x{h}+{x}+{y}")       # crudo (sin el escalado de CTk)
+        # Sin transient Windows puede dejarlo detras de la principal: se pone encima un momento y se suelta
+        # (si se deja 'topmost' fijo, taparia otras aplicaciones)
+        self.attributes("-topmost", True)
+        self.lift()
+        self.focus_force()
+        self.after(400, lambda: self.winfo_exists() and self.attributes("-topmost", False))
 
     def _ok(self):
         try:
@@ -2031,10 +2053,12 @@ class VistaOxford(ctk.CTkFrame):
         self.pu.btn_ejecutar.configure(state="disabled")
 
         def listo(ok: bool):
-            self._preparando = False
-            self.pu.btn_ejecutar.configure(state="normal")
-            if ok:
-                self._ejecutar_pruebas_cargado()
+            try:
+                if ok:                          # incluye el dialogo de confirmacion (no se abren dos)
+                    self._ejecutar_pruebas_cargado()
+            finally:
+                self._preparando = False
+                self.pu.btn_ejecutar.configure(state="normal")
         self.pu.recargar(al_terminar=listo)
 
     def _ejecutar_pruebas_cargado(self):
